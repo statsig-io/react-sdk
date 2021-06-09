@@ -1,0 +1,34 @@
+{
+  "name": "statsig-react",
+  "version": "0.1.0",
+  "description": "An SDK for using Statsig Feature Management and Experimentation platform in react clients",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Don't panic\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/statsig-io/react-sdk.git"
+  },
+  "keywords": [
+    "Feature",
+    "Flag",
+    "Management",
+    "A/B",
+    "Test"
+  ],
+  "author": "Statsig, Inc",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/statsig-io/react-sdk/issues"
+  },
+  "homepage": "https://github.com/statsig-io/react-sdk#readme",
+  "devDependencies": {
+    "@types/react": "^17.0.9",
+    "typescript": "^4.3.2"
+  },
+  "dependencies": {
+    "react": "^17.0.2",
+    "statsig-js": "^2.2.0"
+  }
+}
