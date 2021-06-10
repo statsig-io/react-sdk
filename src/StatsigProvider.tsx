@@ -17,18 +17,29 @@ export default function StatsigProvider({
 }: Props): JSX.Element {
   const [initialized, setInitialized] = useState(false);
   const resolver = useRef<(() => void) | null>(null);
-  const statsigPromise = useRef<Promise<void>>(
+  let statsigPromise = useRef<Promise<void>>(
     new Promise((resolve, _reject) => {
       resolver.current = resolve;
     }),
   );
 
   useEffect(() => {
+    if (initialized) {
+      statsigPromise.current = new Promise((resolve, _reject) => {
+        resolver.current = resolve;
+      });
+      setInitialized(false);
+      statsig.updateUser(user).then(() => {
+        setInitialized(true);
+        resolver.current && resolver.current();
+      });
+      return;
+    }
     statsig.initialize(sdkKey, user, options).then(() => {
       setInitialized(true);
       resolver.current && resolver.current();
     });
-  });
+  }, [user]);
 
   return (
     <StatsigContext.Provider value={{ initialized, statsig, statsigPromise }}>
