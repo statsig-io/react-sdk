@@ -2,9 +2,10 @@
   "name": "statsig-react-pre-release",
   "version": "0.1.0",
   "description": "An SDK for using Statsig Feature Management and Experimentation platform in React clients",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Don't panic\""
+    "prepublish": "tsc"
   },
   "repository": {
     "type": "git",

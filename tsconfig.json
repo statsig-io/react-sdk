@@ -6,7 +6,9 @@
     "outDir": "dist",
     "jsx": "react",
     "sourceMap": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "declaration": true,
+    "emitDeclarationOnly": true
   },
   "include": ["src"]
 }

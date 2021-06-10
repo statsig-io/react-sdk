@@ -1,13 +1,13 @@
 import React, { useRef, MutableRefObject } from 'react';
 import statsig from 'statsig-js';
 
-interface StatsigContext {
+export interface TStatsigContext {
   initialized: boolean;
   statsigPromise: MutableRefObject<Promise<void>>;
   statsig: typeof statsig;
 }
 
-export default React.createContext<StatsigContext>({
+export default React.createContext<TStatsigContext>({
   initialized: false,
   statsig: statsig,
   statsigPromise: useRef<Promise<void>>(
