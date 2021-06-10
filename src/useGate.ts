@@ -10,6 +10,6 @@ export default function (gateName: string): GateResult {
   const { initialized, statsig } = useContext(StatsigContext);
   return {
     isLoading: !initialized,
-    value: statsig.checkGate(gateName),
+    value: initialized ? statsig.checkGate(gateName) : false,
   };
 }

@@ -4,7 +4,7 @@ import { ConfigResult } from './useConfig';
 
 export default async function (configName: string): Promise<ConfigResult> {
   const { statsigPromise, statsig } = useContext(StatsigContext);
-  await statsigPromise;
+  statsigPromise && (await statsigPromise);
   return {
     isLoading: false,
     dynamicConfig: statsig.getConfig(configName),

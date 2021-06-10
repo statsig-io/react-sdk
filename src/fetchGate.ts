@@ -4,9 +4,9 @@ import { GateResult } from './useGate';
 
 export default async function (gateName: string): Promise<GateResult> {
   const { statsigPromise, statsig } = useContext(StatsigContext);
-  await statsigPromise;
+  statsigPromise && (await statsigPromise);
   return {
     isLoading: false,
-    value: statsig?.checkGate(gateName) ?? false,
+    value: statsig.checkGate(gateName),
   };
 }

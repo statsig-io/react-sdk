@@ -1,11 +1,11 @@
 {
   "name": "statsig-react-pre-release",
-  "version": "0.3.0",
+  "version": "0.4.21",
   "description": "An SDK for using Statsig Feature Management and Experimentation platform in React clients",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "prepublish": "tsc"
+    "prepublish": "tsc && webpack"
   },
   "repository": {
     "type": "git",
@@ -26,10 +26,22 @@
   "homepage": "https://github.com/statsig-io/react-sdk#readme",
   "devDependencies": {
     "@types/react": "^17.0.9",
-    "typescript": "^4.3.2"
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.2.2",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-plugin-transform-react-jsx": "^6.24.1",
+    "babel-preset-env": "^1.7.0",
+    "typescript": "^4.3.2",
+    "webpack-cli": "^4.7.2"
   },
   "dependencies": {
-    "react": "^17.0.2",
-    "statsig-js": "^2.2.0"
+    "react": "^16.6.3 || ^17.0.0",
+    "react-dom": "^16.8.4 || ^17.0.0",
+    "statsig-js": "^2.0.0"
+  },
+  "peerDependencies": {
+    "react": "^16.6.3 || ^17.0.0",
+    "react-dom": "^16.8.4 || ^17.0.0"
   }
 }

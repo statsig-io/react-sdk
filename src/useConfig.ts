@@ -1,6 +1,5 @@
 import { useContext } from 'react';
 import statsig from 'statsig-js';
-import DynamicConfig from 'statsig-js';
 import StatsigContext from './StatsigContext';
 
 export type ConfigResult = {
@@ -13,6 +12,8 @@ export default function (configName: string): ConfigResult {
 
   return {
     isLoading: !initialized,
-    dynamicConfig: statsig.getConfig(configName),
+    dynamicConfig: initialized
+      ? statsig.getConfig(configName)
+      : new statsig.DynamicConfig(configName, {}, ''),
   };
 }

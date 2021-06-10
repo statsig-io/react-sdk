@@ -6,7 +6,8 @@ type Props = {
   children: React.ReactNode | React.ReactNode[];
   sdkKey: string;
   user: statsig.StatsigUser;
-  options: statsig.StatsigOptions | null;
+  options?: statsig.StatsigOptions;
+  waitForInitialization?: boolean;
 };
 
 export default function StatsigProvider({
@@ -14,6 +15,7 @@ export default function StatsigProvider({
   sdkKey,
   user,
   options,
+  waitForInitialization,
 }: Props): JSX.Element {
   const [initialized, setInitialized] = useState(false);
   const resolver = useRef<(() => void) | null>(null);
@@ -43,7 +45,7 @@ export default function StatsigProvider({
 
   return (
     <StatsigContext.Provider value={{ initialized, statsig, statsigPromise }}>
-      {children}
+      {waitForInitialization == true ? initialized && children : children}
     </StatsigContext.Provider>
   );
 }
