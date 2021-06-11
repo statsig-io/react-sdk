@@ -45,7 +45,7 @@ export default function StatsigProvider({
 
   return (
     <StatsigContext.Provider value={{ initialized, statsig, statsigPromise }}>
-      {waitForInitialization == true ? initialized && children : children}
+      {waitForInitialization !== true || initialized ? children : null}
     </StatsigContext.Provider>
   );
 }
