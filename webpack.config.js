@@ -14,7 +14,7 @@ module.exports = {
   optimization: {
     sideEffects: false,
   },
-  mode: 'development',
+  mode: 'production',
   module: {
     rules: [
       {
