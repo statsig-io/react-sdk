@@ -1,5 +1,6 @@
 import React from 'react';
 import statsig from 'statsig-js';
+import statsigDefault from './statsigDefault';
 
 export interface TStatsigContext {
   initialized: boolean;
@@ -9,6 +10,6 @@ export interface TStatsigContext {
 
 export default React.createContext<TStatsigContext>({
   initialized: false,
-  statsig: statsig,
+  statsig: statsigDefault,
   statsigPromise: null,
 });
