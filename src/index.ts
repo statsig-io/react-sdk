@@ -7,7 +7,7 @@ import logEventAsync from './logEventAsync';
 import useConfig from './useConfig';
 import useGate from './useGate';
 
-export default {
+export {
   fetchConfig,
   fetchGate,
   logEvent,
