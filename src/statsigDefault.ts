@@ -5,31 +5,29 @@ export default {
     _user?: statsig.StatsigUser | null,
     _options?: statsig.StatsigOptions | null,
   ): Promise<void> {
-    return new Promise(() => {});
+    throw 'You must wrap this component in a StatsigProvider in order to call Statsig SDK functions';
   },
   checkGate(_gateName: string): boolean {
-    return false;
+    throw 'You must wrap this component in a StatsigProvider in order to call Statsig SDK functions';
   },
   getConfig(configName: string): statsig.DynamicConfig {
-    return new statsig.DynamicConfig(configName, {}, '');
+    throw 'You must wrap this component in a StatsigProvider in order to call Statsig SDK functions';
   },
   logEvent(
     _eventName: string,
     _value?: string | number | null,
     _metadata?: object,
   ) {
-    // noop
+    throw 'You must wrap this component in a StatsigProvider in order to call Statsig SDK functions';
   },
   shutdown() {
-    // noop
+    throw 'You must wrap this component in a StatsigProvider in order to call Statsig SDK functions';
   },
   isReady(): boolean {
-    return false;
+    throw 'You must wrap this component in a StatsigProvider in order to call Statsig SDK functions';
   },
   updateUser(_user: statsig.StatsigUser): Promise<boolean> {
-    return new Promise<boolean>((resolve) => {
-      resolve(false);
-    });
+    throw 'You must wrap this component in a StatsigProvider in order to call Statsig SDK functions';
   },
   _setReactNativeDependencies(
     _sdkPackageInfo: statsig._SDKPackageInfo,
@@ -41,7 +39,7 @@ export default {
     _constants: object | null,
     _expoDevice: object | null,
   ) {
-    //noop
+    throw 'You must wrap this component in a StatsigProvider in order to call Statsig SDK functions';
   },
 
   DynamicConfig: statsig.DynamicConfig,

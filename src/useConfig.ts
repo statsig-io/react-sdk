@@ -4,7 +4,7 @@ import StatsigContext from './StatsigContext';
 
 export type ConfigResult = {
   isLoading: boolean;
-  dynamicConfig: statsig.DynamicConfig | null;
+  config: statsig.DynamicConfig;
 };
 
 export default function (configName: string): ConfigResult {
@@ -12,7 +12,7 @@ export default function (configName: string): ConfigResult {
 
   return {
     isLoading: !initialized,
-    dynamicConfig: initialized
+    config: initialized
       ? statsig.getConfig(configName)
       : new statsig.DynamicConfig(configName, {}, ''),
   };

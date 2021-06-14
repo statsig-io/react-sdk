@@ -1,19 +1,21 @@
 import StatsigContext from './StatsigContext';
 import StatsigProvider from './StatsigProvider';
 import fetchConfig from './fetchConfig';
+import fetchExperiment from './fetchExperiment';
 import fetchGate from './fetchGate';
-import logEvent from './logEvent';
-import logEventAsync from './logEventAsync';
 import useConfig from './useConfig';
+import useExperiment from './useExperiment';
 import useGate from './useGate';
+import useStatsig from './useStatsig';
 
 export {
   fetchConfig,
+  fetchExperiment,
   fetchGate,
-  logEvent,
-  logEventAsync,
   StatsigContext,
   StatsigProvider,
   useConfig,
+  useExperiment,
   useGate,
+  useStatsig,
 };
