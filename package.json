@@ -1,6 +1,6 @@
 {
   "name": "statsig-react-pre-release",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "An SDK for using Statsig Feature Management and Experimentation platform in React clients",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -31,7 +31,7 @@
   "dependencies": {
     "react": "^16.6.3 || ^17.0.0",
     "react-dom": "^16.8.4 || ^17.0.0",
-    "statsig-js": "^2.3.1"
+    "statsig-js": "^2.3.2"
   },
   "peerDependencies": {
     "react": "^16.6.3 || ^17.0.0",
