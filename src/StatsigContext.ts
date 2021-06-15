@@ -8,6 +8,9 @@ export interface TStatsigContext {
   statsig: typeof statsig;
 }
 
+/**
+ * The Statsig SDK context used by the StatsigProvider, and consumed by other SDK helper functions
+ */
 export default React.createContext<TStatsigContext>({
   initialized: false,
   statsig: statsigDefault,
