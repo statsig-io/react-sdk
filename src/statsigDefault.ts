@@ -10,7 +10,10 @@ export default {
   checkGate(_gateName: string): boolean {
     throw 'You must wrap this component in a StatsigProvider in order to call Statsig SDK functions';
   },
-  getConfig(configName: string): statsig.DynamicConfig {
+  getConfig(_configName: string): statsig.DynamicConfig {
+    throw 'You must wrap this component in a StatsigProvider in order to call Statsig SDK functions';
+  },
+  getExperiment(_experimentName: string): statsig.DynamicConfig {
     throw 'You must wrap this component in a StatsigProvider in order to call Statsig SDK functions';
   },
   logEvent(
