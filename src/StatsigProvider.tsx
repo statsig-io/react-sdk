@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import statsig from 'statsig-js';
 import StatsigContext from './StatsigContext';
 
@@ -55,6 +55,10 @@ export default function StatsigProvider({
     }),
   );
 
+  const userMemo = useMemo(() => {
+    return user;
+  }, [JSON.stringify(user)]);
+
   useEffect(() => {
     if (initialized) {
       statsigPromise.current = new Promise((resolve, _reject) => {
@@ -67,11 +71,11 @@ export default function StatsigProvider({
       });
       return;
     }
-    statsig.initialize(sdkKey, user, options).then(() => {
+    statsig.initialize(sdkKey, userMemo, options).then(() => {
       setInitialized(true);
       resolver.current && resolver.current();
     });
-  }, [user]);
+  }, [userMemo]);
 
   return (
     <StatsigContext.Provider value={{ initialized, statsig, statsigPromise }}>
