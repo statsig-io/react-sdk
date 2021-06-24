@@ -14,8 +14,14 @@ export type GateResult = {
  */
 export default function (gateName: string): GateResult {
   const { initialized, statsig } = useContext(StatsigContext);
+  if (!initialized) {
+    return {
+      isLoading: true,
+      value: false,
+    };
+  }
   return {
-    isLoading: !initialized,
-    value: initialized ? statsig.checkGate(gateName) : false,
+    isLoading: false,
+    value: statsig?.checkGate(gateName) ?? false,
   };
 }

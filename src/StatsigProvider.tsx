@@ -2,20 +2,6 @@ import React, { useRef, useEffect, useState, useMemo } from 'react';
 import statsig from 'statsig-js';
 import StatsigContext from './StatsigContext';
 
-statsig._setReactNativeDependencies(
-  {
-    sdkType: 'react-client',
-    sdkVersion: require('../package.json')?.version ?? '',
-  },
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-);
-
 /**
  * Properties required to initialize the Statsig React SDK
  */
@@ -86,6 +72,20 @@ export default function StatsigProvider({
       return;
     }
 
+    statsig._setReactNativeDependencies(
+      {
+        sdkType: 'react-client',
+        sdkVersion: require('../package.json')?.version ?? '',
+      },
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+    );
+
     statsig.initialize(sdkKey, userMemo, options).then(() => {
       setInitialized(true);
       resolver.current && resolver.current();
@@ -93,7 +93,13 @@ export default function StatsigProvider({
   }, [userMemo]);
 
   return (
-    <StatsigContext.Provider value={{ initialized, statsig, statsigPromise }}>
+    <StatsigContext.Provider
+      value={{
+        initialized,
+        statsig: initialized ? statsig : undefined,
+        statsigPromise,
+      }}
+    >
       {waitForInitialization !== true || initialized ? children : null}
     </StatsigContext.Provider>
   );
