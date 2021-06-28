@@ -27,6 +27,20 @@ type Props = {
    * Waits for the SDK to initialize with updated values before rendering child components
    */
   waitForInitialization?: boolean;
+
+  /**
+   * DO NOT CALL DIRECTLY. Used to polyfill react native specific dependencies.
+   */
+  _reactNativeDependencies?: {
+    SDKPackageInfo: statsig._SDKPackageInfo;
+    AsyncStorage: object | null;
+    AppState: object | null;
+    NativeModules: object | null;
+    Platform: object | null;
+    RNDevice: object | null;
+    Constants: object | null;
+    ExpoDevice: object | null;
+  };
 };
 
 /**
@@ -46,6 +60,7 @@ export default function StatsigProvider({
   user,
   options,
   waitForInitialization,
+  _reactNativeDependencies,
 }: Props): JSX.Element {
   const [initialized, setInitialized] = useState(false);
   const resolver = useRef<(() => void) | null>(null);
@@ -73,17 +88,17 @@ export default function StatsigProvider({
     }
 
     statsig._setReactNativeDependencies(
-      {
+      _reactNativeDependencies?.SDKPackageInfo ?? {
         sdkType: 'react-client',
         sdkVersion: require('../package.json')?.version ?? '',
       },
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
+      _reactNativeDependencies?.AsyncStorage ?? null,
+      _reactNativeDependencies?.AppState ?? null,
+      _reactNativeDependencies?.NativeModules ?? null,
+      _reactNativeDependencies?.Platform ?? null,
+      _reactNativeDependencies?.RNDevice ?? null,
+      _reactNativeDependencies?.Constants ?? null,
+      _reactNativeDependencies?.ExpoDevice ?? null,
     );
 
     statsig.initialize(sdkKey, userMemo, options).then(() => {
