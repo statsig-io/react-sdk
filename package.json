@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "react": "^16.6.3 || ^17.0.0",
-    "statsig-js": "^3.0.1"
+    "statsig-js": "^3.0.2"
   },
   "peerDependencies": {
     "react": "^16.6.3 || ^17.0.0",
