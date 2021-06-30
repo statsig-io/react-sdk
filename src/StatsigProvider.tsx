@@ -87,7 +87,7 @@ export default function StatsigProvider({
       return;
     }
 
-    statsig._setReactNativeDependencies(
+    statsig._setDependencies(
       _reactNativeDependencies?.SDKPackageInfo ?? {
         sdkType: 'react-client',
         sdkVersion: require('../package.json')?.version ?? '',
