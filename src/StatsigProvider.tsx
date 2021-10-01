@@ -63,6 +63,7 @@ export default function StatsigProvider({
   _reactNativeDependencies,
 }: Props): JSX.Element {
   const [initialized, setInitialized] = useState(false);
+  const initStarted = useRef<boolean>(false);
   const resolver = useRef<(() => void) | null>(null);
   let statsigPromise = useRef<Promise<void>>(
     new Promise((resolve, _reject) => {
@@ -75,7 +76,7 @@ export default function StatsigProvider({
   }, [JSON.stringify(user)]);
 
   useEffect(() => {
-    if (initialized) {
+    if (initStarted.current) {
       statsigPromise.current = new Promise((resolve, _reject) => {
         resolver.current = resolve;
       });
@@ -105,6 +106,7 @@ export default function StatsigProvider({
       setInitialized(true);
       resolver.current && resolver.current();
     });
+    initStarted.current = true;
   }, [userMemo]);
 
   return (
