@@ -43,6 +43,8 @@ type Props = {
   };
 };
 
+let initStarted = false;
+
 /**
  * The StatsigProvider is the top level component from which all React SDK components derive
  * It initializes the SDK so child components can use FeatureGate and DynamicConfig values
@@ -63,7 +65,6 @@ export default function StatsigProvider({
   _reactNativeDependencies,
 }: Props): JSX.Element {
   const [initialized, setInitialized] = useState(false);
-  const initStarted = useRef<boolean>(false);
   const resolver = useRef<(() => void) | null>(null);
   let statsigPromise = useRef<Promise<void>>(
     new Promise((resolve, _reject) => {
@@ -76,7 +77,7 @@ export default function StatsigProvider({
   }, [JSON.stringify(user)]);
 
   useEffect(() => {
-    if (initStarted.current) {
+    if (initStarted) {
       statsigPromise.current = new Promise((resolve, _reject) => {
         resolver.current = resolve;
       });
@@ -106,7 +107,7 @@ export default function StatsigProvider({
       setInitialized(true);
       resolver.current && resolver.current();
     });
-    initStarted.current = true;
+    initStarted = true;
   }, [userMemo]);
 
   return (
