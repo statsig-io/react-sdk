@@ -5,6 +5,10 @@ import useExperiment from './useExperiment';
 import useGate from './useGate';
 import useStatsig from './useStatsig';
 
+import type { statsigSDK } from './useStatsig';
+import type { ConfigResult } from './useConfig';
+import type { GateResult } from './useGate';
+
 export {
   StatsigContext,
   StatsigProvider,
@@ -12,4 +16,10 @@ export {
   useExperiment,
   useGate,
   useStatsig,
+};
+
+export type {
+  statsigSDK,
+  ConfigResult,
+  GateResult,
 };
