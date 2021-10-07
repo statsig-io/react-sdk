@@ -9,6 +9,12 @@ import type { statsigSDK } from './useStatsig';
 import type { ConfigResult } from './useConfig';
 import type { GateResult } from './useGate';
 
+import type {
+  StatsigUser,
+  StatsigOptions,
+  StatsigEnvironment,
+} from './StatsigProvider'
+
 export {
   StatsigContext,
   StatsigProvider,
@@ -22,4 +28,8 @@ export type {
   statsigSDK,
   ConfigResult,
   GateResult,
+  StatsigUser,
+  StatsigOptions,
+  StatsigEnvironment,
 };
+

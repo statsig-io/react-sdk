@@ -2,6 +2,10 @@ import React, { useRef, useEffect, useState, useMemo } from 'react';
 import statsig from 'statsig-js';
 import StatsigContext from './StatsigContext';
 
+export type StatsigUser = statsig.StatsigUser;
+export type StatsigOptions = statsig.StatsigOptions;
+export type StatsigEnvironment = statsig.StatsigEnvironment;
+
 /**
  * Properties required to initialize the Statsig React SDK
  */
@@ -16,12 +20,12 @@ type Props = {
   /**
    * A Statsig User object.  Changing this will update the user and Gate values, causing a re-initialization
    */
-  user: statsig.StatsigUser;
+  user: StatsigUser;
 
   /**
    * Options for initializing the SDK, shared with the statsig-js SDK
    */
-  options?: statsig.StatsigOptions;
+  options?: StatsigOptions;
 
   /**
    * Waits for the SDK to initialize with updated values before rendering child components
