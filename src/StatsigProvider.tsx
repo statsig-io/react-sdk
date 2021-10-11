@@ -68,7 +68,6 @@ export default function StatsigProvider({
   waitForInitialization,
   _reactNativeDependencies,
 }: Props): JSX.Element {
-  console.log(user, options);
   const [initialized, setInitialized] = useState(false);
   const resolver = useRef<(() => void) | null>(null);
   let statsigPromise = useRef<Promise<void>>(
