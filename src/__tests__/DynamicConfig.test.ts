@@ -1,23 +1,20 @@
 import DynamicConfig from '../DynamicConfig';
 
 describe('Verify behavior of DynamicConfig', () => {
-  const testConfig = new DynamicConfig(
-    'test_config',
-    {
-      bool: true,
-      number: 2,
-      string: 'string',
-      object: {
-        key: 'value',
-        key2: 123,
-      },
-      boolStr1: 'true',
-      boolStr2: 'FALSE',
-      numberStr1: '3',
-      numberStr2: '3.3',
-      arr: [1, 2, 'three'],
+  const testConfig = new DynamicConfig('test_config', {
+    bool: true,
+    number: 2,
+    string: 'string',
+    object: {
+      key: 'value',
+      key2: 123,
     },
-  );
+    boolStr1: 'true',
+    boolStr2: 'FALSE',
+    numberStr1: '3',
+    numberStr2: '3.3',
+    arr: [1, 2, 'three'],
+  });
 
   beforeEach(() => {
     expect.hasAssertions();
@@ -26,7 +23,6 @@ describe('Verify behavior of DynamicConfig', () => {
   test('Test constructor', () => {
     const config = new DynamicConfig('name', { test: 123 });
     expect(config.getValue()).toStrictEqual({ test: 123 });
-    
   });
 
   test('Test nonexistent keys', () => {

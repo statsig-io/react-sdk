@@ -13,7 +13,7 @@ import type {
   StatsigUser,
   StatsigOptions,
   StatsigEnvironment,
-} from './StatsigProvider'
+} from './StatsigProvider';
 
 export {
   StatsigContext,
@@ -32,4 +32,3 @@ export type {
   StatsigOptions,
   StatsigEnvironment,
 };
-
