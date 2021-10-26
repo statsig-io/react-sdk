@@ -1,10 +1,18 @@
 import React, { useRef, useEffect, useState, useMemo } from 'react';
-import statsig from 'statsig-js';
 import StatsigContext from './StatsigContext';
-
-export type StatsigUser = statsig.StatsigUser;
-export type StatsigOptions = statsig.StatsigOptions;
-export type StatsigEnvironment = statsig.StatsigEnvironment;
+import {
+  StatsigUser,
+  StatsigOptions,
+  _SDKPackageInfo,
+  StatsigClient,
+  AppState,
+  AsyncStorage,
+  DeviceInfo,
+  ExpoConstants,
+  ExpoDevice,
+  NativeModules,
+  Platform,
+} from 'statsig-js';
 
 /**
  * Properties required to initialize the Statsig React SDK
@@ -36,14 +44,14 @@ type Props = {
    * DO NOT CALL DIRECTLY. Used to polyfill react native specific dependencies.
    */
   _reactNativeDependencies?: {
-    SDKPackageInfo: statsig._SDKPackageInfo;
-    AsyncStorage: object | null;
-    AppState: object | null;
-    NativeModules: object | null;
-    Platform: object | null;
-    RNDevice: object | null;
-    Constants: object | null;
-    ExpoDevice: object | null;
+    SDKPackageInfo: _SDKPackageInfo;
+    AsyncStorage: AsyncStorage | null;
+    AppState: AppState | null;
+    NativeModules: NativeModules | null;
+    Platform: Platform | null;
+    RNDevice: DeviceInfo | null;
+    Constants: ExpoConstants | null;
+    ExpoDevice: ExpoDevice | null;
   };
 };
 
@@ -68,8 +76,12 @@ export default function StatsigProvider({
   waitForInitialization,
   _reactNativeDependencies,
 }: Props): JSX.Element {
+  const statsig = useMemo(() => {
+    return new StatsigClient();
+  }, []);
   const [initialized, setInitialized] = useState(false);
   const resolver = useRef<(() => void) | null>(null);
+  const initStarted = useRef<boolean>(false);
   let statsigPromise = useRef<Promise<void>>(
     new Promise((resolve, _reject) => {
       resolver.current = resolve;
@@ -81,7 +93,7 @@ export default function StatsigProvider({
   }, [JSON.stringify(user)]);
 
   useEffect(() => {
-    if (initStarted) {
+    if (initStarted.current) {
       statsigPromise.current = new Promise((resolve, _reject) => {
         resolver.current = resolve;
       });
@@ -93,36 +105,44 @@ export default function StatsigProvider({
       return;
     }
 
-    statsig._setDependencies(
+    statsig.setSDKPackageInfo(
       _reactNativeDependencies?.SDKPackageInfo ?? {
         sdkType: 'react-client',
         sdkVersion: require('../package.json')?.version ?? '',
       },
-      _reactNativeDependencies?.AsyncStorage ?? null,
-      _reactNativeDependencies?.AppState ?? null,
-      _reactNativeDependencies?.NativeModules ?? null,
-      _reactNativeDependencies?.Platform ?? null,
-      _reactNativeDependencies?.RNDevice ?? null,
-      _reactNativeDependencies?.Constants ?? null,
-      _reactNativeDependencies?.ExpoDevice ?? null,
     );
 
-    statsig.initialize(sdkKey, userMemo, options).then(() => {
+    statsig.setAsyncStorage(_reactNativeDependencies?.AsyncStorage);
+    statsig.setAppState(_reactNativeDependencies?.AppState);
+    statsig.setNativeModules(_reactNativeDependencies?.NativeModules);
+    statsig.setPlatform(_reactNativeDependencies?.Platform);
+    statsig.setRNDeviceInfo(_reactNativeDependencies?.RNDevice);
+    statsig.setExpoConstants(_reactNativeDependencies?.Constants);
+    statsig.setExpoDevice(_reactNativeDependencies?.ExpoDevice);
+
+    statsig.initializeAsync(sdkKey, userMemo, options).then(() => {
       setInitialized(true);
       resolver.current && resolver.current();
     });
-    initStarted = true;
+    initStarted.current = true;
   }, [userMemo]);
+
+  let child = null;
+  if (waitForInitialization !== true && initStarted) {
+    child = children;
+  } else if (waitForInitialization && initialized) {
+    child = children;
+  }
 
   return (
     <StatsigContext.Provider
       value={{
         initialized,
-        statsig: initialized ? statsig : undefined,
+        statsig,
         statsigPromise,
       }}
     >
-      {waitForInitialization !== true || initialized ? children : null}
+      {child}
     </StatsigContext.Provider>
   );
 }

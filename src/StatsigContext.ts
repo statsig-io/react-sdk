@@ -1,10 +1,10 @@
 import React from 'react';
-import statsig from 'statsig-js';
+import { IStatsig, StatsigClient } from 'statsig-js';
 
 export interface TStatsigContext {
   initialized: boolean;
   statsigPromise: React.MutableRefObject<Promise<void>> | null;
-  statsig: typeof statsig | undefined;
+  statsig: IStatsig;
 }
 
 /**
@@ -12,6 +12,6 @@ export interface TStatsigContext {
  */
 export default React.createContext<TStatsigContext>({
   initialized: false,
-  statsig: undefined,
+  statsig: new StatsigClient(),
   statsigPromise: null,
 });

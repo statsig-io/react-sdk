@@ -6,7 +6,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { StatsigProvider, useGate } from '..';
 import { act } from 'react-dom/test-utils';
-import statsig from 'statsig-js';
+import { StatsigClient } from 'statsig-js';
 
 const GateComponent = function (props: { gateName: string }): JSX.Element {
   const gate = useGate(props.gateName);
@@ -25,17 +25,19 @@ describe('Tests the StatsigProvider with mocked network responses', () => {
   let initialized = false;
   jest.useFakeTimers();
 
-  jest.spyOn(statsig, 'initialize').mockImplementation(() => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        initialized = true;
-        resolve();
-      }, 2000);
+  jest
+    .spyOn(StatsigClient.prototype, 'initializeAsync')
+    .mockImplementation(() => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          initialized = true;
+          resolve();
+        }, 2000);
+      });
     });
-  });
 
   jest
-    .spyOn(statsig, 'checkGate')
+    .spyOn(StatsigClient.prototype, 'checkGate')
     .mockImplementation((gate: string) => initialized);
 
   test('Verify not waiting for init renders immediately', async () => {

@@ -1,8 +1,8 @@
 import { useContext } from 'react';
 import StatsigContext from './StatsigContext';
-import statsig from 'statsig-js';
+import type { IStatsig } from 'statsig-js';
 
-export type statsigSDK = typeof statsig | undefined;
+export type statsigSDK = IStatsig | undefined;
 
 /**
  * Returns the StatsigContext's internal statsig-js SDK

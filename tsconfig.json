@@ -5,7 +5,7 @@
     "strict": true,
     "outDir": "dist",
     "jsx": "react",
-    "sourceMap": true,
+    "sourceMap": false,
     "esModuleInterop": true,
     "declaration": true
   },

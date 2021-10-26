@@ -6,7 +6,7 @@ import React, { useEffect, useCallback, useState, useMemo } from 'react';
 import { render } from '@testing-library/react';
 import { StatsigProvider, useGate, StatsigUser } from '..';
 import { act } from 'react-dom/test-utils';
-import statsig from 'statsig-js';
+import { StatsigClient } from 'statsig-js';
 
 describe('Tests the StatsigProvider with an updated user', () => {
   const mGetRandomValues = jest.fn().mockReturnValueOnce(new Uint32Array(16));
@@ -18,16 +18,18 @@ describe('Tests the StatsigProvider with an updated user', () => {
   let updatedUser = false;
   jest.useFakeTimers();
 
-  jest.spyOn(statsig, 'initialize').mockImplementation(() => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        initialized = true;
-        resolve();
-      }, 2000);
+  jest
+    .spyOn(StatsigClient.prototype, 'initializeAsync')
+    .mockImplementation(() => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          initialized = true;
+          resolve();
+        }, 2000);
+      });
     });
-  });
 
-  jest.spyOn(statsig, 'updateUser').mockImplementation(() => {
+  jest.spyOn(StatsigClient.prototype, 'updateUser').mockImplementation(() => {
     return new Promise((resolve) => {
       setTimeout(() => {
         updatedUser = true;
@@ -37,7 +39,7 @@ describe('Tests the StatsigProvider with an updated user', () => {
   });
 
   jest
-    .spyOn(statsig, 'checkGate')
+    .spyOn(StatsigClient.prototype, 'checkGate')
     .mockImplementation((gate: string) => initialized && updatedUser);
 
   const GateComponent = function (props: {

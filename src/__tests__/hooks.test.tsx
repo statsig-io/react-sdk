@@ -6,8 +6,12 @@ import React from 'react';
 import { render, RenderResult } from '@testing-library/react';
 import useGate from '../useGate';
 import StatsigContext from '../StatsigContext';
-import DynamicConfig from '../DynamicConfig';
-import statsig from 'statsig-js';
+import {
+  StatsigClient,
+  DynamicConfig,
+  StatsigUser,
+  StatsigOptions,
+} from 'statsig-js';
 import useConfig from '../useConfig';
 import { useExperiment } from '..';
 
@@ -18,7 +22,7 @@ const waitForInitializationProvider = function (
     <StatsigContext.Provider
       value={{
         initialized: false,
-        statsig: undefined,
+        statsig: new StatsigClient(),
         statsigPromise: null,
       }}
     ></StatsigContext.Provider>,
@@ -33,10 +37,10 @@ const mockProvider = function (
       value={{
         initialized: true,
         statsig: {
-          initialize: (
+          initializeAsync: (
             _sdkKey: string,
-            _user?: statsig.StatsigUser | null | undefined,
-            _options?: statsig.StatsigOptions | null | undefined,
+            _user?: StatsigUser | null | undefined,
+            _options?: StatsigOptions | null | undefined,
           ) => {
             return new Promise(() => {
               return Promise.resolve();
@@ -66,7 +70,7 @@ const mockProvider = function (
             }
             return new DynamicConfig(config, {});
           },
-          updateUser: (_user?: statsig.StatsigUser | null | undefined) => {
+          updateUser: (_user?: StatsigUser | null | undefined) => {
             return new Promise(() => {
               return Promise.resolve();
             });
@@ -77,8 +81,15 @@ const mockProvider = function (
           getOverrides: () => {
             return {};
           },
-          _setDependencies: () => {},
-          DynamicConfig: DynamicConfig,
+          overrideConfig: (_gate: string, _val: Record<string, any>) => {},
+          removeGateOverride: (_name?: string | undefined) => {},
+          removeConfigOverride: (_name?: string | undefined) => {},
+          getAllOverrides: () => {
+            return {
+              gates: {},
+              configs: {},
+            };
+          },
         },
         statsigPromise: null,
       }}

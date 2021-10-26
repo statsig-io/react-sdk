@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import DynamicConfig from './DynamicConfig';
+import { DynamicConfig } from 'statsig-js';
 import StatsigContext from './StatsigContext';
 
 /**
@@ -18,16 +18,8 @@ export type ConfigResult = {
  */
 export default function (configName: string): ConfigResult {
   const { initialized, statsig } = useContext(StatsigContext);
-
-  if (initialized && statsig) {
-    const config = statsig.getConfig(configName);
-    return {
-      isLoading: !initialized,
-      config: new DynamicConfig(configName, config.value),
-    };
-  }
   return {
     isLoading: !initialized,
-    config: new DynamicConfig(configName, {}),
+    config: statsig.getConfig(configName),
   };
 }
