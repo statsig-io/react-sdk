@@ -5,6 +5,7 @@ export interface TStatsigContext {
   initialized: boolean;
   statsigPromise: React.MutableRefObject<Promise<void>> | null;
   statsig: IStatsig;
+  userVersion: number;
 }
 
 /**
@@ -14,4 +15,5 @@ export default React.createContext<TStatsigContext>({
   initialized: false,
   statsig: new StatsigClient(),
   statsigPromise: null,
+  userVersion: 0,
 });
