@@ -41,6 +41,11 @@ type Props = {
   waitForInitialization?: boolean;
 
   /**
+   * A loading component to render iff waitForInitialization is set to true, and the SDK is initializing
+   */
+  initializingComponent?: React.ReactNode | React.ReactNode[];
+
+  /**
    * DO NOT CALL DIRECTLY. Used to polyfill react native specific dependencies.
    */
   _reactNativeDependencies?: {
@@ -54,8 +59,6 @@ type Props = {
     ExpoDevice: ExpoDevice | null;
   };
 };
-
-let initStarted = false;
 
 /**
  * The StatsigProvider is the top level component from which all React SDK components derive
@@ -74,10 +77,12 @@ export default function StatsigProvider({
   user,
   options,
   waitForInitialization,
+  initializingComponent,
   _reactNativeDependencies,
 }: Props): JSX.Element {
   const statsig = useMemo(() => {
-    return new StatsigClient();
+    StatsigClient.setAsyncStorage(_reactNativeDependencies?.AsyncStorage);
+    return new StatsigClient(sdkKey, userMemo, options);
   }, []);
   const [initialized, setInitialized] = useState(false);
   const resolver = useRef<(() => void) | null>(null);
@@ -114,7 +119,6 @@ export default function StatsigProvider({
       },
     );
 
-    statsig.setAsyncStorage(_reactNativeDependencies?.AsyncStorage);
     statsig.setAppState(_reactNativeDependencies?.AppState);
     statsig.setNativeModules(_reactNativeDependencies?.NativeModules);
     statsig.setPlatform(_reactNativeDependencies?.Platform);
@@ -122,7 +126,7 @@ export default function StatsigProvider({
     statsig.setExpoConstants(_reactNativeDependencies?.Constants);
     statsig.setExpoDevice(_reactNativeDependencies?.ExpoDevice);
 
-    statsig.initializeAsync(sdkKey, userMemo, options).then(() => {
+    statsig.initializeAsync().then(() => {
       setInitialized(true);
       resolver.current && resolver.current();
     });
@@ -130,10 +134,12 @@ export default function StatsigProvider({
   }, [userMemo]);
 
   let child = null;
-  if (waitForInitialization !== true && initStarted) {
+  if (waitForInitialization !== true) {
     child = children;
   } else if (waitForInitialization && initialized) {
     child = children;
+  } else if (waitForInitialization && initializingComponent != null) {
+    child = initializingComponent;
   }
 
   return (

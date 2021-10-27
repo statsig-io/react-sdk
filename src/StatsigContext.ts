@@ -13,7 +13,7 @@ export interface TStatsigContext {
  */
 export default React.createContext<TStatsigContext>({
   initialized: false,
-  statsig: new StatsigClient(),
+  statsig: new StatsigClient('client-default'),
   statsigPromise: null,
   userVersion: 0,
 });

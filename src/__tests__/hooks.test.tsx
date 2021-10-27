@@ -22,7 +22,7 @@ const waitForInitializationProvider = function (
     <StatsigContext.Provider
       value={{
         initialized: false,
-        statsig: new StatsigClient(),
+        statsig: new StatsigClient('client-test'),
         statsigPromise: null,
         userVersion: 0,
       }}
@@ -38,11 +38,7 @@ const mockProvider = function (
       value={{
         initialized: true,
         statsig: {
-          initializeAsync: (
-            _sdkKey: string,
-            _user?: StatsigUser | null | undefined,
-            _options?: StatsigOptions | null | undefined,
-          ) => {
+          initializeAsync: () => {
             return new Promise(() => {
               return Promise.resolve();
             });
@@ -90,6 +86,9 @@ const mockProvider = function (
               gates: {},
               configs: {},
             };
+          },
+          getStableID(): string {
+            return '';
           },
         },
         statsigPromise: null,
