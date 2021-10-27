@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import { DynamicConfig } from 'statsig-js';
 import StatsigContext from './StatsigContext';
 
@@ -17,9 +17,10 @@ export type ConfigResult = {
  * @returns a ConfigResult indicating the DynamicConfig value, and the loading state of the SDK
  */
 export default function (configName: string): ConfigResult {
-  const { initialized, statsig } = useContext(StatsigContext);
+  const { initialized, statsig, userVersion } = useContext(StatsigContext);
+  const config = useMemo(() => statsig.getConfig(configName), [initialized, configName, userVersion]);
   return {
     isLoading: !initialized,
-    config: statsig.getConfig(configName),
+    config,
   };
 }

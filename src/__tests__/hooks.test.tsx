@@ -24,6 +24,7 @@ const waitForInitializationProvider = function (
         initialized: false,
         statsig: new StatsigClient(),
         statsigPromise: null,
+        userVersion: 0,
       }}
     ></StatsigContext.Provider>,
   );
@@ -92,6 +93,7 @@ const mockProvider = function (
           },
         },
         statsigPromise: null,
+        userVersion: 0,
       }}
     >
       {ui}

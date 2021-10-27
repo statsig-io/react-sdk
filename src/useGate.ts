@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import StatsigContext from './StatsigContext';
 
 export type GateResult = {
@@ -13,9 +13,10 @@ export type GateResult = {
  * @returns a result indicating the boolean value of the gate and loading state of the SDK
  */
 export default function (gateName: string): GateResult {
-  const { initialized, statsig } = useContext(StatsigContext);
+  const { initialized, statsig, userVersion } = useContext(StatsigContext);
+  const gate = useMemo(() => statsig.checkGate(gateName), [initialized, gateName, userVersion]);
   return {
     isLoading: !initialized,
-    value: statsig.checkGate(gateName),
+    value: gate,
   };
 }
