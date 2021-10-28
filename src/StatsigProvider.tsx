@@ -4,7 +4,6 @@ import {
   StatsigUser,
   StatsigOptions,
   _SDKPackageInfo,
-  StatsigClient,
   AppState,
   AsyncStorage,
   DeviceInfo,
@@ -13,6 +12,7 @@ import {
   NativeModules,
   Platform,
 } from 'statsig-js';
+import Statsig from 'statsig-js';
 
 /**
  * Properties required to initialize the Statsig React SDK
@@ -60,6 +60,8 @@ type Props = {
   };
 };
 
+let initStarted = false;
+
 /**
  * The StatsigProvider is the top level component from which all React SDK components derive
  * It initializes the SDK so child components can use FeatureGate and DynamicConfig values
@@ -80,13 +82,8 @@ export default function StatsigProvider({
   initializingComponent,
   _reactNativeDependencies,
 }: Props): JSX.Element {
-  const statsig = useMemo(() => {
-    StatsigClient.setAsyncStorage(_reactNativeDependencies?.AsyncStorage);
-    return new StatsigClient(sdkKey, userMemo, options);
-  }, []);
   const [initialized, setInitialized] = useState(false);
   const resolver = useRef<(() => void) | null>(null);
-  const initStarted = useRef<boolean>(false);
   const [userVersion, setUserVersion] = useState(0);
   let statsigPromise = useRef<Promise<void>>(
     new Promise((resolve, _reject) => {
@@ -99,12 +96,12 @@ export default function StatsigProvider({
   }, [JSON.stringify(user)]);
 
   useEffect(() => {
-    if (initStarted.current) {
+    if (initStarted) {
       statsigPromise.current = new Promise((resolve, _reject) => {
         resolver.current = resolve;
       });
       setInitialized(false);
-      statsig.updateUser(user).then(() => {
+      Statsig.updateUser(user).then(() => {
         resolver.current && resolver.current();
         setUserVersion(userVersion + 1);
         setInitialized(true);
@@ -112,25 +109,11 @@ export default function StatsigProvider({
       return;
     }
 
-    statsig.setSDKPackageInfo(
-      _reactNativeDependencies?.SDKPackageInfo ?? {
-        sdkType: 'react-client',
-        sdkVersion: require('../package.json')?.version ?? '',
-      },
-    );
-
-    statsig.setAppState(_reactNativeDependencies?.AppState);
-    statsig.setNativeModules(_reactNativeDependencies?.NativeModules);
-    statsig.setPlatform(_reactNativeDependencies?.Platform);
-    statsig.setRNDeviceInfo(_reactNativeDependencies?.RNDevice);
-    statsig.setExpoConstants(_reactNativeDependencies?.Constants);
-    statsig.setExpoDevice(_reactNativeDependencies?.ExpoDevice);
-
-    statsig.initializeAsync().then(() => {
+    Statsig.initialize(sdkKey, userMemo, options).then(() => {
       setInitialized(true);
       resolver.current && resolver.current();
     });
-    initStarted.current = true;
+    initStarted = true;
   }, [userMemo]);
 
   let child = null;
@@ -146,9 +129,9 @@ export default function StatsigProvider({
     <StatsigContext.Provider
       value={{
         initialized,
-        statsig,
         statsigPromise,
         userVersion,
+        initStarted,
       }}
     >
       {child}

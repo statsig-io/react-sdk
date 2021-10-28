@@ -3,9 +3,6 @@ import StatsigProvider from './StatsigProvider';
 import useConfig from './useConfig';
 import useExperiment from './useExperiment';
 import useGate from './useGate';
-import useStatsig from './useStatsig';
-
-import type { statsigSDK } from './useStatsig';
 import type { ConfigResult } from './useConfig';
 import type { GateResult } from './useGate';
 
@@ -15,17 +12,9 @@ import type {
   StatsigEnvironment,
 } from 'statsig-js';
 
-export {
-  StatsigContext,
-  StatsigProvider,
-  useConfig,
-  useExperiment,
-  useGate,
-  useStatsig,
-};
+export { StatsigContext, StatsigProvider, useConfig, useExperiment, useGate };
 
 export type {
-  statsigSDK,
   ConfigResult,
   GateResult,
   StatsigUser,
