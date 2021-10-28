@@ -31,6 +31,7 @@ describe('Tests the StatsigProvider with mocked network responses', () => {
       return new Promise((resolve) => {
         setTimeout(() => {
           initialized = true;
+          // @ts-ignore
           resolve();
         }, 2000);
       });
