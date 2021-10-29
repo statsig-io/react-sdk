@@ -97,15 +97,25 @@ export default function StatsigProvider({
 
   useEffect(() => {
     if (initStarted) {
-      statsigPromise.current = new Promise((resolve, _reject) => {
-        resolver.current = resolve;
-      });
-      setInitialized(false);
-      Statsig.updateUser(user).then(() => {
-        resolver.current && resolver.current();
-        setUserVersion(userVersion + 1);
-        setInitialized(true);
-      });
+      const updateUser = () => {
+        statsigPromise.current = new Promise((resolve, _reject) => {
+          resolver.current = resolve;
+        });
+        setInitialized(false);
+        Statsig.updateUser(user).then(() => {
+          resolver.current && resolver.current();
+          setUserVersion(userVersion + 1);
+          setInitialized(true);
+        });
+      };
+      if (initialized) {
+        updateUser();
+      } else {
+        statsigPromise.current.then(() => {
+          updateUser();
+        });
+      }
+
       return;
     }
 

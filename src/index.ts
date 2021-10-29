@@ -12,7 +12,16 @@ import type {
   StatsigEnvironment,
 } from 'statsig-js';
 
-export { StatsigContext, StatsigProvider, useConfig, useExperiment, useGate };
+import Statsig from 'statsig-js';
+
+export {
+  Statsig,
+  StatsigContext,
+  StatsigProvider,
+  useConfig,
+  useExperiment,
+  useGate,
+};
 
 export type {
   ConfigResult,
