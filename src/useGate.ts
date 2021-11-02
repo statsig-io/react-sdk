@@ -1,6 +1,6 @@
 import { useContext, useMemo } from 'react';
 import StatsigContext from './StatsigContext';
-import Statsig from 'statsig-js';
+import Statsig from './Statsig';
 
 export type GateResult = {
   isLoading: boolean;

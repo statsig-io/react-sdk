@@ -1,7 +1,7 @@
 import { useContext, useMemo } from 'react';
 import { DynamicConfig } from 'statsig-js';
 import StatsigContext from './StatsigContext';
-import Statsig from 'statsig-js';
+import Statsig from './Statsig';
 
 /**
  * Returns the initialization state of the SDK and a DynamicConfig value

@@ -6,13 +6,15 @@ import useGate from './useGate';
 import type { ConfigResult } from './useConfig';
 import type { GateResult } from './useGate';
 import useStatsigLogEffect from './useStatsigLogEffect';
+import { DynamicConfig } from 'statsig-js';
 
 import type {
   StatsigUser,
   StatsigOptions,
   StatsigEnvironment,
+  StatsigOverrides,
 } from 'statsig-js';
-import Statsig from 'statsig-js';
+import Statsig from './Statsig';
 
 export {
   Statsig,
@@ -22,6 +24,7 @@ export {
   useExperiment,
   useGate,
   useStatsigLogEffect,
+  DynamicConfig,
 };
 
 export type {
@@ -30,4 +33,5 @@ export type {
   StatsigUser,
   StatsigOptions,
   StatsigEnvironment,
+  StatsigOverrides,
 };

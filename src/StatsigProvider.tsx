@@ -1,18 +1,7 @@
 import React, { useRef, useEffect, useState, useMemo } from 'react';
 import StatsigContext from './StatsigContext';
-import {
-  StatsigUser,
-  StatsigOptions,
-  _SDKPackageInfo,
-  AppState,
-  AsyncStorage,
-  DeviceInfo,
-  ExpoConstants,
-  ExpoDevice,
-  NativeModules,
-  Platform,
-} from 'statsig-js';
-import Statsig from 'statsig-js';
+import { StatsigUser, StatsigOptions, _SDKPackageInfo } from 'statsig-js';
+import Statsig from './Statsig';
 
 /**
  * Properties required to initialize the Statsig React SDK
@@ -44,20 +33,6 @@ type Props = {
    * A loading component to render iff waitForInitialization is set to true, and the SDK is initializing
    */
   initializingComponent?: React.ReactNode | React.ReactNode[];
-
-  /**
-   * DO NOT CALL DIRECTLY. Used to polyfill react native specific dependencies.
-   */
-  _reactNativeDependencies?: {
-    SDKPackageInfo: _SDKPackageInfo;
-    AsyncStorage: AsyncStorage | null;
-    AppState: AppState | null;
-    NativeModules: NativeModules | null;
-    Platform: Platform | null;
-    RNDevice: DeviceInfo | null;
-    Constants: ExpoConstants | null;
-    ExpoDevice: ExpoDevice | null;
-  };
 };
 
 /**
@@ -78,7 +53,6 @@ export default function StatsigProvider({
   options,
   waitForInitialization,
   initializingComponent,
-  _reactNativeDependencies,
 }: Props): JSX.Element {
   const [initialized, setInitialized] = useState(false);
   const resolver = useRef<(() => void) | null>(null);
@@ -108,21 +82,10 @@ export default function StatsigProvider({
       return;
     }
 
-    if (_reactNativeDependencies?.SDKPackageInfo) {
-      Statsig.setSDKPackageInfo(_reactNativeDependencies?.SDKPackageInfo);
-    } else {
-      Statsig.setSDKPackageInfo({
-        sdkType: 'react-client',
-        sdkVersion: require('../package.json')?.version ?? '',
-      });
-    }
-    Statsig.setAppState(_reactNativeDependencies?.AppState);
-    Statsig.setAsyncStorage(_reactNativeDependencies?.AsyncStorage);
-    Statsig.setNativeModules(_reactNativeDependencies?.NativeModules);
-    Statsig.setPlatform(_reactNativeDependencies?.Platform);
-    Statsig.setRNDeviceInfo(_reactNativeDependencies?.RNDevice);
-    Statsig.setExpoConstants(_reactNativeDependencies?.Constants);
-    Statsig.setExpoDevice(_reactNativeDependencies?.ExpoDevice);
+    Statsig.setSDKPackageInfo({
+      sdkType: 'react-client',
+      sdkVersion: require('../package.json')?.version ?? '',
+    });
 
     Statsig.initialize(sdkKey, userMemo, options).then(() => {
       setInitialized(true);

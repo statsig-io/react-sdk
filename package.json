@@ -1,6 +1,6 @@
 {
   "name": "statsig-react",
-  "version": "0.6.5",
+  "version": "0.6.7",
   "description": "An SDK for using Statsig Feature Management and Experimentation platform in React clients",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
