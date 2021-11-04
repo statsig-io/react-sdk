@@ -13,6 +13,10 @@ import type {
   StatsigOptions,
   StatsigEnvironment,
   StatsigOverrides,
+  UUID,
+  AppState,
+  AppStateStatus,
+  AppStateEvent,
 } from 'statsig-js';
 import Statsig from './Statsig';
 
@@ -34,4 +38,8 @@ export type {
   StatsigOptions,
   StatsigEnvironment,
   StatsigOverrides,
+  UUID,
+  AppState,
+  AppStateStatus,
+  AppStateEvent,
 };

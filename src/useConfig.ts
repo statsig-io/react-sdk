@@ -17,14 +17,17 @@ export type ConfigResult = {
  * @param configName - the name of the DynamicConfig to check
  * @returns a ConfigResult indicating the DynamicConfig value, and the loading state of the SDK
  */
-export default function (configName: string): ConfigResult {
+export default function (
+  configName: string,
+  ignoreOverrides?: boolean,
+): ConfigResult {
   const { initialized, initStarted, userVersion } = useContext(StatsigContext);
   const config = useMemo(
     () =>
       initStarted
-        ? Statsig.getConfig(configName)
+        ? Statsig.getConfig(configName, ignoreOverrides)
         : new DynamicConfig(configName),
-    [initialized, initStarted, configName, userVersion],
+    [initialized, initStarted, configName, userVersion, ignoreOverrides],
   );
   return {
     isLoading: !initialized,

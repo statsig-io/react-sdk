@@ -3,6 +3,16 @@ import StatsigContext from './StatsigContext';
 import { StatsigUser, StatsigOptions, _SDKPackageInfo } from 'statsig-js';
 import Statsig from './Statsig';
 
+import type {
+  NativeModules,
+  Platform,
+  DeviceInfo,
+  ExpoConstants,
+  ExpoDevice,
+  AsyncStorage,
+  UUID,
+} from 'statsig-js';
+
 /**
  * Properties required to initialize the Statsig React SDK
  */
@@ -33,6 +43,21 @@ type Props = {
    * A loading component to render iff waitForInitialization is set to true, and the SDK is initializing
    */
   initializingComponent?: React.ReactNode | React.ReactNode[];
+
+  /**
+   * DO NOT CALL DIRECTLY. Used to polyfill react native specific dependencies.
+   */
+  _reactNativeDependencies?: {
+    SDKPackageInfo: _SDKPackageInfo;
+    AsyncStorage: AsyncStorage | null;
+    AppState: any | null;
+    NativeModules: NativeModules | null;
+    Platform: Platform | null;
+    RNDevice: DeviceInfo | null;
+    Constants: ExpoConstants | null;
+    ExpoDevice: ExpoDevice | null;
+    ReactNativeUUID: UUID | null;
+  };
 };
 
 /**
@@ -53,6 +78,7 @@ export default function StatsigProvider({
   options,
   waitForInitialization,
   initializingComponent,
+  _reactNativeDependencies,
 }: Props): JSX.Element {
   const [initialized, setInitialized] = useState(false);
   const resolver = useRef<(() => void) | null>(null);
@@ -68,7 +94,7 @@ export default function StatsigProvider({
   }, [JSON.stringify(user)]);
 
   useEffect(() => {
-    if (Statsig.initializedCalled()) {
+    if (Statsig.initializeCalled()) {
       statsigPromise.current = new Promise((resolve, _reject) => {
         resolver.current = resolve;
       });
@@ -82,10 +108,26 @@ export default function StatsigProvider({
       return;
     }
 
-    Statsig.setSDKPackageInfo({
-      sdkType: 'react-client',
-      sdkVersion: require('../package.json')?.version ?? '',
-    });
+    Statsig.setSDKPackageInfo(
+      _reactNativeDependencies?.SDKPackageInfo ?? {
+        sdkType: 'react-client',
+        sdkVersion: require('../package.json')?.version ?? '',
+      },
+    );
+
+    // rn
+    Statsig.setAppState(_reactNativeDependencies?.AppState ?? null);
+    Statsig.setAsyncStorage(_reactNativeDependencies?.AsyncStorage ?? null);
+    Statsig.setNativeModules(_reactNativeDependencies?.NativeModules ?? null);
+    Statsig.setPlatform(_reactNativeDependencies?.Platform ?? null);
+    Statsig.setRNDeviceInfo(_reactNativeDependencies?.RNDevice ?? null);
+    Statsig.setReactNativeUUID(
+      _reactNativeDependencies?.ReactNativeUUID ?? null,
+    );
+
+    // expo
+    Statsig.setExpoConstants(_reactNativeDependencies?.Constants ?? null);
+    Statsig.setExpoDevice(_reactNativeDependencies?.ExpoDevice ?? null);
 
     Statsig.initialize(sdkKey, userMemo, options).then(() => {
       setInitialized(true);
@@ -108,7 +150,7 @@ export default function StatsigProvider({
         initialized,
         statsigPromise,
         userVersion,
-        initStarted: Statsig.initializedCalled(),
+        initStarted: Statsig.initializeCalled(),
       }}
     >
       {child}
