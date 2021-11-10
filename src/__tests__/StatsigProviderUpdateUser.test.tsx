@@ -16,11 +16,13 @@ describe('Tests the StatsigProvider with an updated user', () => {
 
   let initialized = false;
   let updatedUser = false;
+  let initStarted = false;
   jest.useFakeTimers();
 
   jest
     .spyOn(StatsigClient.prototype, 'initializeAsync')
     .mockImplementation(() => {
+      initStarted = true;
       return new Promise((resolve) => {
         setTimeout(() => {
           initialized = true;
@@ -28,6 +30,10 @@ describe('Tests the StatsigProvider with an updated user', () => {
         }, 2000);
       });
     });
+
+  jest
+    .spyOn(StatsigClient.prototype, 'initializeCalled')
+    .mockImplementation(() => initStarted);
 
   jest.spyOn(StatsigClient.prototype, 'updateUser').mockImplementation(() => {
     return new Promise((resolve) => {

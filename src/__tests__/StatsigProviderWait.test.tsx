@@ -23,11 +23,13 @@ describe('Tests the StatsigProvider with mocked network responses', () => {
   });
 
   let initialized = false;
+  let initStarted = false;
   jest.useFakeTimers();
 
   jest
     .spyOn(StatsigClient.prototype, 'initializeAsync')
     .mockImplementation(() => {
+      initStarted = true;
       return new Promise((resolve) => {
         setTimeout(() => {
           initialized = true;
@@ -36,6 +38,10 @@ describe('Tests the StatsigProvider with mocked network responses', () => {
         }, 2000);
       });
     });
+
+  jest
+    .spyOn(StatsigClient.prototype, 'initializeCalled')
+    .mockImplementation(() => initStarted);
 
   jest
     .spyOn(StatsigClient.prototype, 'checkGate')
