@@ -40,24 +40,33 @@ export default class Statsig {
     user?: StatsigUser | null,
     options?: StatsigOptions | null,
   ): Promise<void> {
-    if (!Statsig.instance) {
-      Statsig.instance = new StatsigClient(sdkKey, user, options);
-      Statsig.instance.setSDKPackageInfo(this.sdkPackageInfo);
-      Statsig.instance.setAppState(this.appState);
-      Statsig.instance.setNativeModules(this.nativeModules);
-      Statsig.instance.setPlatform(this.platform);
-      Statsig.instance.setRNDeviceInfo(this.deviceInfo);
-      Statsig.instance.setExpoConstants(this.expoConstants);
-      Statsig.instance.setExpoDevice(this.expoDevice);
+    try {
+      if (!Statsig.instance) {
+        Statsig.instance = new StatsigClient(sdkKey, user, options);
+        Statsig.instance.setSDKPackageInfo(this.sdkPackageInfo);
+        Statsig.instance.setAppState(this.appState);
+        Statsig.instance.setNativeModules(this.nativeModules);
+        Statsig.instance.setPlatform(this.platform);
+        Statsig.instance.setRNDeviceInfo(this.deviceInfo);
+        Statsig.instance.setExpoConstants(this.expoConstants);
+        Statsig.instance.setExpoDevice(this.expoDevice);
+      }
+      return Statsig.instance.initializeAsync();
+    } catch (e) {
+      if (process.env.REACT_APP_STATSIG_SDK_MODE !== 'silent') {
+        throw e;
+      }
     }
-    return Statsig.instance.initializeAsync();
+    return Promise.resolve();
   }
 
   public static checkGate(
     gateName: string,
     ignoreOverrides: boolean = false,
   ): boolean {
-    this.ensureInitialized();
+    if (!this.isInitialized()) {
+      return false;
+    }
     return Statsig.instance.checkGate(gateName, ignoreOverrides);
   }
 
@@ -65,7 +74,9 @@ export default class Statsig {
     configName: string,
     ignoreOverrides: boolean = false,
   ): DynamicConfig {
-    this.ensureInitialized();
+    if (!this.isInitialized()) {
+      return new DynamicConfig(configName);
+    }
     return Statsig.instance.getConfig(configName, ignoreOverrides);
   }
 
@@ -74,7 +85,9 @@ export default class Statsig {
     keepDeviceValue: boolean = false,
     ignoreOverrides: boolean = false,
   ): DynamicConfig {
-    this.ensureInitialized();
+    if (!this.isInitialized()) {
+      return new DynamicConfig(experimentName);
+    }
     return Statsig.instance.getExperiment(
       experimentName,
       keepDeviceValue,
@@ -87,17 +100,23 @@ export default class Statsig {
     value: string | number | null = null,
     metadata: Record<string, string> | null = null,
   ): void {
-    this.ensureInitialized();
+    if (!this.isInitialized()) {
+      return;
+    }
     Statsig.instance.logEvent(eventName, value, metadata);
   }
 
   public static updateUser(user: StatsigUser | null): Promise<boolean> {
-    this.ensureInitialized();
+    if (!this.isInitialized()) {
+      return Promise.resolve(false);
+    }
     return Statsig.instance.updateUser(user);
   }
 
   public static shutdown() {
-    this.ensureInitialized();
+    if (!this.isInitialized()) {
+      return;
+    }
     Statsig.instance.shutdown();
   }
 
@@ -107,7 +126,9 @@ export default class Statsig {
    * @param value - value to assign to the gate
    */
   public static overrideGate(gateName: string, value: boolean): void {
-    this.ensureInitialized();
+    if (!this.isInitialized()) {
+      return;
+    }
     Statsig.instance.overrideGate(gateName, value);
   }
 
@@ -117,7 +138,9 @@ export default class Statsig {
    * @param value - value to assign to the config
    */
   public static overrideConfig(configName: string, value: object): void {
-    this.ensureInitialized();
+    if (!this.isInitialized()) {
+      return;
+    }
     Statsig.instance.overrideConfig(configName, value);
   }
 
@@ -125,7 +148,9 @@ export default class Statsig {
    * @param name the gate override to remove
    */
   public static removeGateOverride(name?: string): void {
-    this.ensureInitialized();
+    if (!this.isInitialized()) {
+      return;
+    }
     Statsig.instance.removeGateOverride(name);
   }
 
@@ -133,7 +158,9 @@ export default class Statsig {
    * @param name the config override to remove
    */
   public static removeConfigOverride(name?: string): void {
-    this.ensureInitialized();
+    if (!this.isInitialized()) {
+      return;
+    }
     Statsig.instance.removeConfigOverride(name);
   }
 
@@ -141,7 +168,12 @@ export default class Statsig {
    * @returns The local gate and config overrides
    */
   public static getAllOverrides(): StatsigOverrides {
-    this.ensureInitialized();
+    if (!this.isInitialized()) {
+      return {
+        gates: {},
+        configs: {},
+      };
+    }
     return Statsig.instance.getAllOverrides();
   }
 
@@ -149,7 +181,9 @@ export default class Statsig {
    * @returns The Statsig stable ID used for device level experiments
    */
   public static getStableID(): string {
-    this.ensureInitialized();
+    if (!this.isInitialized()) {
+      return '';
+    }
     return Statsig.instance.getStableID();
   }
 
@@ -210,9 +244,13 @@ export default class Statsig {
     }
   }
 
-  private static ensureInitialized() {
-    if (!Statsig.instance) {
+  private static isInitialized(): boolean {
+    if (Statsig.instance) {
+      return true;
+    }
+    if (process.env.REACT_APP_STATSIG_SDK_MODE !== 'silent') {
       throw new Error('Call and wait for initialize() to finish first.');
     }
+    return false;
   }
 }
