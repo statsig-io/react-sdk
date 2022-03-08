@@ -18,7 +18,9 @@ import type {
   UUID,
   AppState,
 } from 'statsig-js';
+import { staticImplements, StatsigStatic } from './StatsigStatic';
 
+@staticImplements<StatsigStatic>()
 export default class Statsig {
   private static instance: StatsigClient;
 
@@ -32,8 +34,6 @@ export default class Statsig {
   private static expoConstants?: ExpoConstants;
   private static expoDevice?: ExpoDevice;
   private static uuid?: UUID;
-
-  private constructor() {}
 
   public static async initialize(
     sdkKey: string,
@@ -252,5 +252,23 @@ export default class Statsig {
       throw new Error('Call and wait for initialize() to finish first.');
     }
     return false;
+  }
+
+  // Exposed for RN sdks to override this class - an instance of this class
+  // is undefined
+  public constructor(
+    sdkKey: string,
+    user?: StatsigUser | null,
+    options?: StatsigOptions | null,
+  ) {
+    if (
+      Statsig.instance != null &&
+      process.env.REACT_APP_STATSIG_SDK_MODE !== 'silent'
+    ) {
+      throw new Error(
+        'Cannot create another instance of the static Statsig class',
+      );
+    }
+    Statsig.instance = new StatsigClient(sdkKey, user, options);
   }
 }

@@ -20,6 +20,8 @@ import type {
 } from 'statsig-js';
 import Statsig from './Statsig';
 
+import { staticImplements, StatsigStatic } from './StatsigStatic';
+
 export {
   Statsig,
   StatsigContext,
@@ -29,6 +31,8 @@ export {
   useGate,
   useStatsigLogEffect,
   DynamicConfig,
+  staticImplements,
+  StatsigStatic,
 };
 
 export type {
