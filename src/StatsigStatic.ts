@@ -1,10 +1,9 @@
 import {
   DynamicConfig,
+  Layer,
   StatsigOptions,
   StatsigOverrides,
   StatsigUser,
-  UUID,
-  _SDKPackageInfo,
 } from 'statsig-js';
 
 export interface StatsigStatic {
@@ -23,6 +22,8 @@ export interface StatsigStatic {
     keepDeviceValue: boolean,
     ignoreOverrides: boolean,
   ): DynamicConfig;
+
+  getLayer(layerName: string, keepDeviceValue: boolean): Layer;
 
   logEvent(
     eventName: string,

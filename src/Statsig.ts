@@ -1,22 +1,22 @@
-import {
-  DynamicConfig,
-  StatsigClient,
-  StatsigOverrides,
-  _SDKPackageInfo,
-  StatsigOptions,
-  StatsigUser,
-  StatsigAsyncStorage,
-} from 'statsig-js';
-
 import type {
-  NativeModules,
-  Platform,
+  AppState,
+  AsyncStorage,
   DeviceInfo,
   ExpoConstants,
   ExpoDevice,
-  AsyncStorage,
+  NativeModules,
+  Platform,
   UUID,
-  AppState,
+} from 'statsig-js';
+import {
+  DynamicConfig,
+  Layer,
+  StatsigAsyncStorage,
+  StatsigClient,
+  StatsigOptions,
+  StatsigOverrides,
+  StatsigUser,
+  _SDKPackageInfo,
 } from 'statsig-js';
 import { staticImplements, StatsigStatic } from './StatsigStatic';
 
@@ -93,6 +93,16 @@ export default class Statsig {
       keepDeviceValue,
       ignoreOverrides,
     );
+  }
+
+  public static getLayer(
+    layerName: string,
+    keepDeviceValue: boolean = false,
+  ): Layer {
+    if (!this.isInitialized()) {
+      return new Layer(layerName);
+    }
+    return Statsig.instance.getLayer(layerName, keepDeviceValue);
   }
 
   public static logEvent(
