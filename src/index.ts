@@ -2,10 +2,9 @@ import type {
   AppState,
   AppStateEvent,
   AppStateStatus,
-  StatsigEnvironment,
-  StatsigOptions,
-  StatsigOverrides,
   StatsigUser,
+  StatsigEnvironment,
+  StatsigOverrides,
   UUID,
 } from 'statsig-js';
 import { DynamicConfig, Layer } from 'statsig-js';
@@ -20,6 +19,8 @@ import type { GateResult } from './useGate';
 import useGate from './useGate';
 import useLayer from './useLayer';
 import useStatsigLogEffect from './useStatsigLogEffect';
+import StatsigSynchronousProvider from './StatsigSynchronousProvider';
+import { StatsigOptions } from './StatsigOptions';
 
 export {
   Statsig,
@@ -34,6 +35,7 @@ export {
   staticImplements,
   StatsigStatic,
   Layer,
+  StatsigSynchronousProvider,
 };
 export type {
   ConfigResult,

@@ -1,22 +1,23 @@
+import {
+  DynamicConfig,
+  StatsigClient,
+  StatsigOverrides,
+  _SDKPackageInfo,
+  StatsigOptions,
+  StatsigUser,
+  StatsigAsyncStorage,
+  Layer,
+} from 'statsig-js';
+
 import type {
-  AppState,
-  AsyncStorage,
+  NativeModules,
+  Platform,
   DeviceInfo,
   ExpoConstants,
   ExpoDevice,
-  NativeModules,
-  Platform,
+  AsyncStorage,
   UUID,
-} from 'statsig-js';
-import {
-  DynamicConfig,
-  Layer,
-  StatsigAsyncStorage,
-  StatsigClient,
-  StatsigOptions,
-  StatsigOverrides,
-  StatsigUser,
-  _SDKPackageInfo,
+  AppState,
 } from 'statsig-js';
 import { staticImplements, StatsigStatic } from './StatsigStatic';
 
@@ -58,6 +59,30 @@ export default class Statsig {
       }
     }
     return Promise.resolve();
+  }
+
+  public static bootstrap(
+    sdkKey: string,
+    initializeValues: Record<string, any>,
+    user?: StatsigUser | null,
+    options?: StatsigOptions | null,
+  ): void {
+    if (Statsig.instance != null) {
+      if (user != Statsig.instance.getCurrentUser())
+        Statsig.instance.setInitializeValues(initializeValues);
+      return;
+    }
+    Statsig.instance = new StatsigClient(sdkKey, user, options);
+    Statsig.instance.setInitializeValues(initializeValues);
+  }
+
+  public static setInitializeValues(
+    initializeValues: Record<string, any>,
+  ): void {
+    if (!this.isInitialized()) {
+      return;
+    }
+    Statsig.instance.setInitializeValues(initializeValues);
   }
 
   public static checkGate(
