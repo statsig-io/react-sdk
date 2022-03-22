@@ -24,7 +24,7 @@ type Props = {
    * The values to initialize the SDK with.  Required for this provider.  For non server side rendered use cases,
    * @see StatsigProvider.tsx
    */
-  initializeValues: Record<string, any>;
+  initializeValues: Record<string, unknown>;
 
   /**
    * Options for initializing the SDK, shared with the statsig-js SDK
