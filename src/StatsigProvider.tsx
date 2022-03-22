@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState, useMemo } from 'react';
 import StatsigContext from './StatsigContext';
-import { StatsigUser, StatsigOptions, _SDKPackageInfo } from 'statsig-js';
+import { StatsigOptions } from './StatsigOptions';
+import { StatsigUser, _SDKPackageInfo } from 'statsig-js';
 import Statsig from './Statsig';
 
 import type {
