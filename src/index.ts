@@ -13,6 +13,7 @@ import StatsigContext from './StatsigContext';
 import StatsigProvider from './StatsigProvider';
 import { staticImplements, StatsigStatic } from './StatsigStatic';
 import type { ConfigResult } from './useConfig';
+import type { LayerResult } from './useLayer';
 import useConfig from './useConfig';
 import useExperiment from './useExperiment';
 import type { GateResult } from './useGate';
@@ -39,6 +40,7 @@ export {
 };
 export type {
   ConfigResult,
+  LayerResult,
   GateResult,
   StatsigUser,
   StatsigOptions,
