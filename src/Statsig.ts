@@ -68,8 +68,7 @@ export default class Statsig {
     options?: StatsigOptions | null,
   ): void {
     if (Statsig.instance != null) {
-      if (user != Statsig.instance.getCurrentUser())
-        Statsig.instance.setInitializeValues(initializeValues);
+      Statsig.instance.setInitializeValues(initializeValues);
       return;
     }
     Statsig.instance = new StatsigClient(sdkKey, user, options);
