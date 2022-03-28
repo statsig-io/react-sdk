@@ -1,7 +1,4 @@
-import {
-  StatsigOptions as InternalOptions,
-  StatsigEnvironment,
-} from 'statsig-js';
+import { StatsigEnvironment } from 'statsig-js';
 
 // The options for the react SDK and JS SDK have diverged
 // Because initializeValues is not compatible with the StatsigProvider
@@ -16,4 +13,5 @@ export type StatsigOptions = {
   localMode?: boolean;
   initTimeoutMs?: number;
   disableErrorLogging?: boolean;
+  disableAutoMetricsLogging?: boolean;
 };
