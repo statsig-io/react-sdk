@@ -124,7 +124,7 @@ export default class Statsig {
     keepDeviceValue: boolean = false,
   ): Layer {
     if (!this.isInitialized()) {
-      return new Layer(layerName);
+      return Layer._create(layerName);
     }
     return Statsig.instance.getLayer(layerName, keepDeviceValue);
   }

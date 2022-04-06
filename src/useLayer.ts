@@ -27,7 +27,7 @@ export default function (
     () =>
       initStarted
         ? Statsig.getLayer(layerName, keepDeviceValue)
-        : new Layer(layerName),
+        : Layer._create(layerName),
     [initialized, initStarted, layerName, userVersion, keepDeviceValue],
   );
   return {
