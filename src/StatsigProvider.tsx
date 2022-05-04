@@ -46,6 +46,14 @@ type Props = {
   initializingComponent?: React.ReactNode | React.ReactNode[];
 
   /**
+   * A key for stable mounting/unmounting when updating the user.  If this key is set and changes when the user object changes
+   * (or if it is not provided) Then the children of StatsigProvider will unmount/remount with the async update.
+   * If this key is set and does not change, then the children of StatsigProvider will continue to be mounted,
+   * and it will trigger a rerender after updateUser completes
+   */
+  mountKey?: string;
+
+  /**
    * DO NOT CALL DIRECTLY. Used to polyfill react native specific dependencies.
    */
   _reactNativeDependencies?: {
@@ -60,6 +68,14 @@ type Props = {
     ReactNativeUUID: UUID | null;
   };
 };
+
+function usePrevious(value: string | null): string | null {
+  const ref = useRef<string | null>(null);
+  useEffect(() => {
+    ref.current = value;
+  }, [value]);
+  return ref.current;
+}
 
 /**
  * The StatsigProvider is the top level component from which all React SDK components derive
@@ -79,6 +95,7 @@ export default function StatsigProvider({
   options,
   waitForInitialization,
   initializingComponent,
+  mountKey,
   _reactNativeDependencies,
 }: Props): JSX.Element {
   const [initialized, setInitialized] = useState(false);
@@ -94,16 +111,24 @@ export default function StatsigProvider({
     return user;
   }, [JSON.stringify(user)]);
 
+  const prevMountKey = usePrevious(mountKey ?? null);
+
   useEffect(() => {
     if (Statsig.initializeCalled()) {
       statsigPromise.current = new Promise((resolve, _reject) => {
         resolver.current = resolve;
       });
-      setInitialized(false);
+      const unmount = mountKey === undefined || prevMountKey !== mountKey;
+      if (unmount) {
+        setInitialized(false);
+      }
+
       Statsig.updateUser(user).then(() => {
         resolver.current && resolver.current();
         setUserVersion(userVersion + 1);
-        setInitialized(true);
+        if (unmount) {
+          setInitialized(true);
+        }
       });
 
       return;
