@@ -1,6 +1,6 @@
 import type { ConfigResult } from './useConfig';
 import { useContext, useMemo } from 'react';
-import { DynamicConfig } from 'statsig-js';
+import { DynamicConfig, EvaluationReason } from 'statsig-js';
 import StatsigContext from './StatsigContext';
 import Statsig from './Statsig';
 
@@ -26,7 +26,10 @@ export default function (
             keepDeviceValue,
             ignoreOverrides,
           )
-        : new DynamicConfig(experimentName),
+        : new DynamicConfig(experimentName, {}, '', {
+            time: Date.now(),
+            reason: EvaluationReason.Uninitialized,
+          }),
     [
       initialized,
       initStarted,

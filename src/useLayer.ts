@@ -1,5 +1,5 @@
 import { useContext, useMemo } from 'react';
-import { Layer } from 'statsig-js';
+import { EvaluationReason, Layer } from 'statsig-js';
 import Statsig from './Statsig';
 import StatsigContext from './StatsigContext';
 
@@ -27,7 +27,10 @@ export default function (
     () =>
       initStarted
         ? Statsig.getLayer(layerName, keepDeviceValue)
-        : Layer._create(layerName),
+        : Layer._create(layerName, {}, '', {
+            time: Date.now(),
+            reason: EvaluationReason.Uninitialized,
+          }),
     [initialized, initStarted, layerName, userVersion, keepDeviceValue],
   );
   return {

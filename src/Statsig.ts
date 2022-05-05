@@ -7,6 +7,7 @@ import {
   StatsigUser,
   StatsigAsyncStorage,
   Layer,
+  EvaluationReason,
 } from 'statsig-js';
 
 import type {
@@ -99,7 +100,10 @@ export default class Statsig {
     ignoreOverrides: boolean = false,
   ): DynamicConfig {
     if (!this.isInitialized()) {
-      return new DynamicConfig(configName);
+      return new DynamicConfig(configName, {}, '', {
+        time: Date.now(),
+        reason: EvaluationReason.Uninitialized,
+      });
     }
     return Statsig.instance.getConfig(configName, ignoreOverrides);
   }
@@ -110,7 +114,10 @@ export default class Statsig {
     ignoreOverrides: boolean = false,
   ): DynamicConfig {
     if (!this.isInitialized()) {
-      return new DynamicConfig(experimentName);
+      return new DynamicConfig(experimentName, {}, '', {
+        time: Date.now(),
+        reason: EvaluationReason.Uninitialized,
+      });
     }
     return Statsig.instance.getExperiment(
       experimentName,
@@ -124,7 +131,10 @@ export default class Statsig {
     keepDeviceValue: boolean = false,
   ): Layer {
     if (!this.isInitialized()) {
-      return Layer._create(layerName);
+      return Layer._create(layerName, {}, '', {
+        time: Date.now(),
+        reason: EvaluationReason.Uninitialized,
+      });
     }
     return Statsig.instance.getLayer(layerName, keepDeviceValue);
   }

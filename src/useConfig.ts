@@ -1,5 +1,5 @@
 import { useContext, useMemo } from 'react';
-import { DynamicConfig } from 'statsig-js';
+import { DynamicConfig, EvaluationReason } from 'statsig-js';
 import StatsigContext from './StatsigContext';
 import Statsig from './Statsig';
 
@@ -26,7 +26,10 @@ export default function (
     () =>
       initStarted
         ? Statsig.getConfig(configName, ignoreOverrides)
-        : new DynamicConfig(configName),
+        : new DynamicConfig(configName, {}, '', {
+            time: Date.now(),
+            reason: EvaluationReason.Uninitialized,
+          }),
     [initialized, initStarted, configName, userVersion, ignoreOverrides],
   );
   return {
