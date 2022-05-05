@@ -53,6 +53,8 @@ type Props = {
    */
   mountKey?: string;
 
+  shutdownOnUnmount?: boolean;
+
   /**
    * DO NOT CALL DIRECTLY. Used to polyfill react native specific dependencies.
    */
@@ -96,6 +98,7 @@ export default function StatsigProvider({
   waitForInitialization,
   initializingComponent,
   mountKey,
+  shutdownOnUnmount = false,
   _reactNativeDependencies,
 }: Props): JSX.Element {
   const [initialized, setInitialized] = useState(false);
@@ -160,6 +163,14 @@ export default function StatsigProvider({
       resolver.current && resolver.current();
     });
   }, [userMemo]);
+
+  useEffect(() => {
+    return () => {
+      if (shutdownOnUnmount) {
+        Statsig.shutdown();
+      }
+    };
+  }, []);
 
   let child = null;
   if (waitForInitialization !== true) {
