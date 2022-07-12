@@ -14,4 +14,5 @@ export type StatsigOptions = {
   initTimeoutMs?: number;
   disableErrorLogging?: boolean;
   disableAutoMetricsLogging?: boolean;
+  eventLoggingApi?: string;
 };
