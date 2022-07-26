@@ -4,12 +4,16 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import { StatsigProvider, useGate } from '..';
+import { StatsigProvider, useGate, Statsig } from '..';
 import { act } from 'react-dom/test-utils';
-import { StatsigClient } from 'statsig-js';
+import { EvaluationReason, StatsigClient } from 'statsig-js';
 
 const GateComponent = function (props: { gateName: string }): JSX.Element {
   const gate = useGate(props.gateName);
+  expect(Statsig.getEvaluationDetails()).toEqual({
+    reason: EvaluationReason.Network,
+    time: 1,
+  });
   if (gate.value) {
     return <div>ON</div>;
   }
@@ -33,6 +37,12 @@ describe('Tests the StatsigProvider with mocked network responses', () => {
       return new Promise((resolve) => {
         setTimeout(() => {
           initialized = true;
+          jest
+            .spyOn(StatsigClient.prototype, 'getEvaluationDetails')
+            .mockReturnValue({
+              reason: EvaluationReason.Network,
+              time: 1,
+            });
           // @ts-ignore
           resolve();
         }, 2000);
@@ -48,6 +58,10 @@ describe('Tests the StatsigProvider with mocked network responses', () => {
     .mockImplementation(() => initialized);
 
   test('Verify waitForInitialization renders nothing then children after init', async () => {
+    expect(Statsig.getEvaluationDetails()).toEqual({
+      reason: EvaluationReason.Uninitialized,
+      time: 0,
+    });
     const { getByText } = render(
       <StatsigProvider
         sdkKey="client-dummy-key"

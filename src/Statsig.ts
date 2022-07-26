@@ -8,6 +8,7 @@ import {
   StatsigAsyncStorage,
   Layer,
   EvaluationReason,
+  EvaluationDetails,
 } from 'statsig-js';
 
 import type {
@@ -219,6 +220,15 @@ export default class Statsig {
       };
     }
     return Statsig.instance.getAllOverrides();
+  }
+
+  public static getEvaluationDetails(): EvaluationDetails {
+    return (
+      Statsig.instance?.getEvaluationDetails() ?? {
+        reason: EvaluationReason.Uninitialized,
+        time: 0,
+      }
+    );
   }
 
   /**
