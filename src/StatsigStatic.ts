@@ -13,6 +13,8 @@ export interface StatsigStatic {
     options?: StatsigOptions | null,
   ): Promise<void>;
 
+  prefetchUsers(users: StatsigUser[]): Promise<void>;
+
   checkGate(gateName: string, ignoreOverrides: boolean): boolean;
 
   getConfig(configName: string, ignoreOverrides: boolean): DynamicConfig;

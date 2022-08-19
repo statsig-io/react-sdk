@@ -1,4 +1,4 @@
-import { StatsigEnvironment } from 'statsig-js';
+import { StatsigEnvironment, StatsigUser } from 'statsig-js';
 
 // The options for the react SDK and JS SDK have diverged
 // Because initializeValues is not compatible with the StatsigProvider
@@ -15,4 +15,5 @@ export type StatsigOptions = {
   disableErrorLogging?: boolean;
   disableAutoMetricsLogging?: boolean;
   eventLoggingApi?: string;
+  prefetchUsers?: StatsigUser[];
 };

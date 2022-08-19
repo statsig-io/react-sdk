@@ -19,6 +19,7 @@ import useExperiment from './useExperiment';
 import type { GateResult } from './useGate';
 import useGate from './useGate';
 import useLayer from './useLayer';
+import usePrefetchUsers from './usePrefetchUsers';
 import useStatsigLogEffect from './useStatsigLogEffect';
 import StatsigSynchronousProvider from './StatsigSynchronousProvider';
 import { StatsigOptions } from './StatsigOptions';
@@ -30,6 +31,7 @@ export {
   useConfig,
   useExperiment,
   useLayer,
+  usePrefetchUsers,
   useGate,
   useStatsigLogEffect,
   DynamicConfig,

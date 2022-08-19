@@ -77,6 +77,10 @@ export default class Statsig {
     Statsig.instance.setInitializeValues(initializeValues);
   }
 
+  public static async prefetchUsers(users: StatsigUser[]): Promise<void> {
+    return Statsig.instance.prefetchUsers(users);
+  }
+
   public static setInitializeValues(
     initializeValues: Record<string, any>,
   ): void {
