@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import { StatsigProvider, useGate } from '..';
+import { StatsigProvider, useGate, Statsig } from '..';
 import { act } from 'react-dom/test-utils';
 import { StatsigClient } from 'statsig-js';
 
@@ -47,6 +47,56 @@ describe('Tests the StatsigProvider with mocked network responses', () => {
       return initialized;
     });
 
+  beforeEach(() => {
+    // @ts-ignore
+    Statsig.instance = undefined;
+  });
+
+  test('Verify exceptions when calling methods before initializing', async () => {
+    expect(() => {
+      Statsig.checkGate('any_gate');
+    }).toThrowError('Call and wait for initialize() to finish first.');
+
+    expect(() => {
+      new Statsig('client-whatever');
+      new Statsig('client-whatever');
+    }).toThrowError(
+      'Cannot create another instance of the static Statsig class',
+    );
+  });
+
+  test('Verify when process.env is undefined, it does not get referenced', async () => {
+    // @ts-ignore
+    process = {};
+
+    expect(() => {
+      const res = Statsig.checkGate('any_gate_123');
+    }).toThrowError('Call and wait for initialize() to finish first.');
+
+    expect(() => {
+      new Statsig('client-whatever');
+      new Statsig('client-whatever');
+    }).toThrowError(
+      'Cannot create another instance of the static Statsig class',
+    );
+  });
+
+  test('Verify when process is undefined, it does not get referenced', async () => {
+    // @ts-ignore
+    process = undefined;
+
+    expect(() => {
+      Statsig.checkGate('any_gate_1234');
+    }).toThrowError('Call and wait for initialize() to finish first.');
+
+    expect(() => {
+      new Statsig('client-whatever-process-undef');
+      new Statsig('client-whatever-process-undef');
+    }).toThrowError(
+      'Cannot create another instance of the static Statsig class',
+    );
+  });
+
   test('Verify not waiting for init renders immediately', async () => {
     const { getByText } = render(
       <StatsigProvider
@@ -66,5 +116,19 @@ describe('Tests the StatsigProvider with mocked network responses', () => {
       jest.advanceTimersByTime(3000);
     });
     expect(() => getByText(/ON/)).not.toThrow();
+  });
+
+  test('Verify silent mode does not throw', async () => {
+    // @ts-ignore
+    process = { env: {} };
+    process.env.REACT_APP_STATSIG_SDK_MODE = 'silent';
+
+    expect(() => {
+      Statsig.checkGate('any_gate');
+    }).not.toThrow();
+
+    expect(() => {
+      new Statsig('client-whatever');
+    }).not.toThrow();
   });
 });

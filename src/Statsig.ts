@@ -56,7 +56,7 @@ export default class Statsig {
       }
       return Statsig.instance.initializeAsync();
     } catch (e) {
-      if (process.env.REACT_APP_STATSIG_SDK_MODE !== 'silent') {
+      if (Statsig.canThrow()) {
         throw e;
       }
     }
@@ -78,6 +78,9 @@ export default class Statsig {
   }
 
   public static async prefetchUsers(users: StatsigUser[]): Promise<void> {
+    if (!this.isInitialized()) {
+      return;
+    }
     return Statsig.instance.prefetchUsers(users);
   }
 
@@ -306,7 +309,7 @@ export default class Statsig {
     if (Statsig.instance) {
       return true;
     }
-    if (process.env.REACT_APP_STATSIG_SDK_MODE !== 'silent') {
+    if (Statsig.canThrow()) {
       throw new Error('Call and wait for initialize() to finish first.');
     }
     return false;
@@ -319,14 +322,19 @@ export default class Statsig {
     user?: StatsigUser | null,
     options?: StatsigOptions | null,
   ) {
-    if (
-      Statsig.instance != null &&
-      process.env.REACT_APP_STATSIG_SDK_MODE !== 'silent'
-    ) {
+    if (Statsig.instance != null && Statsig.canThrow()) {
       throw new Error(
         'Cannot create another instance of the static Statsig class',
       );
     }
     Statsig.instance = new StatsigClient(sdkKey, user, options);
+  }
+
+  private static canThrow() {
+    return (
+      typeof process === 'undefined' ||
+      typeof process.env === 'undefined' ||
+      process?.env?.REACT_APP_STATSIG_SDK_MODE !== 'silent'
+    );
   }
 }
