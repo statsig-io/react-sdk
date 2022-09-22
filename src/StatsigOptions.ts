@@ -1,4 +1,5 @@
 import { StatsigEnvironment, StatsigUser } from 'statsig-js';
+import { InitCompletionCallback } from 'statsig-js/dist/StatsigSDKOptions';
 
 // The options for the react SDK and JS SDK have diverged
 // Because initializeValues is not compatible with the StatsigProvider
@@ -16,4 +17,5 @@ export type StatsigOptions = {
   disableAutoMetricsLogging?: boolean;
   eventLoggingApi?: string;
   prefetchUsers?: StatsigUser[];
+  initCompletionCallback?: InitCompletionCallback | null;
 };
