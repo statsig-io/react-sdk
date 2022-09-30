@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
+    "lib": ["es6", "esnext", "dom"],
     "strict": true,
     "outDir": "dist",
     "jsx": "react",
