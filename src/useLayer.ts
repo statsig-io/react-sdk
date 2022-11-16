@@ -16,17 +16,24 @@ export type LayerResult = {
  * calling.
  * @param layerName - the name of the layer that has been setup in the Statsig console.
  * @param keepDeviceValue - whether the value returned should be kept for the user on the device for the duration of the experiment
+ * @param exposureLoggingDisabled - flag to disable exposure logging
  * @returns an object containing a isLoading flag and the Layer object itself
  */
 export default function (
   layerName: string,
   keepDeviceValue: boolean = false,
+  exposureLoggingDisabled?: boolean,
 ): LayerResult {
   const { initialized, initStarted, userVersion } = useContext(StatsigContext);
   const layer = useMemo(
     () =>
       initStarted
-        ? Statsig.getLayer(layerName, keepDeviceValue)
+        ? exposureLoggingDisabled
+          ? Statsig.getLayerWithExposureLoggingDisabled(
+              layerName,
+              keepDeviceValue,
+            )
+          : Statsig.getLayer(layerName, keepDeviceValue)
         : Layer._create(layerName, {}, '', {
             time: Date.now(),
             reason: EvaluationReason.Uninitialized,

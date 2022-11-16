@@ -8,24 +8,32 @@ import Statsig from './Statsig';
  * A synchronous hook to check the value of an experiment.  To ensure correctness, wait for SDK initialization before
  * calling.
  * @param experimentName - the name of the experiment to check
- * @param keepDeviceValue -
+ * @param keepDeviceValue - whether the value returned should be kept for the user on the device for the duration of the experiment
  * @param ignoreOverrides -
+ * @param exposureLoggingDisabled - flag to disable exposure logging
  * @returns a ConfigResult indicating the DynamicConfig backing the experiment, and the loading state of the SDK
  */
 export default function (
   experimentName: string,
   keepDeviceValue: boolean = false,
   ignoreOverrides?: boolean,
+  exposureLoggingDisabled?: boolean,
 ): ConfigResult {
   const { initialized, initStarted, userVersion } = useContext(StatsigContext);
   const config = useMemo(
     () =>
       initStarted
-        ? Statsig.getExperiment(
-            experimentName,
-            keepDeviceValue,
-            ignoreOverrides,
-          )
+        ? exposureLoggingDisabled
+          ? Statsig.getExperimentWithExposureLoggingDisabled(
+              experimentName,
+              keepDeviceValue,
+              ignoreOverrides,
+            )
+          : Statsig.getExperiment(
+              experimentName,
+              keepDeviceValue,
+              ignoreOverrides,
+            )
         : new DynamicConfig(experimentName, {}, '', {
             time: Date.now(),
             reason: EvaluationReason.Uninitialized,

@@ -15,17 +15,25 @@ export type ConfigResult = {
  * A synchronous hook to check the value of a Dynamic Config.  To ensure correctness, wait for SDK initialization before
  * calling.
  * @param configName - the name of the DynamicConfig to check
+ * @param ignoreOverrides -
+ * @param exposureLoggingDisabled - flag to disable exposure logging
  * @returns a ConfigResult indicating the DynamicConfig value, and the loading state of the SDK
  */
 export default function (
   configName: string,
   ignoreOverrides?: boolean,
+  exposureLoggingDisabled?: boolean,
 ): ConfigResult {
   const { initialized, initStarted, userVersion } = useContext(StatsigContext);
   const config = useMemo(
     () =>
       initStarted
-        ? Statsig.getConfig(configName, ignoreOverrides)
+        ? exposureLoggingDisabled
+          ? Statsig.getConfigWithExposureLoggingDisabled(
+              configName,
+              ignoreOverrides,
+            )
+          : Statsig.getConfig(configName, ignoreOverrides)
         : new DynamicConfig(configName, {}, '', {
             time: Date.now(),
             reason: EvaluationReason.Uninitialized,
