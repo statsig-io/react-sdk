@@ -116,7 +116,10 @@ export default class Statsig {
     );
   }
 
-  public static logGateExpsoure(gateName: string): void {
+  public static logGateExposure(gateName: string): void {
+    if (!this.isInitialized()) {
+      return;
+    }
     Statsig.instance.logGateExposure(gateName);
   }
 
@@ -150,6 +153,9 @@ export default class Statsig {
   }
 
   public static logConfigExposure(configName: string): void {
+    if (!this.isInitialized()) {
+      return;
+    }
     Statsig.instance.logConfigExposure(configName);
   }
 
@@ -193,6 +199,9 @@ export default class Statsig {
     experimentName: string,
     keepDeviceValue: boolean,
   ): void {
+    if (!this.isInitialized()) {
+      return;
+    }
     Statsig.instance.logExperimentExposure(experimentName, keepDeviceValue);
   }
 
@@ -230,6 +239,9 @@ export default class Statsig {
     parameterName: string,
     keepDeviceValue: boolean = false,
   ): void {
+    if (!this.isInitialized()) {
+      return;
+    }
     Statsig.instance.logLayerParameterExposure(
       layerName,
       parameterName,

@@ -1,8 +1,8 @@
 import { ConfigResult, useExperimentImpl } from './StatsigHooks';
 
 /**
- * A synchronous hook to check the value of an experiment.  To ensure correctness, wait for SDK initialization before
- * calling.
+ * A synchronous hook to check the value of an experiment without exposure logging.
+ * To ensure correctness, wait for SDK initialization before calling.
  * @param experimentName - the name of the experiment to check
  * @param keepDeviceValue - whether the value returned should be kept for the user on the device for the duration of the experiment
  * @param ignoreOverrides - flag to ignore overrides
@@ -17,6 +17,6 @@ export default function (
     experimentName,
     keepDeviceValue,
     ignoreOverrides,
-    false /* exposure logging disabled */,
+    true /* exposure logging disabled */,
   );
 }
