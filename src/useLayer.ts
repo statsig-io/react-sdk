@@ -1,15 +1,4 @@
-import { useContext, useMemo } from 'react';
-import { EvaluationReason, Layer } from 'statsig-js';
-import Statsig from './Statsig';
-import StatsigContext from './StatsigContext';
-
-/**
- * Returns the initialization state of the SDK and a Layer value
- */
-export type LayerResult = {
-  isLoading: boolean;
-  layer: Layer;
-};
+import { LayerResult, useLayerImpl } from './StatsigHooks';
 
 /**
  * A synchronous hook to check the value of an layer.  To ensure correctness, wait for SDK initialization before
@@ -22,19 +11,11 @@ export default function (
   layerName: string,
   keepDeviceValue: boolean = false,
 ): LayerResult {
-  const { initialized, initStarted, userVersion } = useContext(StatsigContext);
-  const layer = useMemo(
-    () =>
-      initStarted
-        ? Statsig.getLayer(layerName, keepDeviceValue)
-        : Layer._create(layerName, {}, '', {
-            time: Date.now(),
-            reason: EvaluationReason.Uninitialized,
-          }),
-    [initialized, initStarted, layerName, userVersion, keepDeviceValue],
+  return useLayerImpl(
+    layerName,
+    {
+      keepDeviceValue,
+      exposureLoggingDisabled: false,
+    }
   );
-  return {
-    isLoading: !initialized,
-    layer,
-  };
 }
