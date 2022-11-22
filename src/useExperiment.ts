@@ -15,8 +15,10 @@ export default function (
 ): ConfigResult {
   return useExperimentImpl(
     experimentName,
-    keepDeviceValue,
-    ignoreOverrides,
-    false /* exposure logging disabled */,
+    {
+      keepDeviceValue,
+      ignoreOverrides,
+      exposureLoggingDisabled: false,
+    }
   );
 }

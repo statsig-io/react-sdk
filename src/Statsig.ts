@@ -23,6 +23,24 @@ import type {
 } from 'statsig-js';
 import { staticImplements, StatsigStatic } from './StatsigStatic';
 
+export type CheckGateOptions = {
+  ignoreOverrides?: boolean;
+  exposureLoggingDisabled?: boolean;
+};
+export type GetConfigOptions = {
+  ignoreOverrides?: boolean;
+  exposureLoggingDisabled?: boolean;
+};
+export type GetExperimentOptions = {
+  keepDeviceValue?: boolean;
+  ignoreOverrides?: boolean;
+  exposureLoggingDisabled?: boolean;
+};
+export type GetLayerOptions = {
+  keepDeviceValue?: boolean;
+  exposureLoggingDisabled?: boolean;
+};
+
 @staticImplements<StatsigStatic>()
 export default class Statsig {
   private static instance: StatsigClient;
@@ -103,20 +121,25 @@ export default class Statsig {
     return Statsig.instance.checkGate(gateName, ignoreOverrides);
   }
 
-  public static checkGateWithExposureLoggingDisabled(
+  public static checkGateWithOptions(
     gateName: string,
-    ignoreOverrides: boolean = false,
+    options: CheckGateOptions,
   ): boolean {
+    const { ignoreOverrides, exposureLoggingDisabled } = options;
     if (!this.isInitialized()) {
       return false;
     }
-    return Statsig.instance.checkGateWithExposureLoggingDisabled(
-      gateName,
-      ignoreOverrides,
-    );
+    if (!!exposureLoggingDisabled) {
+      return Statsig.instance.checkGateWithExposureLoggingDisabled(
+        gateName,
+        ignoreOverrides,
+      );
+    } else {
+      return Statsig.instance.checkGate(gateName, ignoreOverrides);
+    }
   }
 
-  public static logGateExposure(gateName: string): void {
+  public static manuallyLogGateExposure(gateName: string): void {
     if (!this.isInitialized()) {
       return;
     }
@@ -136,23 +159,28 @@ export default class Statsig {
     return Statsig.instance.getConfig(configName, ignoreOverrides);
   }
 
-  public static getConfigWithExposureLoggingDisabled(
+  public static getConfigWithOptions(
     configName: string,
-    ignoreOverrides: boolean = false,
+    options: GetConfigOptions,
   ): DynamicConfig {
+    const { ignoreOverrides, exposureLoggingDisabled } = options;
     if (!this.isInitialized()) {
       return new DynamicConfig(configName, {}, '', {
         time: Date.now(),
         reason: EvaluationReason.Uninitialized,
       });
     }
-    return Statsig.instance.getConfigWithExposureLoggingDisabled(
-      configName,
-      ignoreOverrides,
-    );
+    if (!!exposureLoggingDisabled) {
+      return Statsig.instance.getConfigWithExposureLoggingDisabled(
+        configName,
+        ignoreOverrides,
+      );
+    } else {
+      return Statsig.instance.getConfig(configName, ignoreOverrides);
+    }
   }
 
-  public static logConfigExposure(configName: string): void {
+  public static manuallyLogConfigExposure(configName: string): void {
     if (!this.isInitialized()) {
       return;
     }
@@ -177,25 +205,34 @@ export default class Statsig {
     );
   }
 
-  public static getExperimentWithExposureLoggingDisabled(
+  public static getExperimentWithOptions(
     experimentName: string,
-    keepDeviceValue: boolean = false,
-    ignoreOverrides: boolean = false,
+    options: GetExperimentOptions,
   ): DynamicConfig {
+    const { keepDeviceValue, ignoreOverrides, exposureLoggingDisabled } =
+      options;
     if (!this.isInitialized()) {
       return new DynamicConfig(experimentName, {}, '', {
         time: Date.now(),
         reason: EvaluationReason.Uninitialized,
       });
     }
-    return Statsig.instance.getExperimentWithExposureLoggingDisabled(
-      experimentName,
-      keepDeviceValue,
-      ignoreOverrides,
-    );
+    if (!!exposureLoggingDisabled) {
+      return Statsig.instance.getExperimentWithExposureLoggingDisabled(
+        experimentName,
+        keepDeviceValue,
+        ignoreOverrides,
+      );
+    } else {
+      return Statsig.instance.getExperiment(
+        experimentName,
+        keepDeviceValue,
+        ignoreOverrides,
+      );
+    }
   }
 
-  public static logExperimentExposure(
+  public static manuallyLogExperimentExposure(
     experimentName: string,
     keepDeviceValue: boolean,
   ): void {
@@ -218,23 +255,28 @@ export default class Statsig {
     return Statsig.instance.getLayer(layerName, keepDeviceValue);
   }
 
-  public static getLayerWithExposureLoggingDisabled(
+  public static getLayerWithOptions(
     layerName: string,
-    keepDeviceValue: boolean = false,
+    options: GetLayerOptions,
   ): Layer {
+    const { keepDeviceValue, exposureLoggingDisabled } = options;
     if (!this.isInitialized()) {
       return Layer._create(layerName, {}, '', {
         time: Date.now(),
         reason: EvaluationReason.Uninitialized,
       });
     }
-    return Statsig.instance.getLayerWithExposureLoggingDisabled(
-      layerName,
-      keepDeviceValue,
-    );
+    if (!!exposureLoggingDisabled) {
+      return Statsig.instance.getLayerWithExposureLoggingDisabled(
+        layerName,
+        keepDeviceValue,
+      );
+    } else {
+      return Statsig.instance.getLayer(layerName, keepDeviceValue);
+    }
   }
 
-  public static logLayerParameterExposure(
+  public static manuallyLogLayerParameterExposure(
     layerName: string,
     parameterName: string,
     keepDeviceValue: boolean = false,

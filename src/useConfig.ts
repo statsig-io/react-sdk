@@ -13,7 +13,9 @@ export default function (
 ): ConfigResult {
   return useConfigImpl(
     configName,
-    ignoreOverrides,
-    false /* exposure logging disabled */,
+    {
+      ignoreOverrides,
+      exposureLoggingDisabled: false,
+    }
   );
 }

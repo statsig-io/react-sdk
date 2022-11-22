@@ -13,7 +13,9 @@ export default function (
 ): LayerResult {
   return useLayerImpl(
     layerName,
-    keepDeviceValue,
-    false /* exposure logging disabled */,
+    {
+      keepDeviceValue,
+      exposureLoggingDisabled: false,
+    }
   );
 }

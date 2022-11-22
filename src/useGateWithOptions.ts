@@ -1,19 +1,21 @@
+import { CheckGateOptions } from './Statsig';
 import { GateResult, useGateImpl } from './StatsigHooks';
 
 /**
  * A synchronous hook to check the value of the gate without exposure logging.
  * To ensure correctness, wait for SDK initialization before calling.
  * @param gateName - the name of the gate to check
- * @param ignoreOverrides - flag to ignore overrides
+ * @param options - Custom options for the API
+ *
+ * ignoreOverrides - flag to ignore overrides
+ *
+ * exposureLoggingDisabled - flag to disable exposure logging
+ *
  * @returns a result indicating the boolean value of the gate and loading state of the SDK
  */
 export default function (
   gateName: string,
-  ignoreOverrides?: boolean,
+  options: CheckGateOptions,
 ): GateResult {
-  return useGateImpl(
-    gateName,
-    ignoreOverrides,
-    true /* exposure logging disabled */,
-  );
+  return useGateImpl(gateName, options);
 }

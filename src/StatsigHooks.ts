@@ -1,7 +1,12 @@
 import { useContext, useMemo } from 'react';
 import { DynamicConfig, EvaluationReason, Layer } from 'statsig-js';
 import StatsigContext from './StatsigContext';
-import Statsig from './Statsig';
+import Statsig, {
+  CheckGateOptions,
+  GetConfigOptions,
+  GetExperimentOptions,
+  GetLayerOptions,
+} from './Statsig';
 
 /**
  * Returns the initialization state of the SDK and a gate value
@@ -13,20 +18,18 @@ export type GateResult = {
 
 export function useGateImpl(
   gateName: string,
-  ignoreOverrides?: boolean,
-  exposureLoggingDisabled?: boolean,
+  options: CheckGateOptions,
 ): GateResult {
+  const { ignoreOverrides, exposureLoggingDisabled } = options;
   const { initialized, userVersion, initStarted } = useContext(StatsigContext);
 
   const gate = useMemo(
     () =>
       initStarted
-        ? exposureLoggingDisabled
-          ? Statsig.checkGateWithExposureLoggingDisabled(
-              gateName,
-              ignoreOverrides,
-            )
-          : Statsig.checkGate(gateName, ignoreOverrides)
+        ? Statsig.checkGateWithOptions(gateName, {
+            ignoreOverrides,
+            exposureLoggingDisabled,
+          })
         : false,
     [initialized, initStarted, gateName, userVersion, ignoreOverrides],
   );
@@ -46,19 +49,17 @@ export type ConfigResult = {
 
 export function useConfigImpl(
   configName: string,
-  ignoreOverrides?: boolean,
-  exposureLoggingDisabled?: boolean,
+  options: GetConfigOptions,
 ): ConfigResult {
+  const { ignoreOverrides, exposureLoggingDisabled } = options;
   const { initialized, initStarted, userVersion } = useContext(StatsigContext);
   const config = useMemo(
     () =>
       initStarted
-        ? exposureLoggingDisabled
-          ? Statsig.getConfigWithExposureLoggingDisabled(
-              configName,
-              ignoreOverrides,
-            )
-          : Statsig.getConfig(configName, ignoreOverrides)
+        ? Statsig.getConfigWithOptions(configName, {
+            ignoreOverrides,
+            exposureLoggingDisabled,
+          })
         : new DynamicConfig(configName, {}, '', {
             time: Date.now(),
             reason: EvaluationReason.Uninitialized,
@@ -73,25 +74,18 @@ export function useConfigImpl(
 
 export function useExperimentImpl(
   experimentName: string,
-  keepDeviceValue: boolean = false,
-  ignoreOverrides?: boolean,
-  exposureLoggingDisabled?: boolean,
+  options: GetExperimentOptions,
 ): ConfigResult {
+  const { keepDeviceValue, ignoreOverrides, exposureLoggingDisabled } = options;
   const { initialized, initStarted, userVersion } = useContext(StatsigContext);
   const config = useMemo(
     () =>
       initStarted
-        ? exposureLoggingDisabled
-          ? Statsig.getExperimentWithExposureLoggingDisabled(
-              experimentName,
-              keepDeviceValue,
-              ignoreOverrides,
-            )
-          : Statsig.getExperiment(
-              experimentName,
-              keepDeviceValue,
-              ignoreOverrides,
-            )
+        ? Statsig.getExperimentWithOptions(experimentName, {
+            keepDeviceValue,
+            ignoreOverrides,
+            exposureLoggingDisabled,
+          })
         : new DynamicConfig(experimentName, {}, '', {
             time: Date.now(),
             reason: EvaluationReason.Uninitialized,
@@ -121,19 +115,17 @@ export type LayerResult = {
 
 export function useLayerImpl(
   layerName: string,
-  keepDeviceValue: boolean = false,
-  exposureLoggingDisabled?: boolean,
+  options: GetLayerOptions,
 ): LayerResult {
+  const { keepDeviceValue, exposureLoggingDisabled } = options;
   const { initialized, initStarted, userVersion } = useContext(StatsigContext);
   const layer = useMemo(
     () =>
       initStarted
-        ? exposureLoggingDisabled
-          ? Statsig.getLayerWithExposureLoggingDisabled(
-              layerName,
-              keepDeviceValue,
-            )
-          : Statsig.getLayer(layerName, keepDeviceValue)
+        ? Statsig.getLayerWithOptions(layerName, {
+            keepDeviceValue,
+            exposureLoggingDisabled,
+          })
         : Layer._create(layerName, {}, '', {
             time: Date.now(),
             reason: EvaluationReason.Uninitialized,

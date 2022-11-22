@@ -21,24 +21,24 @@ import useStatsigLogEffect from './useStatsigLogEffect';
 import StatsigSynchronousProvider from './StatsigSynchronousProvider';
 import { StatsigOptions } from './StatsigOptions';
 import { ConfigResult, LayerResult, GateResult } from './StatsigHooks';
-import useConfigWithExposureLoggingDisabled from './useConfigWithExposureLoggingDisabled';
-import useGateWithExposureLoggingDisabled from './useGateWithExposureLoggingDisabled';
-import useExperimentWithExposureLoggingDisabled from './useExperimentWithExposureLoggingDisabled';
-import useLayerWithExposureLoggingDisabled from './useLayerWithExposureLoggingDisabled';
+import useConfigWithOptions from './useConfigWithOptions';
+import useGateWithOptions from './useGateWithOptions';
+import useExperimentWithOptions from './useExperimentWithOptions';
+import useLayerWithOptions from './useLayerWithOptions';
 
 export {
   Statsig,
   StatsigContext,
   StatsigProvider,
   useConfig,
-  useConfigWithExposureLoggingDisabled,
+  useConfigWithOptions,
   useExperiment,
-  useExperimentWithExposureLoggingDisabled,
+  useExperimentWithOptions,
   useLayer,
-  useLayerWithExposureLoggingDisabled,
+  useLayerWithOptions,
   usePrefetchUsers,
   useGate,
-  useGateWithExposureLoggingDisabled,
+  useGateWithOptions,
   useStatsigLogEffect,
   DynamicConfig,
   staticImplements,
