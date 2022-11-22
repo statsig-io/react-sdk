@@ -341,6 +341,18 @@ export default class Statsig {
   }
 
   /**
+   * Overrides the given layer locally with the given value
+   * @param layerName - name of the layer to override
+   * @param value - value to assign to the layer
+   */
+   public static overrideLayer(layerName: string, value: object): void {
+    if (!this.isInitialized()) {
+      return;
+    }
+    Statsig.instance.overrideLayer(layerName, value);
+   }
+
+  /**
    * @param name the gate override to remove
    */
   public static removeGateOverride(name?: string): void {
@@ -361,6 +373,16 @@ export default class Statsig {
   }
 
   /**
+   * @param name the config override to remove
+   */
+   public static removeLayerOverrie(name?: string): void {
+    if (!this.isInitialized()) {
+      return;
+    }
+    Statsig.instance.removeLayerOverride(name);
+  }
+
+  /**
    * @returns The local gate and config overrides
    */
   public static getAllOverrides(): StatsigOverrides {
@@ -368,6 +390,7 @@ export default class Statsig {
       return {
         gates: {},
         configs: {},
+        layers: {},
       };
     }
     return Statsig.instance.getAllOverrides();

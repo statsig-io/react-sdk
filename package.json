@@ -38,7 +38,7 @@
     "react-dom": "^16.8.4 || ^17.0.0 || ^18.0.0"
   },
   "dependencies": {
-    "statsig-js": "^4.27.0"
+    "statsig-js": "^4.28.0"
   },
   "peerDependencies": {
     "react": "^16.6.3 || ^17.0.0 || ^18.0.0"
