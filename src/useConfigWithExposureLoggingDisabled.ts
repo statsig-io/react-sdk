@@ -9,13 +9,15 @@ import { ConfigResult, useConfigImpl } from './StatsigHooks';
  *
  * ignoreOverrides - flag to ignore overrides
  *
- * exposureLoggingDisabled - flag to disable exposure logging
- *
  * @returns a ConfigResult indicating the DynamicConfig value, and the loading state of the SDK
  */
 export default function (
   configName: string,
-  options: GetConfigOptions,
+  options?: GetConfigOptions,
 ): ConfigResult {
-  return useConfigImpl(configName, options);
+  return useConfigImpl(
+    configName,
+    options,
+    true /* exposure logging disabled */,
+  );
 }

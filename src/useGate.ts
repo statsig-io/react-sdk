@@ -11,11 +11,7 @@ export default function (
   gateName: string,
   ignoreOverrides?: boolean,
 ): GateResult {
-  return useGateImpl(
-    gateName,
-    {
-      ignoreOverrides,
-      exposureLoggingDisabled: false,
-    }
-  );
+  return useGateImpl(gateName, {
+    ignoreOverrides,
+  });
 }
