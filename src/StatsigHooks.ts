@@ -94,7 +94,7 @@ export function useExperimentImpl(
     () =>
       initStarted
         ? exposureLoggingDisabled
-          ? Statsig.getConfigWithExposureLoggingDisabled(
+          ? Statsig.getExperimentWithExposureLoggingDisabled(
               experimentName,
               options,
             )
