@@ -11,13 +11,15 @@ import { ConfigResult, useExperimentImpl } from './StatsigHooks';
  *
  * ignoreOverrides - flag to ignore overrides
  *
- * exposureLoggingDisabled - flag to disable exposure logging
- *
  * @returns a ConfigResult indicating the DynamicConfig backing the experiment, and the loading state of the SDK
  */
 export default function (
   experimentName: string,
   options: GetExperimentOptions,
 ): ConfigResult {
-  return useExperimentImpl(experimentName, options);
+  return useExperimentImpl(
+    experimentName,
+    options,
+    true /* exposure logging disabled */,
+  );
 }

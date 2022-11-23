@@ -9,13 +9,11 @@ import { GateResult, useGateImpl } from './StatsigHooks';
  *
  * ignoreOverrides - flag to ignore overrides
  *
- * exposureLoggingDisabled - flag to disable exposure logging
- *
  * @returns a result indicating the boolean value of the gate and loading state of the SDK
  */
 export default function (
   gateName: string,
   options: CheckGateOptions,
 ): GateResult {
-  return useGateImpl(gateName, options);
+  return useGateImpl(gateName, options, true /* exposure logging disabled */);
 }

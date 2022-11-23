@@ -11,11 +11,7 @@ export default function (
   configName: string,
   ignoreOverrides?: boolean,
 ): ConfigResult {
-  return useConfigImpl(
-    configName,
-    {
-      ignoreOverrides,
-      exposureLoggingDisabled: false,
-    }
-  );
+  return useConfigImpl(configName, {
+    ignoreOverrides,
+  });
 }
