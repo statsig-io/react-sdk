@@ -18,7 +18,7 @@ export type GateResult = {
 
 export function useGateImpl(
   gateName: string,
-  options: CheckGateOptions,
+  options?: CheckGateOptions,
   exposureLoggingDisabled: boolean = false,
 ): GateResult {
   const { initialized, userVersion, initStarted } = useContext(StatsigContext);
@@ -28,7 +28,7 @@ export function useGateImpl(
       initStarted
         ? exposureLoggingDisabled
           ? Statsig.checkGateWithExposureLoggingDisabled(gateName, options)
-          : Statsig.checkGate(gateName, options.ignoreOverrides)
+          : Statsig.checkGate(gateName, options?.ignoreOverrides)
         : false,
     [
       initialized,
@@ -55,7 +55,7 @@ export type ConfigResult = {
 
 export function useConfigImpl(
   configName: string,
-  options: GetConfigOptions,
+  options?: GetConfigOptions,
   exposureLoggingDisabled: boolean = false,
 ): ConfigResult {
   const { initialized, initStarted, userVersion } = useContext(StatsigContext);
@@ -64,7 +64,7 @@ export function useConfigImpl(
       initStarted
         ? exposureLoggingDisabled
           ? Statsig.getConfigWithExposureLoggingDisabled(configName, options)
-          : Statsig.getConfig(configName, options.ignoreOverrides)
+          : Statsig.getConfig(configName, options?.ignoreOverrides)
         : new DynamicConfig(configName, {}, '', {
             time: Date.now(),
             reason: EvaluationReason.Uninitialized,
@@ -86,7 +86,7 @@ export function useConfigImpl(
 
 export function useExperimentImpl(
   experimentName: string,
-  options: GetExperimentOptions,
+  options?: GetExperimentOptions,
   exposureLoggingDisabled: boolean = false,
 ): ConfigResult {
   const { initialized, initStarted, userVersion } = useContext(StatsigContext);
@@ -100,8 +100,8 @@ export function useExperimentImpl(
             )
           : Statsig.getExperiment(
               experimentName,
-              options.keepDeviceValue,
-              options.ignoreOverrides,
+              options?.keepDeviceValue,
+              options?.ignoreOverrides,
             )
         : new DynamicConfig(experimentName, {}, '', {
             time: Date.now(),
@@ -132,7 +132,7 @@ export type LayerResult = {
 
 export function useLayerImpl(
   layerName: string,
-  options: GetLayerOptions,
+  options?: GetLayerOptions,
   exposureLoggingDisabled: boolean = false,
 ): LayerResult {
   const { initialized, initStarted, userVersion } = useContext(StatsigContext);
@@ -141,7 +141,7 @@ export function useLayerImpl(
       initStarted
         ? exposureLoggingDisabled
           ? Statsig.getLayerWithExposureLoggingDisabled(layerName, options)
-          : Statsig.getLayer(layerName, options.keepDeviceValue)
+          : Statsig.getLayer(layerName, options?.keepDeviceValue)
         : Layer._create(layerName, {}, '', {
             time: Date.now(),
             reason: EvaluationReason.Uninitialized,

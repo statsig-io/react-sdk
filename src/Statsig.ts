@@ -119,15 +119,14 @@ export default class Statsig {
 
   public static checkGateWithExposureLoggingDisabled(
     gateName: string,
-    options: CheckGateOptions,
+    options?: CheckGateOptions,
   ): boolean {
-    const { ignoreOverrides } = options;
     if (!this.isInitialized()) {
       return false;
     }
     return Statsig.instance.checkGateWithExposureLoggingDisabled(
       gateName,
-      ignoreOverrides,
+      options?.ignoreOverrides,
     );
   }
 
@@ -153,9 +152,8 @@ export default class Statsig {
 
   public static getConfigWithExposureLoggingDisabled(
     configName: string,
-    options: GetConfigOptions,
+    options?: GetConfigOptions,
   ): DynamicConfig {
-    const { ignoreOverrides } = options;
     if (!this.isInitialized()) {
       return new DynamicConfig(configName, {}, '', {
         time: Date.now(),
@@ -164,7 +162,7 @@ export default class Statsig {
     }
     return Statsig.instance.getConfigWithExposureLoggingDisabled(
       configName,
-      ignoreOverrides,
+      options?.ignoreOverrides,
     );
   }
 
@@ -195,10 +193,8 @@ export default class Statsig {
 
   public static getExperimentWithExposureLoggingDisabled(
     experimentName: string,
-    options: GetExperimentOptions,
+    options?: GetExperimentOptions,
   ): DynamicConfig {
-    const { keepDeviceValue, ignoreOverrides } =
-      options;
     if (!this.isInitialized()) {
       return new DynamicConfig(experimentName, {}, '', {
         time: Date.now(),
@@ -207,8 +203,8 @@ export default class Statsig {
     }
     return Statsig.instance.getExperimentWithExposureLoggingDisabled(
       experimentName,
-      keepDeviceValue,
-      ignoreOverrides,
+      options?.keepDeviceValue,
+      options?.ignoreOverrides,
     );
   }
 
@@ -237,9 +233,8 @@ export default class Statsig {
 
   public static getLayerWithExposureLoggingDisabled(
     layerName: string,
-    options: GetLayerOptions,
+    options?: GetLayerOptions,
   ): Layer {
-    const { keepDeviceValue } = options;
     if (!this.isInitialized()) {
       return Layer._create(layerName, {}, '', {
         time: Date.now(),
@@ -248,7 +243,7 @@ export default class Statsig {
     }
     return Statsig.instance.getLayerWithExposureLoggingDisabled(
       layerName,
-      keepDeviceValue,
+      options?.keepDeviceValue,
     );
   }
 
@@ -321,12 +316,12 @@ export default class Statsig {
    * @param layerName - name of the layer to override
    * @param value - value to assign to the layer
    */
-   public static overrideLayer(layerName: string, value: object): void {
+  public static overrideLayer(layerName: string, value: object): void {
     if (!this.isInitialized()) {
       return;
     }
     Statsig.instance.overrideLayer(layerName, value);
-   }
+  }
 
   /**
    * @param name the gate override to remove
@@ -351,7 +346,7 @@ export default class Statsig {
   /**
    * @param name the config override to remove
    */
-   public static removeLayerOverrie(name?: string): void {
+  public static removeLayerOverrie(name?: string): void {
     if (!this.isInitialized()) {
       return;
     }

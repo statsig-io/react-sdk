@@ -13,7 +13,7 @@ import { GateResult, useGateImpl } from './StatsigHooks';
  */
 export default function (
   gateName: string,
-  options: CheckGateOptions,
+  options?: CheckGateOptions,
 ): GateResult {
   return useGateImpl(gateName, options, true /* exposure logging disabled */);
 }

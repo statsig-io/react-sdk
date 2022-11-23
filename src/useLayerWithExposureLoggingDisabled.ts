@@ -15,7 +15,7 @@ import { LayerResult, useLayerImpl } from './StatsigHooks';
  */
 export default function (
   layerName: string,
-  options: GetLayerOptions,
+  options?: GetLayerOptions,
 ): LayerResult {
   return useLayerImpl(layerName, options, true /* exposure logging disabled */);
 }

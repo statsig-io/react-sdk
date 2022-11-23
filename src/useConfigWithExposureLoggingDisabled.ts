@@ -13,7 +13,7 @@ import { ConfigResult, useConfigImpl } from './StatsigHooks';
  */
 export default function (
   configName: string,
-  options: GetConfigOptions,
+  options?: GetConfigOptions,
 ): ConfigResult {
   return useConfigImpl(
     configName,

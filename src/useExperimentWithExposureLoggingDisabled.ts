@@ -15,7 +15,7 @@ import { ConfigResult, useExperimentImpl } from './StatsigHooks';
  */
 export default function (
   experimentName: string,
-  options: GetExperimentOptions,
+  options?: GetExperimentOptions,
 ): ConfigResult {
   return useExperimentImpl(
     experimentName,
