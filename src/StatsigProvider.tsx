@@ -128,7 +128,7 @@ export default function StatsigProvider({
 
       Statsig.updateUser(user).then(() => {
         resolver.current && resolver.current();
-        setUserVersion(userVersion + 1);
+        setUserVersion((version) => version + 1);
         if (unmount) {
           setInitialized(true);
         }
