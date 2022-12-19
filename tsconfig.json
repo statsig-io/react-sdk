@@ -6,7 +6,6 @@
     "strict": true,
     "outDir": "dist",
     "jsx": "react",
-    "sourceMap": false,
     "esModuleInterop": true,
     "declaration": true,
     "experimentalDecorators": true

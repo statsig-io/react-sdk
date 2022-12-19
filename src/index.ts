@@ -25,6 +25,7 @@ import useConfigWithExposureLoggingDisabled from './useConfigWithExposureLogging
 import useGateWithExposureLoggingDisabled from './useGateWithExposureLoggingDisabled';
 import useExperimentWithExposureLoggingDisabled from './useExperimentWithExposureLoggingDisabled';
 import useLayerWithExposureLoggingDisabled from './useLayerWithExposureLoggingDisabled';
+import useUpdateUser from './useUpdateUser';
 
 export {
   Statsig,
@@ -40,6 +41,7 @@ export {
   useGate,
   useGateWithExposureLoggingDisabled,
   useStatsigLogEffect,
+  useUpdateUser,
   DynamicConfig,
   staticImplements,
   StatsigStatic,

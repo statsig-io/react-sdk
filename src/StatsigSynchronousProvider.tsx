@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import StatsigContext from './StatsigContext';
+import StatsigContext, { UpdateUserFunc } from './StatsigContext';
 import { StatsigOptions } from './StatsigOptions';
 import { StatsigUser, _SDKPackageInfo } from 'statsig-js';
 import Statsig from './Statsig';
@@ -19,6 +19,12 @@ type Props = {
    * A Statsig User object.  Changing this will update the user and Gate values, causing a re-initialization
    */
   user: StatsigUser;
+
+  /**
+   * A function to keep your reference to a StatsigUser in-sync with Statsig's reference.
+   * This is required if you want to use the useUpdateUser hook.
+   */
+  setUser?: UpdateUserFunc;
 
   /**
    * The values to initialize the SDK with.  Required for this provider.  For non server side rendered use cases,
@@ -51,6 +57,7 @@ export default function StatsigSynchronousProvider({
   user,
   options,
   initializeValues,
+  setUser,
 }: Props): JSX.Element {
   const [userVersion, setUserVersion] = useState(0);
   const [initialized, setInitialized] = useState(true);
@@ -84,6 +91,7 @@ export default function StatsigSynchronousProvider({
         statsigPromise: null,
         userVersion: userVersion,
         initStarted: Statsig.initializeCalled(),
+        updateUser: setUser ?? (() => {}),
       }}
     >
       {children}
