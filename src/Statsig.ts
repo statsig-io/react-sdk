@@ -37,6 +37,13 @@ export type GetLayerOptions = {
   keepDeviceValue?: boolean;
 };
 
+declare global {
+  interface Window {
+    __STATSIG_SDK__: Statsig;
+    __STATSIG_RERENDER_OVERRIDE__: () => void;
+  }
+}
+
 @staticImplements<StatsigStatic>()
 export default class Statsig {
   private static instance: StatsigClient;

@@ -170,6 +170,12 @@ export default function StatsigProvider({
       setInitialized(true);
       resolver.current && resolver.current();
     });
+    if (typeof window !== "undefined") {
+      window.__STATSIG_SDK__ = Statsig;
+      window.__STATSIG_RERENDER_OVERRIDE__ = () => {
+          setUserVersion(userVersion + 1);
+      }
+    }
   }, [userMemo]);
 
   useEffect(() => {

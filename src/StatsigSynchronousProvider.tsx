@@ -74,6 +74,12 @@ export default function StatsigSynchronousProvider({
       // we dont want to modify state and trigger a rerender
       // and the SDK is already initialized/usable
       firstUpdate.current = false;
+      if (typeof window !== "undefined") {
+        window.__STATSIG_SDK__ = Statsig;
+        window.__STATSIG_RERENDER_OVERRIDE__ = () => {
+            setUserVersion(userVersion + 1);
+        }
+      }
       return;
     }
     // subsequent runs should update the user
@@ -82,6 +88,7 @@ export default function StatsigSynchronousProvider({
       setUserVersion(userVersion + 1);
       setInitialized(true);
     });
+
   }, [userMemo]);
 
   return (
