@@ -346,7 +346,7 @@ export default class Statsig {
   /**
    * @param name the config override to remove
    */
-  public static removeLayerOverrie(name?: string): void {
+  public static removeLayerOverride(name?: string): void {
     if (!this.isInitialized()) {
       return;
     }
