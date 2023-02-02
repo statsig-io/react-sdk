@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import StatsigContext, { UpdateUserFunc } from './StatsigContext';
-import { StatsigOptions } from './StatsigOptions';
 import { StatsigUser, _SDKPackageInfo } from 'statsig-js';
+
 import Statsig from './Statsig';
+import { StatsigOptions } from './StatsigOptions';
 
 /**
  * Properties required to initialize the Statsig React SDK
@@ -74,11 +75,11 @@ export default function StatsigSynchronousProvider({
       // we dont want to modify state and trigger a rerender
       // and the SDK is already initialized/usable
       firstUpdate.current = false;
-      if (typeof window !== "undefined") {
+      if (typeof window !== 'undefined') {
         window.__STATSIG_SDK__ = Statsig;
         window.__STATSIG_RERENDER_OVERRIDE__ = () => {
-            setUserVersion(userVersion + 1);
-        }
+          setUserVersion(userVersion + 1);
+        };
       }
       return;
     }
@@ -88,19 +89,19 @@ export default function StatsigSynchronousProvider({
       setUserVersion(userVersion + 1);
       setInitialized(true);
     });
-
   }, [userMemo]);
 
+  const contextValue = useMemo(() => {
+    return {
+      initialized: initialized,
+      statsigPromise: null,
+      userVersion: userVersion,
+      initStarted: Statsig.initializeCalled(),
+      updateUser: setUser ?? (() => {}),
+    };
+  }, [initialized, userVersion, Statsig.initializeCalled(), setUser]);
   return (
-    <StatsigContext.Provider
-      value={{
-        initialized: initialized,
-        statsigPromise: null,
-        userVersion: userVersion,
-        initStarted: Statsig.initializeCalled(),
-        updateUser: setUser ?? (() => {}),
-      }}
-    >
+    <StatsigContext.Provider value={contextValue}>
       {children}
     </StatsigContext.Provider>
   );
