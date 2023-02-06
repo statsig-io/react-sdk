@@ -1,18 +1,18 @@
-import React, { useRef, useEffect, useState, useMemo } from 'react';
-import StatsigContext, { UpdateUserFunc } from './StatsigContext';
-import { StatsigOptions } from './StatsigOptions';
-import { StatsigUser, _SDKPackageInfo } from 'statsig-js';
-import Statsig from './Statsig';
-
 import type {
-  NativeModules,
-  Platform,
+  AsyncStorage,
   DeviceInfo,
   ExpoConstants,
   ExpoDevice,
-  AsyncStorage,
+  NativeModules,
+  Platform,
   UUID,
 } from 'statsig-js';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import StatsigContext, { UpdateUserFunc } from './StatsigContext';
+import { StatsigUser, _SDKPackageInfo } from 'statsig-js';
+
+import Statsig from './Statsig';
+import { StatsigOptions } from './StatsigOptions';
 
 /**
  * Properties required to initialize the Statsig React SDK
@@ -170,11 +170,11 @@ export default function StatsigProvider({
       setInitialized(true);
       resolver.current && resolver.current();
     });
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       window.__STATSIG_SDK__ = Statsig;
       window.__STATSIG_RERENDER_OVERRIDE__ = () => {
-          setUserVersion(userVersion + 1);
-      }
+        setUserVersion(userVersion + 1);
+      };
     }
   }, [userMemo]);
 
@@ -195,16 +195,24 @@ export default function StatsigProvider({
     child = initializingComponent;
   }
 
+  const contextValue = useMemo(
+    () => ({
+      initialized,
+      statsigPromise,
+      userVersion,
+      initStarted: Statsig.initializeCalled(),
+      updateUser: setUser ?? (() => {}),
+    }),
+    [
+      initialized,
+      statsigPromise,
+      userVersion,
+      Statsig.initializeCalled(),
+      setUser,
+    ],
+  );
   return (
-    <StatsigContext.Provider
-      value={{
-        initialized,
-        statsigPromise,
-        userVersion,
-        initStarted: Statsig.initializeCalled(),
-        updateUser: setUser ?? (() => {}),
-      }}
-    >
+    <StatsigContext.Provider value={contextValue}>
       {child}
     </StatsigContext.Provider>
   );
