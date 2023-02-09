@@ -1,6 +1,6 @@
 {
   "name": "statsig-react",
-  "version": "1.21.1",
+  "version": "1.22.0",
   "description": "An SDK for using Statsig Feature Management and Experimentation platform in React clients",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -27,7 +27,8 @@
   "homepage": "https://github.com/statsig-io/react-sdk#readme",
   "devDependencies": {
     "@testing-library/jest-dom": "^5.14.1",
-    "@testing-library/react": "^12.1.2",
+    "@testing-library/react": "^12.1.5",
+    "@testing-library/user-event": "^14.4.3",
     "@types/jest": "^27.0.2",
     "@types/node": "^16.7.9",
     "@types/react": "^17.0.9",

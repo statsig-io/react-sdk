@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import StatsigContext from './StatsigContext';
-import { StatsigOptions } from './StatsigOptions';
+import StatsigContext, { UpdateUserFunc } from './StatsigContext';
 import { StatsigUser, _SDKPackageInfo } from 'statsig-js';
+
 import Statsig from './Statsig';
+import { StatsigOptions } from './StatsigOptions';
 
 /**
  * Properties required to initialize the Statsig React SDK
@@ -21,6 +22,12 @@ type Props = {
   user: StatsigUser;
 
   /**
+   * A function to keep your reference to a StatsigUser in-sync with Statsig's reference.
+   * This is required if you want to use the useUpdateUser hook.
+   */
+  setUser?: UpdateUserFunc;
+
+  /**
    * The values to initialize the SDK with.  Required for this provider.  For non server side rendered use cases,
    * @see StatsigProvider.tsx
    */
@@ -31,6 +38,9 @@ type Props = {
    *
    */
   options?: StatsigOptions;
+
+
+  shutdownOnUnmount?: boolean;
 };
 
 /**
@@ -51,6 +61,8 @@ export default function StatsigSynchronousProvider({
   user,
   options,
   initializeValues,
+  setUser,
+  shutdownOnUnmount,
 }: Props): JSX.Element {
   const [userVersion, setUserVersion] = useState(0);
   const [initialized, setInitialized] = useState(true);
@@ -67,6 +79,13 @@ export default function StatsigSynchronousProvider({
       // we dont want to modify state and trigger a rerender
       // and the SDK is already initialized/usable
       firstUpdate.current = false;
+
+      if (typeof window !== 'undefined') {
+        window.__STATSIG_SDK__ = Statsig;
+        window.__STATSIG_RERENDER_OVERRIDE__ = () => {
+          setUserVersion(userVersion + 1);
+        };
+      }
       return;
     }
     // subsequent runs should update the user
@@ -77,15 +96,28 @@ export default function StatsigSynchronousProvider({
     });
   }, [userMemo]);
 
+  useEffect(() => {
+    Statsig.setReactContextUpdater(() => setUserVersion((version) => version + 1));
+    return () => {
+      if (shutdownOnUnmount) {
+        Statsig.shutdown();
+      }
+      Statsig.setReactContextUpdater(null)
+    };
+  }, []);
+
+
+  const contextValue = useMemo(() => {
+    return {
+      initialized: initialized,
+      statsigPromise: null,
+      userVersion: userVersion,
+      initStarted: Statsig.initializeCalled(),
+      updateUser: setUser ?? (() => {}),
+    };
+  }, [initialized, userVersion, Statsig.initializeCalled(), setUser]);
   return (
-    <StatsigContext.Provider
-      value={{
-        initialized: initialized,
-        statsigPromise: null,
-        userVersion: userVersion,
-        initStarted: Statsig.initializeCalled(),
-      }}
-    >
+    <StatsigContext.Provider value={contextValue}>
       {children}
     </StatsigContext.Provider>
   );

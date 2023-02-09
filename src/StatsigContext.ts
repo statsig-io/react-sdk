@@ -1,11 +1,14 @@
 import React from 'react';
-import { IStatsig, StatsigClient } from 'statsig-js';
+import { StatsigUser } from 'statsig-js';
+
+export type UpdateUserFunc = React.Dispatch<React.SetStateAction<StatsigUser>>;
 
 export interface TStatsigContext {
   initialized: boolean;
   statsigPromise: React.MutableRefObject<Promise<void>> | null;
   userVersion: number;
   initStarted: boolean;
+  updateUser: UpdateUserFunc;
 }
 
 /**
@@ -16,4 +19,5 @@ export default React.createContext<TStatsigContext>({
   statsigPromise: null,
   userVersion: 0,
   initStarted: false,
+  updateUser: () => {},
 });

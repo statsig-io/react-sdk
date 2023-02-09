@@ -1,18 +1,18 @@
-import React, { useRef, useEffect, useState, useMemo } from 'react';
-import StatsigContext from './StatsigContext';
-import { StatsigOptions } from './StatsigOptions';
-import { StatsigUser, _SDKPackageInfo } from 'statsig-js';
-import Statsig from './Statsig';
-
 import type {
-  NativeModules,
-  Platform,
+  AsyncStorage,
   DeviceInfo,
   ExpoConstants,
   ExpoDevice,
-  AsyncStorage,
+  NativeModules,
+  Platform,
   UUID,
 } from 'statsig-js';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import StatsigContext, { UpdateUserFunc } from './StatsigContext';
+import { StatsigUser, _SDKPackageInfo } from 'statsig-js';
+
+import Statsig from './Statsig';
+import { StatsigOptions } from './StatsigOptions';
 
 /**
  * Properties required to initialize the Statsig React SDK
@@ -29,6 +29,12 @@ type Props = {
    * A Statsig User object.  Changing this will update the user and Gate values, causing a re-initialization
    */
   user: StatsigUser;
+
+  /**
+   * A function to keep your reference to a StatsigUser in-sync with Statsig's reference.
+   * This is required if you want to use the useUpdateUser hook.
+   */
+  setUser?: UpdateUserFunc;
 
   /**
    * Options for initializing the SDK, shared with the statsig-js SDK
@@ -94,6 +100,7 @@ export default function StatsigProvider({
   children,
   sdkKey,
   user,
+  setUser,
   options,
   waitForInitialization,
   initializingComponent,
@@ -104,6 +111,7 @@ export default function StatsigProvider({
   const [initialized, setInitialized] = useState(false);
   const resolver = useRef<(() => void) | null>(null);
   const [userVersion, setUserVersion] = useState(0);
+
   let statsigPromise = useRef<Promise<void>>(
     new Promise((resolve, _reject) => {
       resolver.current = resolve;
@@ -128,7 +136,7 @@ export default function StatsigProvider({
 
       Statsig.updateUser(user).then(() => {
         resolver.current && resolver.current();
-        setUserVersion(userVersion + 1);
+        setUserVersion((version) => version + 1);
         if (unmount) {
           setInitialized(true);
         }
@@ -162,13 +170,21 @@ export default function StatsigProvider({
       setInitialized(true);
       resolver.current && resolver.current();
     });
+    if (typeof window !== 'undefined') {
+      window.__STATSIG_SDK__ = Statsig;
+      window.__STATSIG_RERENDER_OVERRIDE__ = () => {
+        setUserVersion(userVersion + 1);
+      };
+    }
   }, [userMemo]);
 
   useEffect(() => {
+    Statsig.setReactContextUpdater(() => setUserVersion((version) => version + 1));
     return () => {
       if (shutdownOnUnmount) {
         Statsig.shutdown();
       }
+      Statsig.setReactContextUpdater(null)
     };
   }, []);
 
@@ -181,15 +197,24 @@ export default function StatsigProvider({
     child = initializingComponent;
   }
 
+  const contextValue = useMemo(
+    () => ({
+      initialized,
+      statsigPromise,
+      userVersion,
+      initStarted: Statsig.initializeCalled(),
+      updateUser: setUser ?? (() => {}),
+    }),
+    [
+      initialized,
+      statsigPromise,
+      userVersion,
+      Statsig.initializeCalled(),
+      setUser,
+    ],
+  );
   return (
-    <StatsigContext.Provider
-      value={{
-        initialized,
-        statsigPromise,
-        userVersion,
-        initStarted: Statsig.initializeCalled(),
-      }}
-    >
+    <StatsigContext.Provider value={contextValue}>
       {child}
     </StatsigContext.Provider>
   );
