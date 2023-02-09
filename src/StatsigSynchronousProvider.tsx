@@ -38,6 +38,9 @@ type Props = {
    *
    */
   options?: StatsigOptions;
+
+
+  shutdownOnUnmount?: boolean;
 };
 
 /**
@@ -59,6 +62,7 @@ export default function StatsigSynchronousProvider({
   options,
   initializeValues,
   setUser,
+  shutdownOnUnmount,
 }: Props): JSX.Element {
   const [userVersion, setUserVersion] = useState(0);
   const [initialized, setInitialized] = useState(true);
@@ -75,6 +79,7 @@ export default function StatsigSynchronousProvider({
       // we dont want to modify state and trigger a rerender
       // and the SDK is already initialized/usable
       firstUpdate.current = false;
+
       if (typeof window !== 'undefined') {
         window.__STATSIG_SDK__ = Statsig;
         window.__STATSIG_RERENDER_OVERRIDE__ = () => {
@@ -90,6 +95,17 @@ export default function StatsigSynchronousProvider({
       setInitialized(true);
     });
   }, [userMemo]);
+
+  useEffect(() => {
+    Statsig.setReactContextUpdater(() => setUserVersion((version) => version + 1));
+    return () => {
+      if (shutdownOnUnmount) {
+        Statsig.shutdown();
+      }
+      Statsig.setReactContextUpdater(null)
+    };
+  }, []);
+
 
   const contextValue = useMemo(() => {
     return {

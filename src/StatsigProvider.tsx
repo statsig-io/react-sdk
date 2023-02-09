@@ -179,10 +179,12 @@ export default function StatsigProvider({
   }, [userMemo]);
 
   useEffect(() => {
+    Statsig.setReactContextUpdater(() => setUserVersion((version) => version + 1));
     return () => {
       if (shutdownOnUnmount) {
         Statsig.shutdown();
       }
+      Statsig.setReactContextUpdater(null)
     };
   }, []);
 

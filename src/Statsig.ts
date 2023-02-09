@@ -23,6 +23,13 @@ import type {
 } from 'statsig-js';
 import { staticImplements, StatsigStatic } from './StatsigStatic';
 
+declare global {
+  interface Window {
+    __STATSIG_SDK__: Statsig;
+    __STATSIG_RERENDER_OVERRIDE__: () => void;
+  }
+}
+
 export type CheckGateOptions = {
   ignoreOverrides?: boolean;
 };
@@ -37,12 +44,7 @@ export type GetLayerOptions = {
   keepDeviceValue?: boolean;
 };
 
-declare global {
-  interface Window {
-    __STATSIG_SDK__: Statsig;
-    __STATSIG_RERENDER_OVERRIDE__: () => void;
-  }
-}
+export type StatsigReactContextUpdater = () => void;
 
 @staticImplements<StatsigStatic>()
 export default class Statsig {
@@ -58,6 +60,7 @@ export default class Statsig {
   private static expoConstants?: ExpoConstants;
   private static expoDevice?: ExpoDevice;
   private static uuid?: UUID;
+  private static reactContextUpdater: StatsigReactContextUpdater | null = null;
 
   public static async initialize(
     sdkKey: string,
@@ -303,7 +306,11 @@ export default class Statsig {
     if (!this.isInitialized()) {
       return;
     }
+    if (Statsig.getAllOverrides()["gates"]?.[gateName] === value) {
+      return;
+    }
     Statsig.instance.overrideGate(gateName, value);
+    Statsig.updateContext();
   }
 
   /**
@@ -315,7 +322,11 @@ export default class Statsig {
     if (!this.isInitialized()) {
       return;
     }
+    if (Statsig.getAllOverrides()["configs"]?.[configName] === value) {
+      return;
+    }
     Statsig.instance.overrideConfig(configName, value);
+    Statsig.updateContext();
   }
 
   /**
@@ -327,7 +338,11 @@ export default class Statsig {
     if (!this.isInitialized()) {
       return;
     }
+    if (Statsig.getAllOverrides()["layers"]?.[layerName] === value) {
+      return;
+    }
     Statsig.instance.overrideLayer(layerName, value);
+    Statsig.updateContext();
   }
 
   /**
@@ -338,6 +353,7 @@ export default class Statsig {
       return;
     }
     Statsig.instance.removeGateOverride(name);
+    Statsig.updateContext();
   }
 
   /**
@@ -348,6 +364,7 @@ export default class Statsig {
       return;
     }
     Statsig.instance.removeConfigOverride(name);
+    Statsig.updateContext();
   }
 
   /**
@@ -358,6 +375,7 @@ export default class Statsig {
       return;
     }
     Statsig.instance.removeLayerOverride(name);
+    Statsig.updateContext();
   }
 
   /**
@@ -450,6 +468,10 @@ export default class Statsig {
     }
   }
 
+  public static setReactContextUpdater(fn: (() => void) | null) {
+    Statsig.reactContextUpdater = fn;
+  }
+
   private static isInitialized(): boolean {
     if (Statsig.instance) {
       return true;
@@ -473,6 +495,12 @@ export default class Statsig {
       );
     }
     Statsig.instance = new StatsigClient(sdkKey, user, options);
+  }
+
+  private static updateContext() {
+    if (Statsig.reactContextUpdater != null) {
+      Statsig.reactContextUpdater();
+    }
   }
 
   private static canThrow() {
