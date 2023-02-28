@@ -8,7 +8,8 @@
     "jsx": "react",
     "esModuleInterop": true,
     "declaration": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "resolveJsonModule": true
   },
   "include": ["src/**/*"],
   "exclude": ["dist", "node_modules", "src/__tests__/*", "tsconfig.json"]
