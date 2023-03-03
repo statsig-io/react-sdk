@@ -8,6 +8,7 @@ import userEvent from '@testing-library/user-event';
 import React, { useState } from 'react';
 import StatsigJS, { StatsigUser } from 'statsig-js';
 import StatsigProvider from '../StatsigProvider';
+import Statsig from '../Statsig';
 import useUpdateUser from '../useUpdateUser';
 
 const TID_USER_VALUE = 'statsig-user-object';
@@ -16,6 +17,8 @@ const TID_UPDATE_USER_HOOK = 'update-via-hook';
 const TID_PARTIAL_UPDATE_USER_HOOK = 'partial-update-via-hook';
 
 StatsigJS.encodeIntializeCall = false;
+
+let initCallbacks = 0;
 
 function UpdateUserHookTestComponent(props: { userID: string }) {
   const updateUser = useUpdateUser();
@@ -59,6 +62,9 @@ function UserTestComponent(props: {
       waitForInitialization={true}
       options={{
         disableDiagnosticsLogging: true,
+        initCompletionCallback: () => {
+          initCallbacks++;
+        }
       }}
     >
       <div data-testid={TID_USER_VALUE}>{user.userID}</div>
@@ -100,6 +106,10 @@ describe('StatsigProvider', () => {
 
   beforeEach(() => {
     requestsMade = [];
+    initCallbacks = 0;
+
+    // @ts-ignore
+    Statsig.instance = null;
   });
 
   it('renders children', async () => {
@@ -107,6 +117,7 @@ describe('StatsigProvider', () => {
 
     const child = await waitFor(() => screen.getByTestId(TID_USER_VALUE));
     expect(child).toHaveTextContent('a-user');
+    expect(initCallbacks).toEqual(1);
 
     await VerifyInitializeForUserWithRender('a-user');
   });
@@ -116,12 +127,13 @@ describe('StatsigProvider', () => {
     await waitFor(
       () => screen.getByTestId(TID_USER_VALUE) && requestsMade.length === 1,
     );
-
+    expect(initCallbacks).toEqual(1);
     requestsMade = [];
 
     await userEvent.click(screen.getByTestId(TID_SET_USER_STATE));
 
     await VerifyInitializeForUserWithRender('a-user-update-via-useState');
+    expect(initCallbacks).toEqual(1);
   });
 
   it('updates the user via the useUpdateUser hook', async () => {
