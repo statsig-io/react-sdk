@@ -3,19 +3,25 @@
  */
 
 import '@testing-library/jest-dom';
-import { render, screen, waitFor } from '@testing-library/react';
+import { getByText, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React, { useState } from 'react';
 import StatsigJS, { StatsigUser } from 'statsig-js';
 import StatsigSynchronousProvider from '../StatsigSynchronousProvider';
+import { useGate, useConfig } from '../index';
 import Statsig from '../Statsig';
 import useUpdateUser from '../useUpdateUser';
-import * as TestData from './initialize_response.json';
+import * as TestBootstrapData from './initialize_response.json';
+import * as TestInitializeData from './other_initialize_response.json';
+import { generateKeyPair } from 'crypto';
 
 const TID_USER_VALUE = 'statsig-user-object';
 const TID_SET_USER_STATE = 'update-via-set-state';
 const TID_UPDATE_USER_HOOK = 'update-via-hook';
 const TID_PARTIAL_UPDATE_USER_HOOK = 'partial-update-via-hook';
+const TID_GATE_VALUE = 'gate-value';
+const TID_CONFIG_NAME = 'config-name';
+const TID_CONFIG_VAL = 'config-val';
 
 StatsigJS.encodeIntializeCall = false;
 let initTime = 0;
@@ -23,9 +29,20 @@ let initCallbacks = 0;
 
 function UpdateUserHookTestComponent(props: { userID: string }) {
   const updateUser = useUpdateUser();
+  const gate = useGate('on_for_usera_update');
+  const config = useConfig('usera_config').config;
 
   return (
     <>
+      <div data-testid={TID_GATE_VALUE}>
+        {gate.value ? "ON" : "OFF"}
+      </div>
+      <div data-testid={TID_CONFIG_VAL}>
+        {config.get("val", 4)}
+      </div>
+      <div data-testid={TID_CONFIG_NAME}>
+        {config.get("name", "default")}
+      </div>
       <button
         onClick={() =>
           updateUser((old) => {
@@ -57,7 +74,7 @@ function UserTestComponent(props: {
 
   return (
     <StatsigSynchronousProvider
-      sdkKey="client-sdk-key'"
+      sdkKey="client-sdk-key"
       user={user}
       setUser={props.excludeSetUserFunc === true ? undefined : setUser}
       options={{
@@ -67,7 +84,7 @@ function UserTestComponent(props: {
           initCallbacks++;
         }
       }}
-      initializeValues={TestData}
+      initializeValues={TestBootstrapData}
     >
       <div data-testid={TID_USER_VALUE}>{user.userID}</div>
 
@@ -103,7 +120,27 @@ describe('StatsigSynchronousProvider', () => {
   // @ts-ignore
   global.fetch = jest.fn((url, params) => {
     const body = String(params?.body ?? '{}');
-    requestsMade.push({ url, body: JSON.parse(body) });
+    const reqBody = JSON.parse(body);
+    if (String(url).includes('initialize')) {
+      requestsMade.push({ url, body: reqBody });
+      const user = reqBody.user;
+      if (user.userID === 'a-user-update-via-useState'
+        || user.userID === 'a-user-partial-update-via-useUpdateUser'
+        || user.userID === 'a-user-full-update-via-useUpdateUser') {
+          return Promise.resolve({
+            ok: true,
+            status: 200,
+            text: () => JSON.stringify(TestInitializeData),
+            json: () => TestInitializeData
+          });
+      }
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        text: () => JSON.stringify({}),
+        json: () => {}
+      })
+    }
   });
 
   beforeEach(() => {
@@ -118,10 +155,13 @@ describe('StatsigSynchronousProvider', () => {
   });
 
   it('renders children', async () => {
-    expect.assertions(5);
+    expect.assertions(6);
     
     const child = await waitFor(() => screen.getByTestId(TID_USER_VALUE));
     expect(child).toHaveTextContent('a-user');
+
+    const gate = screen.getByTestId(TID_GATE_VALUE);
+    expect(gate).toHaveTextContent("OFF");
 
     expect(initTime).toBeGreaterThan(0);
     expect(initTime).toBeLessThan(100);
@@ -137,16 +177,33 @@ describe('StatsigSynchronousProvider', () => {
     expect(initCallbacks).toEqual(1);
     requestsMade = [];
 
+    const gate = screen.getByTestId(TID_GATE_VALUE);
+    const configVal = screen.getByTestId(TID_CONFIG_VAL);
+    const configPos = screen.getByTestId(TID_CONFIG_NAME);
+    expect(gate).toHaveTextContent("OFF");
+    expect(configVal).toHaveTextContent("4");
+    expect(configPos).toHaveTextContent("default");
+
     await userEvent.click(screen.getByTestId(TID_SET_USER_STATE));
 
     await VerifyInitializeForUserWithRender('a-user-update-via-useState');
     expect(initCallbacks).toEqual(1);
+
+    expect(gate).toHaveTextContent("ON");
+    expect(configVal).toHaveTextContent("12");
+    expect(configPos).toHaveTextContent("jet");
   });
 
   it('updates the user via the useUpdateUser hook', async () => {
     await waitFor(
       () => screen.getByTestId(TID_USER_VALUE) && requestsMade.length === 1,
     );
+    const gate = screen.getByTestId(TID_GATE_VALUE);
+    const configVal = screen.getByTestId(TID_CONFIG_VAL);
+    const configPos = screen.getByTestId(TID_CONFIG_NAME);
+    expect(gate).toHaveTextContent("OFF");
+    expect(configVal).toHaveTextContent("4");
+    expect(configPos).toHaveTextContent("default");
 
     expect(requestsMade).toEqual([]);
 
@@ -155,6 +212,9 @@ describe('StatsigSynchronousProvider', () => {
     await VerifyInitializeForUserWithRender(
       'a-user-full-update-via-useUpdateUser',
     );
+    expect(gate).toHaveTextContent("ON");
+    expect(configVal).toHaveTextContent("12");
+    expect(configPos).toHaveTextContent("jet");
   });
 
   it('partially updates the user via the useUpdateUser hook', async () => {

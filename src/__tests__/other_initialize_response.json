@@ -1,0 +1,29 @@
+{
+  "feature_gates": {
+    "/LN8MHgzKOZEIa346faHl8+DlTPP9vjJ3L4ui180rK8=": {
+      "name": "/LN8MHgzKOZEIa346faHl8+DlTPP9vjJ3L4ui180rK8=",
+      "value": true,
+      "rule_id": "1rmr56mQfVqHI16tp17WJv"
+    }
+  },
+  "dynamic_configs": {
+    "igI8642yjTAv5YwSGtWBlES7WmsU7A8zE2CaKQSQ//o=": {
+      "name": "igI8642yjTAv5YwSGtWBlES7WmsU7A8zE2CaKQSQ//o=",
+      "value": {
+        "val": 12,
+        "name": "jet"
+      },
+      "rule_id": "2p1luEUe1HoqACRd0kO7Ox",
+      "group": "2p1luEUe1HoqACRd0kO7Ox",
+      "is_device_based": false
+    }
+  },
+  "layer_configs": {},
+  "sdkParams": {},
+  "has_updates": true,
+  "generator": "scrapi-nest",
+  "time": 1679349062969,
+  "evaluated_keys": {
+    "userID": "usera-update"
+  }
+}

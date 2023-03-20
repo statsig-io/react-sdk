@@ -71,7 +71,9 @@ export default function StatsigSynchronousProvider({
     return user;
   }, [JSON.stringify(user)]);
 
-  Statsig.bootstrap(sdkKey, initializeValues, userMemo, options);
+  if (firstUpdate.current) {
+    Statsig.bootstrap(sdkKey, initializeValues, userMemo, options);
+  }
 
   useEffect(() => {
     if (firstUpdate.current) {
