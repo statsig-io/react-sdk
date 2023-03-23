@@ -22,4 +22,5 @@ export type StatsigOptions = {
   prefetchUsers?: StatsigUser[];
   initCompletionCallback?: InitCompletionCallback | null;
   disableDiagnosticsLogging?: boolean;
+  disableLocalStorage?: boolean;
 };
