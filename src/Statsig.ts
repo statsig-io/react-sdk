@@ -96,8 +96,11 @@ export default class Statsig {
     if (Statsig.instance != null) {
       return;
     }
+    if (options == null) {
+      options = {};
+    }
+    options!!.initializeValues = initializeValues;
     Statsig.instance = new StatsigClient(sdkKey, user, options);
-    Statsig.instance.setInitializeValues(initializeValues);
   }
 
   public static async prefetchUsers(users: StatsigUser[]): Promise<void> {

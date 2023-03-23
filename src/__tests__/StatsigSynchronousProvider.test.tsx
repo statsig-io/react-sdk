@@ -13,7 +13,6 @@ import Statsig from '../Statsig';
 import useUpdateUser from '../useUpdateUser';
 import * as TestBootstrapData from './initialize_response.json';
 import * as TestInitializeData from './other_initialize_response.json';
-import { generateKeyPair } from 'crypto';
 
 const TID_USER_VALUE = 'statsig-user-object';
 const TID_SET_USER_STATE = 'update-via-set-state';
@@ -172,8 +171,9 @@ describe('StatsigSynchronousProvider', () => {
 
   it('calls updateUser when user object changes', async () => {
     await waitFor(
-      () => screen.getByTestId(TID_USER_VALUE) && requestsMade.length === 1,
+      () => screen.getByTestId(TID_USER_VALUE),
     );
+    expect(requestsMade.length).toEqual(0);
     expect(initCallbacks).toEqual(1);
     requestsMade = [];
 
@@ -196,7 +196,7 @@ describe('StatsigSynchronousProvider', () => {
 
   it('updates the user via the useUpdateUser hook', async () => {
     await waitFor(
-      () => screen.getByTestId(TID_USER_VALUE) && requestsMade.length === 1,
+      () => screen.getByTestId(TID_USER_VALUE),
     );
     const gate = screen.getByTestId(TID_GATE_VALUE);
     const configVal = screen.getByTestId(TID_CONFIG_VAL);
@@ -219,7 +219,7 @@ describe('StatsigSynchronousProvider', () => {
 
   it('partially updates the user via the useUpdateUser hook', async () => {
     await waitFor(
-      () => screen.getByTestId(TID_USER_VALUE) && requestsMade.length === 1,
+      () => screen.getByTestId(TID_USER_VALUE),
     );
 
     expect(requestsMade).toEqual([]);
