@@ -70,10 +70,10 @@ export default function StatsigSynchronousProvider({
   const userMemo = useMemo(() => {
     return user;
   }, [JSON.stringify(user)]);
-
-  if (firstUpdate.current) {
+  const initializeValuesMemo = useMemo(() => {
     Statsig.bootstrap(sdkKey, initializeValues, userMemo, options);
-  }
+    return initializeValues;
+  }, [JSON.stringify(initializeValues)]);
 
   useEffect(() => {
     if (firstUpdate.current) {

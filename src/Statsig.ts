@@ -94,6 +94,7 @@ export default class Statsig {
     options?: StatsigOptions | null,
   ): void {
     if (Statsig.instance != null) {
+      Statsig.setInitializeValues(initializeValues);
       return;
     }
     if (options == null) {
