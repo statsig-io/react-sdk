@@ -23,4 +23,5 @@ export type StatsigOptions = {
   initCompletionCallback?: InitCompletionCallback | null;
   disableDiagnosticsLogging?: boolean;
   disableLocalStorage?: boolean;
+  disableLocalOverrides?: boolean;
 };
