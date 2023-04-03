@@ -14,6 +14,7 @@ import useUpdateUser from '../useUpdateUser';
 import * as TestBootstrapData from './initialize_response.json';
 import * as TestInitializeData from './other_initialize_response.json';
 import * as UpdatedInitializeData from './updated_initialize_values.json';
+import LocalStorageMock from './LocalStorageMock';
 
 const TID_USER_VALUE = 'statsig-user-object';
 const TID_SET_USER_STATE = 'update-via-set-state';
@@ -84,7 +85,8 @@ function UserTestComponent(props: {
         initCompletionCallback: (duration, success, message) => {
           initTime = duration;
           initCallbacks++;
-        }
+        },
+        overrideStableID: "override-stable-id",
       }}
       initializeValues={initializeValues}
     >
@@ -112,6 +114,9 @@ describe('StatsigSynchronousProvider', () => {
     url: RequestInfo | URL;
     body: Record<string, unknown>;
   }[] = [];
+
+  let localStorage = new LocalStorageMock();
+  
 
   async function VerifyInitializeForUserWithRender(userID: string) {
     await waitFor(() => screen.getByText(userID));
@@ -150,10 +155,19 @@ describe('StatsigSynchronousProvider', () => {
     }
   });
 
+  // @ts-ignore
+  var setTimeout = jest.spyOn(global, 'setTimeout');
+
   beforeEach(() => {
     requestsMade = [];
     initTime = 0;
     initCallbacks = 0;
+    localStorage = new LocalStorageMock();
+    setTimeout = jest.spyOn(global, 'setTimeout');
+    // @ts-ignore
+    Object.defineProperty(window, 'localStorage', {
+      value: localStorage,
+    });
 
     // @ts-ignore
     Statsig.instance = null;
@@ -162,7 +176,10 @@ describe('StatsigSynchronousProvider', () => {
   });
 
   it('renders children', async () => {
-    expect.assertions(6);
+    expect.assertions(9);
+
+    const spyOnSet = jest.spyOn(localStorage, 'setItem');
+    const spyOnGet = jest.spyOn(localStorage, 'getItem');
     
     const child = await waitFor(() => screen.getByTestId(TID_USER_VALUE));
     expect(child).toHaveTextContent('a-user');
@@ -173,16 +190,21 @@ describe('StatsigSynchronousProvider', () => {
     expect(initTime).toBeGreaterThan(0);
     expect(initTime).toBeLessThan(100);
     expect(initCallbacks).toEqual(1);
-
     expect(requestsMade).toEqual([]);
+    expect(spyOnSet).toHaveBeenCalledTimes(0);
+    expect(spyOnGet).toHaveBeenCalledTimes(0);
+    expect(setTimeout).toHaveBeenCalledWith(expect.anything(), 20);
   });
 
   it('calls updateUser when user object changes', async () => {
+    expect.assertions(10);
+
     await waitFor(
       () => screen.getByTestId(TID_USER_VALUE),
     );
     expect(requestsMade.length).toEqual(0);
     expect(initCallbacks).toEqual(1);
+    
     requestsMade = [];
 
     const gate = screen.getByTestId(TID_GATE_VALUE);
@@ -191,12 +213,11 @@ describe('StatsigSynchronousProvider', () => {
     expect(gate).toHaveTextContent("OFF");
     expect(configVal).toHaveTextContent("17");
     expect(configPos).toHaveTextContent("default");
-
+    
     await userEvent.click(screen.getByTestId(TID_SET_USER_STATE));
 
     await VerifyInitializeForUserWithRender('a-user-update-via-useState');
     expect(initCallbacks).toEqual(1);
-
     expect(gate).toHaveTextContent("ON");
     expect(configVal).toHaveTextContent("12");
     expect(configPos).toHaveTextContent("jet");
