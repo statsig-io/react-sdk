@@ -64,7 +64,7 @@ function UserTestComponent(props: {
         disableDiagnosticsLogging: true,
         initCompletionCallback: () => {
           initCallbacks++;
-        }
+        },
       }}
     >
       <div data-testid={TID_USER_VALUE}>{user.userID}</div>
@@ -102,6 +102,10 @@ describe('StatsigProvider', () => {
   global.fetch = jest.fn((url, params) => {
     const body = String(params?.body ?? '{}');
     requestsMade.push({ url, body: JSON.parse(body) });
+    return Promise.resolve({
+      ok: true,
+      text: () => Promise.resolve('{}'),
+    });
   });
 
   beforeEach(() => {

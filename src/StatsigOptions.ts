@@ -1,5 +1,6 @@
 import {
   InitCompletionCallback,
+  UpdateUserCompletionCallback,
   StatsigEnvironment,
   StatsigUser,
 } from 'statsig-js';
@@ -21,6 +22,7 @@ export type StatsigOptions = {
   eventLoggingApi?: string;
   prefetchUsers?: StatsigUser[];
   initCompletionCallback?: InitCompletionCallback | null;
+  updateUserCompletionCallback?: UpdateUserCompletionCallback | null;
   disableDiagnosticsLogging?: boolean;
   disableLocalStorage?: boolean;
   disableLocalOverrides?: boolean;
