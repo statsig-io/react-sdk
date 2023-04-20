@@ -14,6 +14,8 @@ import { StatsigUser, _SDKPackageInfo } from 'statsig-js';
 import Statsig from './Statsig';
 import { StatsigOptions } from './StatsigOptions';
 
+import { version as SDKVersion } from './SDKVersion';
+
 /**
  * Properties required to initialize the Statsig React SDK
  */
@@ -148,7 +150,7 @@ export default function StatsigProvider({
     Statsig.setSDKPackageInfo(
       _reactNativeDependencies?.SDKPackageInfo ?? {
         sdkType: 'react-client',
-        sdkVersion: require('../package.json')?.version ?? '',
+        sdkVersion: SDKVersion,
       },
     );
 

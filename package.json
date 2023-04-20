@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "prepare": "rm -rf dist/ && tsc",
+    "prepare": "rm -rf dist/ && genversion src/SDKVersion.ts --es6 && tsc",
     "test": "jest --verbose"
   },
   "repository": {
@@ -33,6 +33,7 @@
     "@types/node": "^16.7.9",
     "@types/react": "^17.0.9",
     "@types/react-dom": "^17.0.9",
+    "genversion": "^3.1.1",
     "jest": "^27.2.5",
     "react-dom": "^16.8.4 || ^17.0.0 || ^18.0.0",
     "ts-jest": "^27.0.5",

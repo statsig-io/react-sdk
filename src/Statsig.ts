@@ -23,6 +23,8 @@ import type {
 } from 'statsig-js';
 import { staticImplements, StatsigStatic } from './StatsigStatic';
 
+import { version as SDKVersion } from './SDKVersion';
+
 declare global {
   interface Window {
     __STATSIG_SDK__: Statsig;
@@ -102,6 +104,10 @@ export default class Statsig {
     }
     options!!.initializeValues = initializeValues;
     Statsig.instance = new StatsigClient(sdkKey, user, options);
+    Statsig.instance.setSDKPackageInfo({
+      sdkType: 'react-client',
+      sdkVersion: SDKVersion,
+    });
   }
 
   public static async prefetchUsers(users: StatsigUser[]): Promise<void> {
