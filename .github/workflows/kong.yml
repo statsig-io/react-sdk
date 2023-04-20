@@ -1,0 +1,50 @@
+name: KONG
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0/4 * * *'
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+env:
+  test_api_key: ${{ secrets.KONG_SERVER_SDK_KEY }}
+  test_client_key: ${{ secrets. KONG_CLIENT_SDK_KEY }}
+  repo_pat: ${{ secrets.KONG_FINE_GRAINED_REPO_PAT }}
+  FORCE_COLOR: true
+
+jobs:
+  KONG:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get KONG
+        run: git clone https://oauth2:$repo_pat@github.com/statsig-io/kong.git .
+
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16.x'
+
+      - name: Cached Scrapi Responses
+        uses: actions/cache@v3
+        with:
+          path: ~/tmp/kong/cache
+          key: scrapi-cache-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Setup React JS Test Website
+        run: |
+          cd bridges/react-js-server/react-js-web
+          npm install
+          npm run build
+
+      - name: Setup React JS Bridging Server
+        run: |
+          cd bridges/react-js-server
+          npm install
+
+      - name: Run Tests
+        run: |
+          npm install
+          npm run kong -- test react --wipe-cache -v -r
