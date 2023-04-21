@@ -185,7 +185,7 @@ describe('Prefetch Users', () => {
     expectInitializeRequestAt(1, null, 'prefetched_user');
   });
 
-  test.skip('Initializing with Network and Calling Prefetch with Timeout', async () => {
+  test('Initializing with Network and Calling Prefetch with Timeout', async () => {
     render(<NetworkInitCallingPrefetch timeout={500} />);
     await act(async () => {
       jest.advanceTimersByTime(1000);
@@ -207,7 +207,7 @@ describe('Prefetch Users', () => {
     expectOnlyOneInitializeRequest(null, 'prefetched_user');
   });
 
-  test.skip('Initializing with Bootstrap and Calling Prefetch with Timeout', async () => {
+  test('Initializing with Bootstrap and Calling Prefetch with Timeout', async () => {
     render(<BootstrapInitCallingPrefetch timeout={500} />);
     await act(async () => {
       jest.advanceTimersByTime(1000);
@@ -228,7 +228,7 @@ describe('Prefetch Users', () => {
     expectOnlyOneInitializeRequest(null, 'options_prefetched_user');
   });
 
-  test.skip('Initializing with Bootstrap and Providing Prefetch Option with Timeout', async () => {
+  test('Initializing with Bootstrap and Providing Prefetch Option with Timeout', async () => {
     render(<BootstrapInitWithPrefetchOption timeout={500} />);
 
     await act(async () => {

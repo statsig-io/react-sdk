@@ -1,6 +1,6 @@
 {
   "name": "statsig-react",
-  "version": "1.27.1",
+  "version": "1.27.2",
   "description": "An SDK for using Statsig Feature Management and Experimentation platform in React clients",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -40,7 +40,7 @@
     "typescript": "^4.3.2"
   },
   "dependencies": {
-    "statsig-js": "^4.33.2"
+    "statsig-js": "^4.33.5"
   },
   "peerDependencies": {
     "react": "^16.6.3 || ^17.0.0 || ^18.0.0"
