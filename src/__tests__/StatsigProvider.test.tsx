@@ -81,7 +81,7 @@ function UserTestComponent(props: {
   );
 }
 
-describe('StatsigProvider', () => {
+describe('Singleton then StatsigProvider', () => {
   let requestsMade: {
     url: RequestInfo | URL;
     body: Record<string, unknown>;
