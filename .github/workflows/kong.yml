@@ -17,34 +17,20 @@ env:
 
 jobs:
   KONG:
-    timeout-minutes: 10
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
       - name: Get KONG
         run: git clone https://oauth2:$repo_pat@github.com/statsig-io/kong.git .
 
-      - uses: actions/setup-node@v1
-        with:
-          node-version: '16.x'
+      - name: Install Deps
+        run: npm install
 
-      - name: Cached Scrapi Responses
-        uses: actions/cache@v3
-        with:
-          path: ~/tmp/kong/cache
-          key: scrapi-cache-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Setup react SDK
+        run: npm run kong -- setup react -v
 
-      - name: Setup React JS Test Website
-        run: |
-          cd bridges/react-js-server/react-js-web
-          npm install
-          npm run build
-
-      - name: Setup React JS Bridging Server
-        run: |
-          cd bridges/react-js-server
-          npm install
+      - name: Build Bridge Image
+        run: npm run kong -- build react -v
 
       - name: Run Tests
-        run: |
-          npm install
-          npm run kong -- test react --wipe-cache -v -r
+        run: npm run kong -- test react -v -r
