@@ -1,4 +1,4 @@
-import {
+import StatsigJS, {
   DynamicConfig,
   StatsigClient,
   StatsigOverrides,
@@ -28,6 +28,7 @@ import { version as SDKVersion } from './SDKVersion';
 declare global {
   interface Window {
     __STATSIG_SDK__: Statsig;
+    __STATSIG_JS_SDK__: StatsigJS;
     __STATSIG_RERENDER_OVERRIDE__: () => void;
   }
 }
@@ -315,7 +316,7 @@ export default class Statsig {
     if (!this.isInitialized()) {
       return;
     }
-    if (Statsig.getAllOverrides()["gates"]?.[gateName] === value) {
+    if (Statsig.getAllOverrides()['gates']?.[gateName] === value) {
       return;
     }
     Statsig.instance.overrideGate(gateName, value);
@@ -331,7 +332,7 @@ export default class Statsig {
     if (!this.isInitialized()) {
       return;
     }
-    if (Statsig.getAllOverrides()["configs"]?.[configName] === value) {
+    if (Statsig.getAllOverrides()['configs']?.[configName] === value) {
       return;
     }
     Statsig.instance.overrideConfig(configName, value);
@@ -347,7 +348,7 @@ export default class Statsig {
     if (!this.isInitialized()) {
       return;
     }
-    if (Statsig.getAllOverrides()["layers"]?.[layerName] === value) {
+    if (Statsig.getAllOverrides()['layers']?.[layerName] === value) {
       return;
     }
     Statsig.instance.overrideLayer(layerName, value);

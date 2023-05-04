@@ -2,11 +2,11 @@
  * @jest-environment jsdom
  */
 
-import React, { useEffect, useCallback, useState, useMemo } from 'react';
 import { render } from '@testing-library/react';
-import { StatsigProvider, useGate, StatsigUser } from '..';
+import React, { useCallback, useEffect, useState } from 'react';
 import { act } from 'react-dom/test-utils';
 import { StatsigClient } from 'statsig-js';
+import { StatsigProvider, useGate } from '..';
 
 describe('Tests the StatsigProvider with an updated user', () => {
   const mGetRandomValues = jest.fn().mockReturnValueOnce(new Uint32Array(16));

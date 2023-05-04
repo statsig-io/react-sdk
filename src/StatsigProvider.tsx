@@ -9,7 +9,7 @@ import type {
 } from 'statsig-js';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import StatsigContext, { UpdateUserFunc } from './StatsigContext';
-import { StatsigUser, _SDKPackageInfo } from 'statsig-js';
+import StatsigJS, { StatsigUser, _SDKPackageInfo } from 'statsig-js';
 
 import Statsig from './Statsig';
 import { StatsigOptions } from './StatsigOptions';
@@ -174,6 +174,7 @@ export default function StatsigProvider({
     });
     if (typeof window !== 'undefined') {
       window.__STATSIG_SDK__ = Statsig;
+      window.__STATSIG_JS_SDK__ = StatsigJS;
       window.__STATSIG_RERENDER_OVERRIDE__ = () => {
         setUserVersion(userVersion + 1);
       };
@@ -181,12 +182,14 @@ export default function StatsigProvider({
   }, [userMemo]);
 
   useEffect(() => {
-    Statsig.setReactContextUpdater(() => setUserVersion((version) => version + 1));
+    Statsig.setReactContextUpdater(() =>
+      setUserVersion((version) => version + 1),
+    );
     return () => {
       if (shutdownOnUnmount) {
         Statsig.shutdown();
       }
-      Statsig.setReactContextUpdater(null)
+      Statsig.setReactContextUpdater(null);
     };
   }, []);
 
