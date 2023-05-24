@@ -43,7 +43,6 @@ describe('Tests the StatsigProvider with mocked network responses', () => {
               reason: EvaluationReason.Network,
               time: 1,
             });
-          // @ts-ignore
           resolve();
         }, 2000);
       });

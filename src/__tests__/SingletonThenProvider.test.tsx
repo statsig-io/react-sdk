@@ -23,7 +23,7 @@ function UserTestComponent(props: {
   const [user, setUser] = useState<StatsigUser>({ userID: props.userID });
   const [initialized, setInitialized] = useState(false);
   useEffect(() => {
-    Statsig.initialize("client-sdk-key", user, {
+    Statsig.initialize('client-sdk-key', user, {
       disableDiagnosticsLogging: true,
       initCompletionCallback: () => {
         initCallbacks++;
@@ -37,7 +37,7 @@ function UserTestComponent(props: {
   }, []);
 
   if (!initialized) {
-    return <div>Initialize Singleton</div>
+    return <div>Initialize Singleton</div>;
   }
 
   return (
@@ -54,7 +54,6 @@ function UserTestComponent(props: {
       }}
     >
       <div data-testid={TID_USER_VALUE}>{user.userID}</div>
-
     </StatsigProvider>
   );
 }
@@ -65,8 +64,7 @@ describe('StatsigProvider', () => {
     body: Record<string, unknown>;
   }[] = [];
 
-  // @ts-ignore
-  global.fetch = jest.fn((url, params) => {
+  (global as any).fetch = jest.fn((url, params) => {
     const body = String(params?.body ?? '{}');
     requestsMade.push({ url, body: JSON.parse(body) });
     return Promise.resolve({
@@ -80,12 +78,11 @@ describe('StatsigProvider', () => {
     initCallbacks = 0;
     updateUserCallbacks = 0;
 
-    // @ts-ignore
-    Statsig.instance = null;
+    (Statsig as any).instance = null;
   });
 
   it('renders children', async () => {
-    const userID = "a-user";
+    const userID = 'a-user';
     const updateUserSpy = jest.spyOn(StatsigClient.prototype, 'updateUser');
     render(<UserTestComponent userID={userID} />);
 

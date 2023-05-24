@@ -46,7 +46,7 @@ describe('Tests the StatsigProvider with an updated user', () => {
 
   jest
     .spyOn(StatsigClient.prototype, 'checkGate')
-    .mockImplementation((gate: string) => initialized && updatedUser);
+    .mockImplementation(() => initialized && updatedUser);
 
   const GateComponent = function (props: {
     gateName: string;

@@ -1,6 +1,6 @@
-import { useContext, useEffect, useMemo } from 'react';
-import StatsigContext from './StatsigContext';
+import { useContext, useEffect } from 'react';
 import Statsig from './Statsig';
+import StatsigContext from './StatsigContext';
 
 export default function (
   eventName: string,

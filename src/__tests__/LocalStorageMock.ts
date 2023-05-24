@@ -1,8 +1,9 @@
 export default class LocalStorageMock {
-  constructor() {}
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  readonly asRecord: Record<string, string> = this as any;
 
   clear(): void {
-    for (var key in this) {
+    for (const key in this) {
       if (key in ['getItem', 'setItem', 'removeItem']) {
         continue;
       }
@@ -11,17 +12,14 @@ export default class LocalStorageMock {
   }
 
   getItem(key: string): string | null {
-    // @ts-ignore
-    return this[key] ? String(this[key]) : null;
+    return this.asRecord[key] ? String(this.asRecord[key]) : null;
   }
 
   setItem(key: string, value: string): void {
-    // @ts-ignore
-    this[key] = String(value);
+    this.asRecord[key] = String(value);
   }
 
   removeItem(key: string): void {
-    // @ts-ignore
-    delete this[key];
+    delete this.asRecord[key];
   }
 }

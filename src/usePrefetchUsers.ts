@@ -1,7 +1,7 @@
-import { useContext, useEffect, useMemo } from 'react';
-import StatsigContext from './StatsigContext';
-import Statsig from './Statsig';
+import { useContext, useEffect } from 'react';
 import { StatsigUser } from 'statsig-js';
+import Statsig from './Statsig';
+import StatsigContext from './StatsigContext';
 
 export default function (users: StatsigUser[]): void {
   const { initStarted } = useContext(StatsigContext);
@@ -10,6 +10,8 @@ export default function (users: StatsigUser[]): void {
     if (!initStarted || users.length == 0) {
       return;
     }
-    Statsig.prefetchUsers(users);
+    Statsig.prefetchUsers(users).catch(() => {
+      // noop
+    });
   }, [initStarted, users]);
 }

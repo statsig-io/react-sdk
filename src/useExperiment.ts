@@ -10,7 +10,7 @@ import { ConfigResult, useExperimentImpl } from './StatsigHooks';
  */
 export default function (
   experimentName: string,
-  keepDeviceValue: boolean = false,
+  keepDeviceValue = false,
   ignoreOverrides?: boolean,
 ): ConfigResult {
   return useExperimentImpl(experimentName, {

@@ -9,7 +9,7 @@ import { LayerResult, useLayerImpl } from './StatsigHooks';
  */
 export default function (
   layerName: string,
-  keepDeviceValue: boolean = false,
+  keepDeviceValue = false,
 ): LayerResult {
   return useLayerImpl(layerName, {
     keepDeviceValue,

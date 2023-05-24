@@ -19,7 +19,7 @@ export type GateResult = {
 export function useGateImpl(
   gateName: string,
   options?: CheckGateOptions,
-  exposureLoggingDisabled: boolean = false,
+  exposureLoggingDisabled = false,
 ): GateResult {
   const { initialized, userVersion, initStarted } = useContext(StatsigContext);
 
@@ -56,7 +56,7 @@ export type ConfigResult = {
 export function useConfigImpl(
   configName: string,
   options?: GetConfigOptions,
-  exposureLoggingDisabled: boolean = false,
+  exposureLoggingDisabled = false,
 ): ConfigResult {
   const { initialized, initStarted, userVersion } = useContext(StatsigContext);
   const config = useMemo(
@@ -87,7 +87,7 @@ export function useConfigImpl(
 export function useExperimentImpl(
   experimentName: string,
   options?: GetExperimentOptions,
-  exposureLoggingDisabled: boolean = false,
+  exposureLoggingDisabled = false,
 ): ConfigResult {
   const { initialized, initStarted, userVersion } = useContext(StatsigContext);
   const config = useMemo(
@@ -133,7 +133,7 @@ export type LayerResult = {
 export function useLayerImpl(
   layerName: string,
   options?: GetLayerOptions,
-  exposureLoggingDisabled: boolean = false,
+  exposureLoggingDisabled = false,
 ): LayerResult {
   const { initialized, initStarted, userVersion } = useContext(StatsigContext);
   const layer = useMemo(

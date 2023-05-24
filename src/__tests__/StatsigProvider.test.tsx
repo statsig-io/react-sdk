@@ -98,8 +98,7 @@ describe('Singleton then StatsigProvider', () => {
     ]);
   }
 
-  // @ts-ignore
-  global.fetch = jest.fn((url, params) => {
+  (global as any).fetch = jest.fn((url, params) => {
     const body = String(params?.body ?? '{}');
     requestsMade.push({ url, body: JSON.parse(body) });
     return Promise.resolve({
@@ -112,8 +111,7 @@ describe('Singleton then StatsigProvider', () => {
     requestsMade = [];
     initCallbacks = 0;
 
-    // @ts-ignore
-    Statsig.instance = null;
+    (Statsig as any).instance = null;
   });
 
   it('renders children', async () => {

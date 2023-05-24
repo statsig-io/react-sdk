@@ -6,7 +6,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "prepare": "rm -rf dist/ && genversion src/SDKVersion.ts --es6 && tsc",
-    "test": "jest --verbose"
+    "test": "jest --verbose",
+    "lint": "eslint '*/**/*.{ts,tsx}' --fix --max-warnings 0 --cache --cache-strategy content && git status"
   },
   "repository": {
     "type": "git",
@@ -33,6 +34,9 @@
     "@types/node": "^16.7.9",
     "@types/react": "^17.0.9",
     "@types/react-dom": "^17.0.9",
+    "@typescript-eslint/eslint-plugin": "^5.59.7",
+    "@typescript-eslint/parser": "^5.59.7",
+    "eslint": "^8.41.0",
     "genversion": "^3.1.1",
     "jest": "^27.2.5",
     "react-dom": "^16.8.4 || ^17.0.0 || ^18.0.0",

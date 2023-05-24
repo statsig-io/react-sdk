@@ -77,7 +77,7 @@ function UserTestComponent(props: {
       setUser={props.excludeSetUserFunc === true ? undefined : setUser}
       options={{
         disableDiagnosticsLogging: true,
-        initCompletionCallback: (duration, success, message) => {
+        initCompletionCallback: (duration) => {
           initTime = duration;
           initCallbacks++;
         },
@@ -125,8 +125,7 @@ describe('StatsigSynchronousProvider', () => {
     ]);
   }
 
-  // @ts-ignore
-  global.fetch = jest.fn((url, params) => {
+  (global as any).fetch = jest.fn((url, params) => {
     const body = String(params?.body ?? '{}');
     const reqBody = JSON.parse(body);
     if (String(url).includes('initialize')) {
@@ -148,13 +147,11 @@ describe('StatsigSynchronousProvider', () => {
         ok: true,
         status: 200,
         text: () => JSON.stringify({}),
-        json: () => {},
       });
     }
   });
 
-  // @ts-ignore
-  var setTimeout = jest.spyOn(global, 'setTimeout');
+  let setTimeout = jest.spyOn(global, 'setTimeout');
 
   beforeEach(() => {
     requestsMade = [];
@@ -162,13 +159,11 @@ describe('StatsigSynchronousProvider', () => {
     initCallbacks = 0;
     localStorage = new LocalStorageMock();
     setTimeout = jest.spyOn(global, 'setTimeout');
-    // @ts-ignore
     Object.defineProperty(window, 'localStorage', {
       value: localStorage,
     });
 
-    // @ts-ignore
-    Statsig.instance = null;
+    (Statsig as any).instance = null;
 
     render(<UserTestComponent userID="a-user" />);
   });

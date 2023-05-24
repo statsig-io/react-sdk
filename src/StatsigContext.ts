@@ -19,5 +19,7 @@ export default React.createContext<TStatsigContext>({
   statsigPromise: null,
   userVersion: 0,
   initStarted: false,
-  updateUser: () => {},
+  updateUser: () => {
+    // noop
+  },
 });

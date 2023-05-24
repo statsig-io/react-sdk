@@ -106,7 +106,6 @@ const BootstrapInitCallingPrefetch = function ({
 
 describe('Prefetch Users', () => {
   let requests: { url: RequestInfo | URL; params?: RequestInit }[] = [];
-  let resolver: (result: any) => void;
 
   const expectInitializeRequestAt = (
     index: number,
@@ -139,10 +138,9 @@ describe('Prefetch Users', () => {
     expectInitializeRequestAt(0, userID, prefetchUserID);
   };
 
-  // @ts-ignore
-  global.fetch = jest.fn((url, params) => {
+  (global as any).fetch = jest.fn((url, params) => {
     requests.push({ url, params });
-    return new Promise(() => {});
+    return Promise.resolve();
   });
 
   beforeEach(() => {

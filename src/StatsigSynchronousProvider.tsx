@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import StatsigContext, { UpdateUserFunc } from './StatsigContext';
-import StatsigJS, { StatsigUser, _SDKPackageInfo } from 'statsig-js';
+import StatsigJS, { StatsigUser } from 'statsig-js';
 
 import Statsig from './Statsig';
 import { StatsigOptions } from './StatsigOptions';
@@ -69,7 +69,7 @@ export default function StatsigSynchronousProvider({
   const userMemo = useMemo(() => {
     return user;
   }, [JSON.stringify(user)]);
-  const initializeValuesMemo = useMemo(() => {
+  useMemo(() => {
     Statsig.bootstrap(sdkKey, initializeValues, userMemo, options);
     return initializeValues;
   }, [JSON.stringify(initializeValues)]);
@@ -116,7 +116,11 @@ export default function StatsigSynchronousProvider({
       statsigPromise: null,
       userVersion: userVersion,
       initStarted: Statsig.initializeCalled(),
-      updateUser: setUser ?? (() => {}),
+      updateUser:
+        setUser ??
+        (() => {
+          // noop
+        }),
     };
   }, [initialized, userVersion, Statsig.initializeCalled(), setUser]);
   return (

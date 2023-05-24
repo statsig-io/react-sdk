@@ -43,13 +43,10 @@ describe('Tests the StatsigProvider with mocked network responses', () => {
     .mockImplementation(() => initStarted);
   jest
     .spyOn(StatsigClient.prototype, 'checkGate')
-    .mockImplementation((gate: string) => {
-      return initialized;
-    });
+    .mockImplementation(() => initialized);
 
   beforeEach(() => {
-    // @ts-ignore
-    Statsig.instance = undefined;
+    (Statsig as any).instance = undefined;
   });
 
   test('Verify exceptions when calling methods before initializing', async () => {
@@ -66,11 +63,10 @@ describe('Tests the StatsigProvider with mocked network responses', () => {
   });
 
   test('Verify when process.env is undefined, it does not get referenced', async () => {
-    // @ts-ignore
-    process = {};
+    process = {} as any;
 
     expect(() => {
-      const res = Statsig.checkGate('any_gate_123');
+      Statsig.checkGate('any_gate_123');
     }).toThrowError('Call and wait for initialize() to finish first.');
 
     expect(() => {
@@ -82,8 +78,7 @@ describe('Tests the StatsigProvider with mocked network responses', () => {
   });
 
   test('Verify when process is undefined, it does not get referenced', async () => {
-    // @ts-ignore
-    process = undefined;
+    process = undefined as any;
 
     expect(() => {
       Statsig.checkGate('any_gate_1234');
@@ -119,8 +114,7 @@ describe('Tests the StatsigProvider with mocked network responses', () => {
   });
 
   test('Verify silent mode does not throw', async () => {
-    // @ts-ignore
-    process = { env: {} };
+    process = { env: {} } as any;
     process.env.REACT_APP_STATSIG_SDK_MODE = 'silent';
 
     expect(() => {

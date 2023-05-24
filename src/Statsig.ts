@@ -92,7 +92,7 @@ export default class Statsig {
 
   public static bootstrap(
     sdkKey: string,
-    initializeValues: Record<string, any>,
+    initializeValues: Record<string, unknown>,
     user?: StatsigUser | null,
     options?: StatsigOptions | null,
   ): void {
@@ -103,7 +103,7 @@ export default class Statsig {
     if (options == null) {
       options = {};
     }
-    options!!.initializeValues = initializeValues;
+    options.initializeValues = initializeValues;
     Statsig.instance = new StatsigClient(sdkKey, user, options);
     Statsig.instance.setSDKPackageInfo({
       sdkType: 'react-client',
@@ -119,7 +119,7 @@ export default class Statsig {
   }
 
   public static setInitializeValues(
-    initializeValues: Record<string, any>,
+    initializeValues: Record<string, unknown>,
   ): void {
     if (!this.isInitialized()) {
       return;
@@ -127,10 +127,7 @@ export default class Statsig {
     Statsig.instance.setInitializeValues(initializeValues);
   }
 
-  public static checkGate(
-    gateName: string,
-    ignoreOverrides: boolean = false,
-  ): boolean {
+  public static checkGate(gateName: string, ignoreOverrides = false): boolean {
     if (!this.isInitialized()) {
       return false;
     }
@@ -159,7 +156,7 @@ export default class Statsig {
 
   public static getConfig(
     configName: string,
-    ignoreOverrides: boolean = false,
+    ignoreOverrides = false,
   ): DynamicConfig {
     if (!this.isInitialized()) {
       return new DynamicConfig(configName, {}, '', {
@@ -195,8 +192,8 @@ export default class Statsig {
 
   public static getExperiment(
     experimentName: string,
-    keepDeviceValue: boolean = false,
-    ignoreOverrides: boolean = false,
+    keepDeviceValue = false,
+    ignoreOverrides = false,
   ): DynamicConfig {
     if (!this.isInitialized()) {
       return new DynamicConfig(experimentName, {}, '', {
@@ -238,10 +235,7 @@ export default class Statsig {
     Statsig.instance.logExperimentExposure(experimentName, keepDeviceValue);
   }
 
-  public static getLayer(
-    layerName: string,
-    keepDeviceValue: boolean = false,
-  ): Layer {
+  public static getLayer(layerName: string, keepDeviceValue = false): Layer {
     if (!this.isInitialized()) {
       return Layer._create(layerName, {}, '', {
         time: Date.now(),
@@ -270,7 +264,7 @@ export default class Statsig {
   public static manuallyLogLayerParameterExposure(
     layerName: string,
     parameterName: string,
-    keepDeviceValue: boolean = false,
+    keepDeviceValue = false,
   ): void {
     if (!this.isInitialized()) {
       return;

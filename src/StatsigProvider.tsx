@@ -1,4 +1,5 @@
 import type {
+  AppState,
   AsyncStorage,
   DeviceInfo,
   ExpoConstants,
@@ -69,7 +70,7 @@ type Props = {
   _reactNativeDependencies?: {
     SDKPackageInfo: _SDKPackageInfo;
     AsyncStorage: AsyncStorage | null;
-    AppState: any | null;
+    AppState: AppState | null;
     NativeModules: NativeModules | null;
     Platform: Platform | null;
     RNDevice: DeviceInfo | null;
@@ -114,8 +115,8 @@ export default function StatsigProvider({
   const resolver = useRef<(() => void) | null>(null);
   const [userVersion, setUserVersion] = useState(0);
 
-  let statsigPromise = useRef<Promise<void>>(
-    new Promise((resolve, _reject) => {
+  const statsigPromise = useRef<Promise<void>>(
+    new Promise((resolve) => {
       resolver.current = resolve;
     }),
   );
@@ -128,7 +129,7 @@ export default function StatsigProvider({
 
   useEffect(() => {
     if (Statsig.initializeCalled()) {
-      statsigPromise.current = new Promise((resolve, _reject) => {
+      statsigPromise.current = new Promise((resolve) => {
         resolver.current = resolve;
       });
       const unmount = mountKey === undefined || prevMountKey !== mountKey;
@@ -208,7 +209,11 @@ export default function StatsigProvider({
       statsigPromise,
       userVersion,
       initStarted: Statsig.initializeCalled(),
-      updateUser: setUser ?? (() => {}),
+      updateUser:
+        setUser ??
+        (() => {
+          // noop
+        }),
     }),
     [
       initialized,

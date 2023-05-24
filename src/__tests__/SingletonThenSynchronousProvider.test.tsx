@@ -34,15 +34,9 @@ function UpdateUserHookTestComponent(props: { userID: string }) {
 
   return (
     <>
-      <div data-testid={TID_GATE_VALUE}>
-        {gate.value ? "ON" : "OFF"}
-      </div>
-      <div data-testid={TID_CONFIG_VAL}>
-        {config.get("val", 17)}
-      </div>
-      <div data-testid={TID_CONFIG_NAME}>
-        {config.get("name", "default")}
-      </div>
+      <div data-testid={TID_GATE_VALUE}>{gate.value ? 'ON' : 'OFF'}</div>
+      <div data-testid={TID_CONFIG_VAL}>{config.get('val', 17)}</div>
+      <div data-testid={TID_CONFIG_NAME}>{config.get('name', 'default')}</div>
       <button
         onClick={() =>
           updateUser((old) => {
@@ -72,9 +66,10 @@ function UserTestComponent(props: {
 }) {
   const [user, setUser] = useState<StatsigUser>({ userID: props.userID });
   const [initialized, setInitialized] = useState(false);
-  const [initializeValues, setInitializeValues] = useState<Record<string, unknown>>(TestBootstrapData);
+  const [initializeValues] =
+    useState<Record<string, unknown>>(TestBootstrapData);
   useEffect(() => {
-    Statsig.initialize("client-sdk-key", user, {
+    Statsig.initialize('client-sdk-key', user, {
       disableDiagnosticsLogging: true,
       initCompletionCallback: () => {
         initCallbacks++;
@@ -85,7 +80,7 @@ function UserTestComponent(props: {
   }, []);
 
   if (!initialized) {
-    return <div>Initialize Singleton</div>
+    return <div>Initialize Singleton</div>;
   }
 
   return (
@@ -135,29 +130,28 @@ describe('Singleton then StatsigSynchronousProvider', () => {
     ]);
   }
 
-  // @ts-ignore
-  global.fetch = jest.fn((url, params) => {
+  (global as any).fetch = jest.fn((url, params) => {
     const body = String(params?.body ?? '{}');
     const reqBody = JSON.parse(body);
     if (String(url).includes('initialize')) {
       requestsMade.push({ url, body: reqBody });
       const user = reqBody.user;
-      if (user.userID === 'a-user-update-via-useState'
-        || user.userID === 'a-user-partial-update-via-useUpdateUser'
-        || user.userID === 'a-user-full-update-via-useUpdateUser') {
-          return Promise.resolve({
-            ok: true,
-            status: 200,
-            text: () => JSON.stringify(TestInitializeData),
-            json: () => TestInitializeData
-          });
+      if (
+        user.userID === 'a-user-update-via-useState' ||
+        user.userID === 'a-user-partial-update-via-useUpdateUser' ||
+        user.userID === 'a-user-full-update-via-useUpdateUser'
+      ) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          text: () => JSON.stringify(TestInitializeData),
+        });
       }
       return Promise.resolve({
         ok: true,
         status: 200,
         text: () => JSON.stringify({}),
-        json: () => {}
-      })
+      });
     }
   });
   beforeEach(() => {
@@ -165,8 +159,7 @@ describe('Singleton then StatsigSynchronousProvider', () => {
     initCallbacks = 0;
     updateUserCallbacks = 0;
 
-    // @ts-ignore
-    Statsig.instance = null;
+    (Statsig as any).instance = null;
   });
 
   it('renders children', async () => {
@@ -180,9 +173,9 @@ describe('Singleton then StatsigSynchronousProvider', () => {
     const gate = screen.getByTestId(TID_GATE_VALUE);
     const configVal = screen.getByTestId(TID_CONFIG_VAL);
     const configPos = screen.getByTestId(TID_CONFIG_NAME);
-    expect(gate).toHaveTextContent("OFF");
-    expect(configVal).toHaveTextContent("17");
-    expect(configPos).toHaveTextContent("default");
+    expect(gate).toHaveTextContent('OFF');
+    expect(configVal).toHaveTextContent('17');
+    expect(configPos).toHaveTextContent('default');
     expect(requestsMade).toEqual([]);
     expect(updateUserSpy).not.toHaveBeenCalled();
     expect(updateUserCallbacks).toEqual(0);
@@ -192,9 +185,9 @@ describe('Singleton then StatsigSynchronousProvider', () => {
     await VerifyInitializeForUserWithRender('a-user-update-via-useState');
     expect(initCallbacks).toEqual(1);
     expect(updateUserSpy).toHaveBeenCalled();
-    expect(gate).toHaveTextContent("ON");
-    expect(configVal).toHaveTextContent("12");
-    expect(configPos).toHaveTextContent("jet");
+    expect(gate).toHaveTextContent('ON');
+    expect(configVal).toHaveTextContent('12');
+    expect(configPos).toHaveTextContent('jet');
     expect(updateUserCallbacks).toEqual(0);
   });
 });
