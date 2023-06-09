@@ -1,0 +1,21 @@
+{
+  "feature_gates": {
+    "a_gate": {
+      "name": "a_gate",
+      "value": true,
+      "rule_id": "6X3qJgyfwA81IJ2dxI7lYp",
+      "secondary_exposures": []
+    }
+  },
+  "dynamic_configs": {},
+  "layer_configs": {},
+  "sdkParams": {},
+  "has_updates": true,
+  "generator": "scrapi-nest",
+  "time": 1686274483033,
+  "company_lcut": 1686274483033,
+  "evaluated_keys": {
+    "userID": "a-user"
+  },
+  "hash_used": "none"
+}

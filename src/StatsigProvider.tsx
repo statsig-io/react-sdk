@@ -45,7 +45,12 @@ type Props = {
   options?: StatsigOptions;
 
   /**
-   * Waits for the SDK to initialize with updated values before rendering child components
+   * Waits for the SDK to load any cached values before rendering child components
+   */
+  waitForCache?: boolean;
+
+  /**
+   * Waits for the SDK to initialize with updated values from the network before rendering child components
    */
   waitForInitialization?: boolean;
 
@@ -105,13 +110,16 @@ export default function StatsigProvider({
   user,
   setUser,
   options,
+  waitForCache,
   waitForInitialization,
   initializingComponent,
   mountKey,
   shutdownOnUnmount = false,
-  _reactNativeDependencies,
+  _reactNativeDependencies: rnDeps,
 }: Props): JSX.Element {
-  const [initialized, setInitialized] = useState(false);
+  const isReactNative = !!rnDeps;
+  const [isCacheLoaded, setCacheLoaded] = useState(false);
+  const [isInitialized, setInitialized] = useState(false);
   const resolver = useRef<(() => void) | null>(null);
   const [userVersion, setUserVersion] = useState(0);
 
@@ -148,31 +156,34 @@ export default function StatsigProvider({
       return;
     }
 
-    Statsig.setSDKPackageInfo(
-      _reactNativeDependencies?.SDKPackageInfo ?? {
-        sdkType: 'react-client',
-        sdkVersion: SDKVersion,
-      },
-    );
+    Statsig.setSDKPackageInfo({
+      sdkType: 'react-client',
+      sdkVersion: SDKVersion,
+    });
 
-    // rn
-    Statsig.setAppState(_reactNativeDependencies?.AppState ?? null);
-    Statsig.setAsyncStorage(_reactNativeDependencies?.AsyncStorage ?? null);
-    Statsig.setNativeModules(_reactNativeDependencies?.NativeModules ?? null);
-    Statsig.setPlatform(_reactNativeDependencies?.Platform ?? null);
-    Statsig.setRNDeviceInfo(_reactNativeDependencies?.RNDevice ?? null);
-    Statsig.setReactNativeUUID(
-      _reactNativeDependencies?.ReactNativeUUID ?? null,
-    );
+    if (isReactNative) {
+      Statsig.setSDKPackageInfo(rnDeps.SDKPackageInfo);
+      Statsig.setAppState(rnDeps.AppState);
+      Statsig.setAsyncStorage(rnDeps.AsyncStorage);
+      Statsig.setNativeModules(rnDeps.NativeModules);
+      Statsig.setPlatform(rnDeps.Platform);
+      Statsig.setRNDeviceInfo(rnDeps.RNDevice);
+      Statsig.setReactNativeUUID(rnDeps.ReactNativeUUID);
 
-    // expo
-    Statsig.setExpoConstants(_reactNativeDependencies?.Constants ?? null);
-    Statsig.setExpoDevice(_reactNativeDependencies?.ExpoDevice ?? null);
+      // expo
+      Statsig.setExpoConstants(rnDeps.Constants);
+      Statsig.setExpoDevice(rnDeps.ExpoDevice);
+    }
+
+    Statsig.setOnCacheLoadedCallback(() => {
+      setCacheLoaded(true);
+    });
 
     Statsig.initialize(sdkKey, userMemo, options).then(() => {
       setInitialized(true);
       resolver.current && resolver.current();
     });
+
     if (typeof window !== 'undefined') {
       window.__STATSIG_SDK__ = Statsig;
       window.__STATSIG_JS_SDK__ = StatsigJS;
@@ -194,18 +205,18 @@ export default function StatsigProvider({
     };
   }, []);
 
-  let child = null;
-  if (waitForInitialization !== true) {
-    child = children;
-  } else if (waitForInitialization && initialized) {
-    child = children;
-  } else if (waitForInitialization && initializingComponent != null) {
-    child = initializingComponent;
-  }
+  const child = pickChildToRender(
+    waitForCache === true,
+    waitForInitialization === true,
+    isInitialized,
+    isCacheLoaded,
+    children,
+    initializingComponent,
+  );
 
   const contextValue = useMemo(
     () => ({
-      initialized,
+      initialized: isInitialized,
       statsigPromise,
       userVersion,
       initStarted: Statsig.initializeCalled(),
@@ -216,7 +227,7 @@ export default function StatsigProvider({
         }),
     }),
     [
-      initialized,
+      isInitialized,
       statsigPromise,
       userVersion,
       Statsig.initializeCalled(),
@@ -228,4 +239,39 @@ export default function StatsigProvider({
       {child}
     </StatsigContext.Provider>
   );
+}
+
+function pickChildToRender(
+  waitForCache: boolean,
+  waitForInitialization: boolean,
+  isInitialized: boolean,
+  isCacheLoaded: boolean,
+  children: React.ReactNode | React.ReactNode[],
+  initializingComponent?: React.ReactNode | React.ReactNode[],
+): React.ReactNode | React.ReactNode[] | null {
+  // Don't wait
+  if (waitForInitialization !== true && waitForCache !== true) {
+    return children;
+  }
+
+  // Wait until cache is ready
+  if (waitForCache && isCacheLoaded) {
+    return children;
+  }
+
+  // Wait until initialized from network
+  if (waitForInitialization && isInitialized) {
+    return children;
+  }
+
+  // Wait until initialized and I have a custom loading component
+  if (
+    (waitForInitialization || waitForCache) &&
+    initializingComponent != null
+  ) {
+    return initializingComponent;
+  }
+
+  // Cannot render yet
+  return null;
 }

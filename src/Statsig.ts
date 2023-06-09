@@ -59,6 +59,7 @@ export default class Statsig {
   private static nativeModules?: NativeModules;
   private static platform?: Platform;
   private static deviceInfo?: DeviceInfo;
+  private static onCacheLoadedCallback?: () => void;
   // RN Expo static dependencies
   private static expoConstants?: ExpoConstants;
   private static expoDevice?: ExpoDevice;
@@ -80,6 +81,9 @@ export default class Statsig {
         Statsig.instance.setRNDeviceInfo(this.deviceInfo);
         Statsig.instance.setExpoConstants(this.expoConstants);
         Statsig.instance.setExpoDevice(this.expoDevice);
+        Statsig.instance.setOnCacheLoadedReactCallback(
+          this.onCacheLoadedCallback,
+        );
       }
       return Statsig.instance.initializeAsync();
     } catch (e) {
@@ -474,6 +478,10 @@ export default class Statsig {
 
   public static setReactContextUpdater(fn: (() => void) | null) {
     Statsig.reactContextUpdater = fn;
+  }
+
+  public static setOnCacheLoadedCallback(fn: () => void) {
+    Statsig.onCacheLoadedCallback = fn;
   }
 
   private static isInitialized(): boolean {
