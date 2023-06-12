@@ -131,6 +131,13 @@ export default class Statsig {
     Statsig.instance.setInitializeValues(initializeValues);
   }
 
+  public static getCurrentUser(): StatsigUser | null {
+    if (!this.isInitialized()) {
+      return null;
+    }
+    return Statsig.instance.getCurrentUser();
+  }
+
   public static checkGate(gateName: string, ignoreOverrides = false): boolean {
     if (!this.isInitialized()) {
       return false;
