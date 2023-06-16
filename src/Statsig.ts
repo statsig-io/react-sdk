@@ -305,6 +305,16 @@ export default class Statsig {
     return Statsig.instance.updateUser(user);
   }
 
+  public static updateUserWithValues(
+    user: StatsigUser | null,
+    values: Record<string, unknown>,
+  ): boolean {
+    if (!this.isInitialized()) {
+      return false;
+    }
+    return Statsig.instance.updateUserWithValues(user, values)
+  }
+
   public static shutdown() {
     if (!this.isInitialized()) {
       return;
