@@ -118,8 +118,8 @@ export default function StatsigProvider({
   _reactNativeDependencies: rnDeps,
 }: Props): JSX.Element {
   const isReactNative = !!rnDeps;
-  const [isCacheLoaded, setCacheLoaded] = useState(false);
-  const [isInitialized, setInitialized] = useState(false);
+  const [hasCacheValues, setHasCacheValues] = useState(false);
+  const [hasNetworkValues, setHasNetworkValues] = useState(false);
   const resolver = useRef<(() => void) | null>(null);
   const [userVersion, setUserVersion] = useState(0);
 
@@ -142,14 +142,16 @@ export default function StatsigProvider({
       });
       const unmount = mountKey === undefined || prevMountKey !== mountKey;
       if (unmount) {
-        setInitialized(false);
+        setHasNetworkValues(false);
+        setHasCacheValues(false);
       }
 
       Statsig.updateUser(user).then(() => {
         resolver.current && resolver.current();
         setUserVersion((version) => version + 1);
         if (unmount) {
-          setInitialized(true);
+          setHasNetworkValues(true);
+          setHasCacheValues(true);
         }
       });
 
@@ -176,11 +178,11 @@ export default function StatsigProvider({
     }
 
     Statsig.setOnCacheLoadedCallback(() => {
-      setCacheLoaded(true);
+      setHasCacheValues(true);
     });
 
     Statsig.initialize(sdkKey, userMemo, options).then(() => {
-      setInitialized(true);
+      setHasNetworkValues(true);
       resolver.current && resolver.current();
     });
 
@@ -208,15 +210,15 @@ export default function StatsigProvider({
   const child = pickChildToRender(
     waitForCache === true,
     waitForInitialization === true,
-    isInitialized,
-    isCacheLoaded,
+    hasNetworkValues,
+    hasCacheValues,
     children,
     initializingComponent,
   );
 
   const contextValue = useMemo(
     () => ({
-      initialized: isInitialized,
+      initialized: hasNetworkValues,
       statsigPromise,
       userVersion,
       initStarted: Statsig.initializeCalled(),
@@ -227,7 +229,7 @@ export default function StatsigProvider({
         }),
     }),
     [
-      isInitialized,
+      hasNetworkValues,
       statsigPromise,
       userVersion,
       Statsig.initializeCalled(),
@@ -244,23 +246,28 @@ export default function StatsigProvider({
 function pickChildToRender(
   waitForCache: boolean,
   waitForInitialization: boolean,
-  isInitialized: boolean,
-  isCacheLoaded: boolean,
+  hasNetworkValues: boolean,
+  hasCacheValues: boolean,
   children: React.ReactNode | React.ReactNode[],
   initializingComponent?: React.ReactNode | React.ReactNode[],
 ): React.ReactNode | React.ReactNode[] | null {
-  // Don't wait
+  // No Need to Wait
+  if (hasNetworkValues) {
+    return children;
+  }
+
+  // Has to wait, but don't want to
   if (waitForInitialization !== true && waitForCache !== true) {
     return children;
   }
 
   // Wait until cache is ready
-  if (waitForCache && isCacheLoaded) {
+  if (waitForCache && hasCacheValues) {
     return children;
   }
 
   // Wait until initialized from network
-  if (waitForInitialization && isInitialized) {
+  if (waitForInitialization && hasNetworkValues) {
     return children;
   }
 
