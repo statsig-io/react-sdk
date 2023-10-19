@@ -14,12 +14,12 @@ specifiers:
   genversion: ^3.1.1
   jest: ^27.2.5
   react-dom: ^16.8.4 || ^17.0.0 || ^18.0.0
-  statsig-js: ^4.39.2
+  statsig-js: ^4.40.1
   ts-jest: ^27.0.5
   typescript: ^4.3.2
 
 dependencies:
-  statsig-js: 4.39.2
+  statsig-js: 4.40.1
 
 devDependencies:
   '@testing-library/jest-dom': 5.16.4
@@ -2563,6 +2563,10 @@ packages:
       - utf-8-validate
     dev: true
 
+  /js-sha256/0.10.1:
+    resolution: {integrity: sha512-5obBtsz9301ULlsgggLg542s/jqtddfOpV5KJc4hajc9JV8GeY2gZHSVpYBn4nWqAUTJ9v+xwtbJ1mIBgIH5Vw==}
+    dev: false
+
   /js-tokens/4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
     dev: true
@@ -3192,9 +3196,10 @@ packages:
       escape-string-regexp: 2.0.0
     dev: true
 
-  /statsig-js/4.39.2:
-    resolution: {integrity: sha512-t4EAErld1Y060AIWrsQ9Y5E6hHITi2FXkHgwus2G2N+K8C7UNzPwsiad+73VnybCL8YWibdR5/vRRql9Iq1G2g==}
+  /statsig-js/4.40.1:
+    resolution: {integrity: sha512-xDzksQTh5/2xz7cD43RmrARuTUSq1IH6XcdGo+p89JypWAzb+R6q7SXGzEQNHjMRApQ0Q9zUHCx37dJHLBGbfA==}
     dependencies:
+      js-sha256: 0.10.1
       uuid: 8.3.2
     dev: false
 
