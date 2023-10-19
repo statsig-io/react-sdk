@@ -1,27 +1,26 @@
-import StatsigJS, {
-  DynamicConfig,
-  StatsigClient,
-  StatsigOverrides,
-  _SDKPackageInfo,
-  StatsigOptions,
-  StatsigUser,
-  StatsigAsyncStorage,
-  Layer,
-  EvaluationReason,
-  EvaluationDetails,
-} from 'statsig-js';
-
 import type {
-  NativeModules,
-  Platform,
+  AppState,
+  AsyncStorage,
   DeviceInfo,
   ExpoConstants,
   ExpoDevice,
-  AsyncStorage,
+  NativeModules,
+  Platform,
   UUID,
-  AppState,
 } from 'statsig-js';
-import { staticImplements, StatsigStatic } from './StatsigStatic';
+import StatsigJS, {
+  DynamicConfig,
+  EvaluationDetails,
+  EvaluationReason,
+  Layer,
+  StatsigAsyncStorage,
+  StatsigClient,
+  StatsigOptions,
+  StatsigOverrides,
+  StatsigUser,
+  _SDKPackageInfo,
+} from 'statsig-js';
+import { StatsigStatic, staticImplements } from './StatsigStatic';
 
 import { version as SDKVersion } from './SDKVersion';
 
@@ -312,7 +311,7 @@ export default class Statsig {
     if (!this.isInitialized()) {
       return false;
     }
-    return Statsig.instance.updateUserWithValues(user, values)
+    return Statsig.instance.updateUserWithValues(user, values);
   }
 
   public static shutdown() {
