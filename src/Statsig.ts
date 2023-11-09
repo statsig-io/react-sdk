@@ -114,6 +114,17 @@ export default class Statsig {
     });
   }
 
+  public static flushEvents() {
+    return this.capture(() => Statsig.getClientX().flushEvents(), undefined);
+  }
+
+  public static reenableAllLogging() {
+    return this.capture(
+      () => Statsig.getClientX().reenableAllLogging(),
+      undefined,
+    );
+  }
+
   public static async prefetchUsers(users: StatsigUser[]): Promise<void> {
     return this.capture(
       () => Statsig.getClientX().prefetchUsers(users),
@@ -131,10 +142,7 @@ export default class Statsig {
   }
 
   public static getCurrentUser(): StatsigUser | null {
-    return this.capture(
-      () => Statsig.getClientX().getCurrentUser(),
-      null,
-    );
+    return this.capture(() => Statsig.getClientX().getCurrentUser(), null);
   }
 
   public static checkGate(gateName: string, ignoreOverrides = false): boolean {
@@ -325,10 +333,7 @@ export default class Statsig {
   }
 
   public static shutdown() {
-    this.capture(
-      () => Statsig.getClientX().shutdown(),
-      undefined,
-    );
+    this.capture(() => Statsig.getClientX().shutdown(), undefined);
     Statsig.instance = undefined;
   }
 
@@ -411,14 +416,11 @@ export default class Statsig {
    * @returns The local gate and config overrides
    */
   public static getAllOverrides(): StatsigOverrides {
-    return this.capture(
-      () => Statsig.getClientX().getAllOverrides(),
-      {
-        gates: {},
-        configs: {},
-        layers: {},
-      },
-    );
+    return this.capture(() => Statsig.getClientX().getAllOverrides(), {
+      gates: {},
+      configs: {},
+      layers: {},
+    });
   }
 
   public static getEvaluationDetails(): EvaluationDetails {
@@ -434,10 +436,7 @@ export default class Statsig {
    * @returns The Statsig stable ID used for device level experiments
    */
   public static getStableID(): string {
-    return this.capture(
-      () => Statsig.getClientX().getStableID(),
-      '',
-    );
+    return this.capture(() => Statsig.getClientX().getStableID(), '');
   }
 
   public static initializeCalled(): boolean {

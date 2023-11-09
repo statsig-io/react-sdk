@@ -27,4 +27,5 @@ export type StatsigOptions = {
   disableLocalStorage?: boolean;
   disableLocalOverrides?: boolean;
   fetchMode?: 'cache-or-network' | 'network-only';
+  disableAllLogging?: boolean;
 };
