@@ -50,7 +50,7 @@ export type StatsigReactContextUpdater = () => void;
 
 @staticImplements<StatsigStatic>()
 export default class Statsig {
-  private static instance: StatsigClient;
+  private static instance: StatsigClient | undefined;
 
   private static sdkPackageInfo?: _SDKPackageInfo;
   // RN static dependencies
@@ -115,89 +115,91 @@ export default class Statsig {
   }
 
   public static async prefetchUsers(users: StatsigUser[]): Promise<void> {
-    if (!this.isInitialized()) {
-      return;
-    }
-    return Statsig.instance.prefetchUsers(users);
+    return this.capture(
+      () => Statsig.getClientX().prefetchUsers(users),
+      Promise.resolve(),
+    );
   }
 
   public static setInitializeValues(
     initializeValues: Record<string, unknown>,
   ): void {
-    if (!this.isInitialized()) {
-      return;
-    }
-    Statsig.instance.setInitializeValues(initializeValues);
+    this.capture(
+      () => Statsig.getClientX().setInitializeValues(initializeValues),
+      undefined,
+    );
   }
 
   public static getCurrentUser(): StatsigUser | null {
-    if (!this.isInitialized()) {
-      return null;
-    }
-    return Statsig.instance.getCurrentUser();
+    return this.capture(
+      () => Statsig.getClientX().getCurrentUser(),
+      null,
+    );
   }
 
   public static checkGate(gateName: string, ignoreOverrides = false): boolean {
-    if (!this.isInitialized()) {
-      return false;
-    }
-    return Statsig.instance.checkGate(gateName, ignoreOverrides);
+    return this.capture(
+      () => Statsig.getClientX().checkGate(gateName, ignoreOverrides),
+      false,
+    );
   }
 
   public static checkGateWithExposureLoggingDisabled(
     gateName: string,
     options?: CheckGateOptions,
   ): boolean {
-    if (!this.isInitialized()) {
-      return false;
-    }
-    return Statsig.instance.checkGateWithExposureLoggingDisabled(
-      gateName,
-      options?.ignoreOverrides,
+    return this.capture(
+      () =>
+        Statsig.getClientX().checkGateWithExposureLoggingDisabled(
+          gateName,
+          options?.ignoreOverrides,
+        ),
+      false,
     );
   }
 
   public static manuallyLogGateExposure(gateName: string): void {
-    if (!this.isInitialized()) {
-      return;
-    }
-    Statsig.instance.logGateExposure(gateName);
+    this.capture(
+      () => Statsig.getClientX().logGateExposure(gateName),
+      undefined,
+    );
   }
 
   public static getConfig(
     configName: string,
     ignoreOverrides = false,
   ): DynamicConfig {
-    if (!this.isInitialized()) {
-      return new DynamicConfig(configName, {}, '', {
+    return this.capture(
+      () => Statsig.getClientX().getConfig(configName, ignoreOverrides),
+      new DynamicConfig(configName, {}, '', {
         time: Date.now(),
         reason: EvaluationReason.Uninitialized,
-      });
-    }
-    return Statsig.instance.getConfig(configName, ignoreOverrides);
+      }),
+    );
   }
 
   public static getConfigWithExposureLoggingDisabled(
     configName: string,
     options?: GetConfigOptions,
   ): DynamicConfig {
-    if (!this.isInitialized()) {
-      return new DynamicConfig(configName, {}, '', {
+    return this.capture(
+      () =>
+        Statsig.getClientX().getConfigWithExposureLoggingDisabled(
+          configName,
+          options?.ignoreOverrides,
+        ),
+      new DynamicConfig(configName, {}, '', {
         time: Date.now(),
         reason: EvaluationReason.Uninitialized,
-      });
-    }
-    return Statsig.instance.getConfigWithExposureLoggingDisabled(
-      configName,
-      options?.ignoreOverrides,
+      }),
     );
   }
 
   public static manuallyLogConfigExposure(configName: string): void {
-    if (!this.isInitialized()) {
-      return;
-    }
-    Statsig.instance.logConfigExposure(configName);
+    this.capture(
+      () => Statsig.getClientX().logConfigExposure(configName),
+      undefined,
+    );
   }
 
   public static getExperiment(
@@ -205,16 +207,17 @@ export default class Statsig {
     keepDeviceValue = false,
     ignoreOverrides = false,
   ): DynamicConfig {
-    if (!this.isInitialized()) {
-      return new DynamicConfig(experimentName, {}, '', {
+    return this.capture(
+      () =>
+        Statsig.getClientX().getExperiment(
+          experimentName,
+          keepDeviceValue,
+          ignoreOverrides,
+        ),
+      new DynamicConfig(experimentName, {}, '', {
         time: Date.now(),
         reason: EvaluationReason.Uninitialized,
-      });
-    }
-    return Statsig.instance.getExperiment(
-      experimentName,
-      keepDeviceValue,
-      ignoreOverrides,
+      }),
     );
   }
 
@@ -222,16 +225,17 @@ export default class Statsig {
     experimentName: string,
     options?: GetExperimentOptions,
   ): DynamicConfig {
-    if (!this.isInitialized()) {
-      return new DynamicConfig(experimentName, {}, '', {
+    return this.capture(
+      () =>
+        Statsig.getClientX().getExperimentWithExposureLoggingDisabled(
+          experimentName,
+          options?.keepDeviceValue,
+          options?.ignoreOverrides,
+        ),
+      new DynamicConfig(experimentName, {}, '', {
         time: Date.now(),
         reason: EvaluationReason.Uninitialized,
-      });
-    }
-    return Statsig.instance.getExperimentWithExposureLoggingDisabled(
-      experimentName,
-      options?.keepDeviceValue,
-      options?.ignoreOverrides,
+      }),
     );
   }
 
@@ -239,35 +243,40 @@ export default class Statsig {
     experimentName: string,
     keepDeviceValue: boolean,
   ): void {
-    if (!this.isInitialized()) {
-      return;
-    }
-    Statsig.instance.logExperimentExposure(experimentName, keepDeviceValue);
+    this.capture(
+      () =>
+        Statsig.getClientX().logExperimentExposure(
+          experimentName,
+          keepDeviceValue,
+        ),
+      undefined,
+    );
   }
 
   public static getLayer(layerName: string, keepDeviceValue = false): Layer {
-    if (!this.isInitialized()) {
-      return Layer._create(layerName, {}, '', {
+    return this.capture(
+      () => Statsig.getClientX().getLayer(layerName, keepDeviceValue),
+      Layer._create(layerName, {}, '', {
         time: Date.now(),
         reason: EvaluationReason.Uninitialized,
-      });
-    }
-    return Statsig.instance.getLayer(layerName, keepDeviceValue);
+      }),
+    );
   }
 
   public static getLayerWithExposureLoggingDisabled(
     layerName: string,
     options?: GetLayerOptions,
   ): Layer {
-    if (!this.isInitialized()) {
-      return Layer._create(layerName, {}, '', {
+    return this.capture(
+      () =>
+        Statsig.getClientX().getLayerWithExposureLoggingDisabled(
+          layerName,
+          options?.keepDeviceValue,
+        ),
+      Layer._create(layerName, {}, '', {
         time: Date.now(),
         reason: EvaluationReason.Uninitialized,
-      });
-    }
-    return Statsig.instance.getLayerWithExposureLoggingDisabled(
-      layerName,
-      options?.keepDeviceValue,
+      }),
     );
   }
 
@@ -276,13 +285,14 @@ export default class Statsig {
     parameterName: string,
     keepDeviceValue = false,
   ): void {
-    if (!this.isInitialized()) {
-      return;
-    }
-    Statsig.instance.logLayerParameterExposure(
-      layerName,
-      parameterName,
-      keepDeviceValue,
+    this.capture(
+      () =>
+        Statsig.getClientX().logLayerParameterExposure(
+          layerName,
+          parameterName,
+          keepDeviceValue,
+        ),
+      undefined,
     );
   }
 
@@ -291,34 +301,35 @@ export default class Statsig {
     value: string | number | null = null,
     metadata: Record<string, string> | null = null,
   ): void {
-    if (!this.isInitialized()) {
-      return;
-    }
-    Statsig.instance.logEvent(eventName, value, metadata);
+    this.capture(
+      () => Statsig.getClientX().logEvent(eventName, value, metadata),
+      undefined,
+    );
   }
 
   public static updateUser(user: StatsigUser | null): Promise<boolean> {
-    if (!this.isInitialized()) {
-      return Promise.resolve(false);
-    }
-    return Statsig.instance.updateUser(user);
+    return this.capture(
+      () => Statsig.getClientX().updateUser(user),
+      Promise.resolve(false),
+    );
   }
 
   public static updateUserWithValues(
     user: StatsigUser | null,
     values: Record<string, unknown>,
   ): boolean {
-    if (!this.isInitialized()) {
-      return false;
-    }
-    return Statsig.instance.updateUserWithValues(user, values);
+    return this.capture(
+      () => Statsig.getClientX().updateUserWithValues(user, values),
+      false,
+    );
   }
 
   public static shutdown() {
-    if (!this.isInitialized()) {
-      return;
-    }
-    Statsig.instance.shutdown();
+    this.capture(
+      () => Statsig.getClientX().shutdown(),
+      undefined,
+    );
+    Statsig.instance = undefined;
   }
 
   /**
@@ -327,14 +338,13 @@ export default class Statsig {
    * @param value - value to assign to the gate
    */
   public static overrideGate(gateName: string, value: boolean): void {
-    if (!this.isInitialized()) {
-      return;
-    }
-    if (Statsig.getAllOverrides()['gates']?.[gateName] === value) {
-      return;
-    }
-    Statsig.instance.overrideGate(gateName, value);
-    Statsig.updateContext();
+    this.capture(() => {
+      if (Statsig.getAllOverrides()['gates']?.[gateName] === value) {
+        return;
+      }
+      Statsig.getClientX().overrideGate(gateName, value);
+      Statsig.updateContext();
+    }, undefined);
   }
 
   /**
@@ -343,14 +353,13 @@ export default class Statsig {
    * @param value - value to assign to the config
    */
   public static overrideConfig(configName: string, value: object): void {
-    if (!this.isInitialized()) {
-      return;
-    }
-    if (Statsig.getAllOverrides()['configs']?.[configName] === value) {
-      return;
-    }
-    Statsig.instance.overrideConfig(configName, value);
-    Statsig.updateContext();
+    this.capture(() => {
+      if (Statsig.getAllOverrides()['configs']?.[configName] === value) {
+        return;
+      }
+      Statsig.getClientX().overrideConfig(configName, value);
+      Statsig.updateContext();
+    }, undefined);
   }
 
   /**
@@ -359,61 +368,57 @@ export default class Statsig {
    * @param value - value to assign to the layer
    */
   public static overrideLayer(layerName: string, value: object): void {
-    if (!this.isInitialized()) {
-      return;
-    }
-    if (Statsig.getAllOverrides()['layers']?.[layerName] === value) {
-      return;
-    }
-    Statsig.instance.overrideLayer(layerName, value);
-    Statsig.updateContext();
+    this.capture(() => {
+      if (Statsig.getAllOverrides()['layers']?.[layerName] === value) {
+        return;
+      }
+      Statsig.getClientX().overrideLayer(layerName, value);
+      Statsig.updateContext();
+    }, undefined);
   }
 
   /**
    * @param name the gate override to remove
    */
   public static removeGateOverride(name?: string): void {
-    if (!this.isInitialized()) {
-      return;
-    }
-    Statsig.instance.removeGateOverride(name);
-    Statsig.updateContext();
+    this.capture(() => {
+      Statsig.getClientX().removeGateOverride(name);
+      Statsig.updateContext();
+    }, undefined);
   }
 
   /**
    * @param name the config override to remove
    */
   public static removeConfigOverride(name?: string): void {
-    if (!this.isInitialized()) {
-      return;
-    }
-    Statsig.instance.removeConfigOverride(name);
-    Statsig.updateContext();
+    this.capture(() => {
+      Statsig.getClientX().removeConfigOverride(name);
+      Statsig.updateContext();
+    }, undefined);
   }
 
   /**
    * @param name the config override to remove
    */
   public static removeLayerOverride(name?: string): void {
-    if (!this.isInitialized()) {
-      return;
-    }
-    Statsig.instance.removeLayerOverride(name);
-    Statsig.updateContext();
+    this.capture(() => {
+      Statsig.getClientX().removeLayerOverride(name);
+      Statsig.updateContext();
+    }, undefined);
   }
 
   /**
    * @returns The local gate and config overrides
    */
   public static getAllOverrides(): StatsigOverrides {
-    if (!this.isInitialized()) {
-      return {
+    return this.capture(
+      () => Statsig.getClientX().getAllOverrides(),
+      {
         gates: {},
         configs: {},
         layers: {},
-      };
-    }
-    return Statsig.instance.getAllOverrides();
+      },
+    );
   }
 
   public static getEvaluationDetails(): EvaluationDetails {
@@ -429,10 +434,10 @@ export default class Statsig {
    * @returns The Statsig stable ID used for device level experiments
    */
   public static getStableID(): string {
-    if (!this.isInitialized()) {
-      return '';
-    }
-    return Statsig.instance.getStableID();
+    return this.capture(
+      () => Statsig.getClientX().getStableID(),
+      '',
+    );
   }
 
   public static initializeCalled(): boolean {
@@ -500,14 +505,22 @@ export default class Statsig {
     Statsig.onCacheLoadedCallback = fn;
   }
 
-  private static isInitialized(): boolean {
-    if (Statsig.instance) {
-      return true;
-    }
-    if (Statsig.canThrow()) {
+  private static getClientX(): StatsigClient {
+    if (!Statsig.instance) {
       throw new Error('Call and wait for initialize() to finish first.');
     }
-    return false;
+    return Statsig.instance;
+  }
+
+  private static capture<T>(task: () => T, recover: T): T {
+    try {
+      return task();
+    } catch (e) {
+      if (Statsig.canThrow()) {
+        throw e;
+      }
+      return recover;
+    }
   }
 
   // Exposed for RN sdks to override this class - an instance of this class
