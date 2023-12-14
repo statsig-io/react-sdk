@@ -1,6 +1,7 @@
 import {
   InitCompletionCallback,
   UpdateUserCompletionCallback,
+  GateEvaluationCallback,
   StatsigEnvironment,
   StatsigUser,
 } from 'statsig-js';
@@ -23,6 +24,7 @@ export type StatsigOptions = {
   prefetchUsers?: StatsigUser[];
   initCompletionCallback?: InitCompletionCallback | null;
   updateUserCompletionCallback?: UpdateUserCompletionCallback | null;
+  gateEvaluationCallback?: GateEvaluationCallback;
   disableDiagnosticsLogging?: boolean;
   disableLocalStorage?: boolean;
   disableLocalOverrides?: boolean;
