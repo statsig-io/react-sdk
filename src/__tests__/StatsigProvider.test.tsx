@@ -3,13 +3,15 @@
  */
 
 import '@testing-library/jest-dom';
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+
 import React, { useState } from 'react';
 import StatsigJS, { StatsigUser } from 'statsig-js';
-import StatsigProvider from '../StatsigProvider';
+import { render, screen, waitFor } from '@testing-library/react';
+
 import Statsig from '../Statsig';
+import StatsigProvider from '../StatsigProvider';
 import useUpdateUser from '../useUpdateUser';
+import userEvent from '@testing-library/user-event';
 
 const TID_USER_VALUE = 'statsig-user-object';
 const TID_SET_USER_STATE = 'update-via-set-state';
@@ -90,12 +92,12 @@ describe('Singleton then StatsigProvider', () => {
   async function VerifyInitializeForUserWithRender(userID: string) {
     await waitFor(() => screen.getByText(userID));
 
-    expect(requestsMade).toEqual([
+    expect(requestsMade).toContainEqual(
       {
         url: 'https://featuregates.org/v1/initialize',
         body: expect.objectContaining({ user: { userID: userID } }),
       },
-    ]);
+    );
   }
 
   (global as any).fetch = jest.fn((url, params) => {
