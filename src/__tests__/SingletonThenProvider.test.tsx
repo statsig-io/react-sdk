@@ -6,8 +6,9 @@ import '@testing-library/jest-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 import React, { useEffect, useState } from 'react';
 import StatsigJS, { StatsigClient, StatsigUser } from 'statsig-js';
-import StatsigProvider from '../StatsigProvider';
-import Statsig from '../Statsig';
+import { StatsigProvider } from '../StatsigProvider';
+import { Statsig } from '../Statsig';
+import { StatsigLazyLoader } from '../StatsigLazyLoader';
 
 const TID_USER_VALUE = 'statsig-user-object';
 

@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import StatsigContext, { UpdateUserFunc } from './StatsigContext';
+import { StatsigContext, UpdateUserFunc } from './StatsigContext';
 import StatsigJS, { StatsigUser } from 'statsig-js';
 
-import Statsig from './Statsig';
+import { Statsig } from './Statsig';
 import { StatsigOptions } from './StatsigOptions';
 
 /**
@@ -54,7 +54,7 @@ type Props = {
  * @param props
  * @returns
  */
-export default function StatsigSynchronousProvider({
+export function StatsigSynchronousProvider({
   children,
   sdkKey,
   user,

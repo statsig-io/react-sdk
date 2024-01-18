@@ -7,9 +7,10 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React, { useState } from 'react';
 import StatsigJS, { StatsigUser } from 'statsig-js';
-import StatsigProvider from '../StatsigProvider';
-import Statsig from '../Statsig';
-import useUpdateUser from '../useUpdateUser';
+import { StatsigProvider } from '../StatsigProvider';
+import { Statsig } from '../Statsig';
+import { useUpdateUser } from '../useUpdateUser';
+import {StatsigLazyLoader} from "../StatsigLazyLoader";
 
 const TID_USER_VALUE = 'statsig-user-object';
 const TID_SET_USER_STATE = 'update-via-set-state';
@@ -112,6 +113,10 @@ describe('Singleton then StatsigProvider', () => {
     initCallbacks = 0;
 
     (Statsig as any).instance = null;
+  });
+
+  beforeAll(async () => {
+    await StatsigLazyLoader.loadModule();
   });
 
   it('renders children', async () => {

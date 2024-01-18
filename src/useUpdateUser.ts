@@ -1,7 +1,7 @@
 import { useContext } from 'react';
-import StatsigContext, { UpdateUserFunc } from './StatsigContext';
+import { StatsigContext, UpdateUserFunc } from './StatsigContext';
 
-export default function (): UpdateUserFunc {
+export const useUpdateUser = (): UpdateUserFunc => {
   const context = useContext(StatsigContext);
   return context.updateUser;
-}
+};

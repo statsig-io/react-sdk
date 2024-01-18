@@ -6,6 +6,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { Statsig, StatsigProvider, useGate } from '..';
 import * as TestInitializeData from './single_gate_init_response.json';
+import { StatsigLazyLoader } from '../StatsigLazyLoader';
 
 let checkResults: boolean[] = [];
 
@@ -22,6 +23,10 @@ describe('Caching and Waiting', () => {
       status: 200,
       text: () => JSON.stringify(TestInitializeData),
     });
+  });
+
+  beforeAll(async () => {
+    await StatsigLazyLoader.loadModule();
   });
 
   beforeEach(() => {

@@ -13,9 +13,9 @@ import { LayerResult, useLayerImpl } from './StatsigHooks';
  *
  * @returns an object containing a isLoading flag and the Layer object itself
  */
-export default function (
+export const useLayerWithExposureLoggingDisabled = (
   layerName: string,
   options?: GetLayerOptions,
-): LayerResult {
+): LayerResult => {
   return useLayerImpl(layerName, options, true /* exposure logging disabled */);
-}
+};

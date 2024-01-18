@@ -1,7 +1,7 @@
-import React from 'react';
-import { StatsigUser } from 'statsig-js';
+import React, { createContext, Dispatch, SetStateAction } from 'react';
+import type { StatsigUser } from 'statsig-js';
 
-export type UpdateUserFunc = React.Dispatch<React.SetStateAction<StatsigUser>>;
+export type UpdateUserFunc = Dispatch<SetStateAction<StatsigUser>>;
 
 export interface TStatsigContext {
   initialized: boolean;
@@ -14,7 +14,7 @@ export interface TStatsigContext {
 /**
  * The Statsig SDK context used by the StatsigProvider, and consumed by other SDK helper functions
  */
-export default React.createContext<TStatsigContext>({
+export const StatsigContext = createContext<TStatsigContext>({
   initialized: false,
   statsigPromise: null,
   userVersion: 0,

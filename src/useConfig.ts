@@ -7,11 +7,11 @@ import { ConfigResult, useConfigImpl } from './StatsigHooks';
  * @param ignoreOverrides - flag to ignore overrides
  * @returns a ConfigResult indicating the DynamicConfig value, and the loading state of the SDK
  */
-export default function (
+export const useConfig = (
   configName: string,
   ignoreOverrides?: boolean,
-): ConfigResult {
+): ConfigResult => {
   return useConfigImpl(configName, {
     ignoreOverrides,
   });
-}
+};

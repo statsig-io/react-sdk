@@ -13,13 +13,13 @@ import { ConfigResult, useExperimentImpl } from './StatsigHooks';
  *
  * @returns a ConfigResult indicating the DynamicConfig backing the experiment, and the loading state of the SDK
  */
-export default function (
+export const useExperimentWithExposureLoggingDisabled = (
   experimentName: string,
   options?: GetExperimentOptions,
-): ConfigResult {
+): ConfigResult => {
   return useExperimentImpl(
     experimentName,
     options,
     true /* exposure logging disabled */,
   );
-}
+};

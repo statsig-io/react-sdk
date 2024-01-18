@@ -7,6 +7,7 @@ import { render } from '@testing-library/react';
 import { StatsigProvider, useGate, Statsig } from '..';
 import { act } from 'react-dom/test-utils';
 import { EvaluationReason, StatsigClient } from 'statsig-js';
+import { StatsigLazyLoader } from '../StatsigLazyLoader';
 
 const GateComponent = function (props: { gateName: string }): JSX.Element {
   const gate = useGate(props.gateName);
@@ -55,6 +56,10 @@ describe('Tests the StatsigProvider with mocked network responses', () => {
   jest
     .spyOn(StatsigClient.prototype, 'checkGate')
     .mockImplementation(() => initialized);
+
+  beforeAll(async () => {
+    await StatsigLazyLoader.loadModule();
+  });
 
   test('Verify waitForInitialization renders nothing then children after init', async () => {
     expect(Statsig.getEvaluationDetails()).toEqual({

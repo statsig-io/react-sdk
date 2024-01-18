@@ -8,6 +8,7 @@ import React from 'react';
 import StatsigJS from 'statsig-js';
 import { Statsig, StatsigProvider, useConfig } from '..';
 import * as TestInitializeData from './single_gate_init_response.json';
+import { StatsigLazyLoader } from '../StatsigLazyLoader';
 
 StatsigJS.encodeIntializeCall = false;
 
@@ -16,7 +17,7 @@ let renderedUserIDs: string[] = [];
 function TestComponent() {
   const { config } = useConfig('a_config');
 
-  const userID = config.get('result', 'not-found');
+  const userID = config?.get('result', 'not-found') as string;
   renderedUserIDs.push(userID);
 
   return <div>{userID}</div>;
@@ -53,6 +54,10 @@ describe('Caching and Updating Users', () => {
       status: 200,
       text: () => JSON.stringify(response),
     });
+  });
+
+  beforeAll(async () => {
+    await StatsigLazyLoader.loadModule();
   });
 
   beforeEach(() => {

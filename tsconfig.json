@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
+    "target": "ES2017",
+    "module": "ES2020",
     "lib": ["es6", "esnext", "dom"],
     "strict": true,
     "outDir": "dist",
@@ -9,6 +9,7 @@
     "esModuleInterop": true,
     "declaration": true,
     "experimentalDecorators": true,
+    "moduleResolution": "Node",
     "resolveJsonModule": true
   },
   "include": ["src/**/*"],

@@ -7,6 +7,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { act } from 'react-dom/test-utils';
 import { StatsigClient } from 'statsig-js';
 import { StatsigProvider, useGate } from '..';
+import { StatsigLazyLoader } from '../StatsigLazyLoader';
 
 describe('Tests the StatsigProvider with an updated user', () => {
   const mGetRandomValues = jest.fn().mockReturnValueOnce(new Uint32Array(16));
@@ -85,6 +86,10 @@ describe('Tests the StatsigProvider with an updated user', () => {
       </StatsigProvider>
     );
   };
+
+  beforeAll(async () => {
+    await StatsigLazyLoader.loadModule();
+  });
 
   test('Verify waitForInitialization renders nothing then children after init', async () => {
     const { getByText } = render(<TestApp />);

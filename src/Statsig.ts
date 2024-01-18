@@ -7,18 +7,18 @@ import type {
   NativeModules,
   Platform,
   UUID,
-} from 'statsig-js';
-import StatsigJS, {
-  DynamicConfig,
   EvaluationDetails,
-  EvaluationReason,
-  Layer,
-  StatsigAsyncStorage,
-  StatsigClient,
   StatsigOptions,
   StatsigOverrides,
   StatsigUser,
   _SDKPackageInfo,
+} from 'statsig-js';
+import StatsigJS, {
+  StatsigClient,
+  StatsigAsyncStorage,
+  DynamicConfig,
+  EvaluationReason,
+  Layer,
 } from 'statsig-js';
 import { StatsigStatic, staticImplements } from './StatsigStatic';
 
@@ -49,7 +49,7 @@ export type GetLayerOptions = {
 export type StatsigReactContextUpdater = () => void;
 
 @staticImplements<StatsigStatic>()
-export default class Statsig {
+export class Statsig {
   private static instance: StatsigClient | undefined;
 
   private static sdkPackageInfo?: _SDKPackageInfo;

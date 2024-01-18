@@ -1,9 +1,9 @@
 import { useContext, useEffect } from 'react';
 import { StatsigUser } from 'statsig-js';
-import Statsig from './Statsig';
-import StatsigContext from './StatsigContext';
+import { Statsig } from './Statsig';
+import { StatsigContext } from './StatsigContext';
 
-export default function (users: StatsigUser[]): void {
+export const usePrefetchUsers = (users: StatsigUser[]): void => {
   const { initStarted } = useContext(StatsigContext);
 
   useEffect(() => {
@@ -14,4 +14,4 @@ export default function (users: StatsigUser[]): void {
       // noop
     });
   }, [initStarted, users]);
-}
+};

@@ -11,13 +11,13 @@ import { ConfigResult, useConfigImpl } from './StatsigHooks';
  *
  * @returns a ConfigResult indicating the DynamicConfig value, and the loading state of the SDK
  */
-export default function (
+export const useConfigWithExposureLoggingDisabled = (
   configName: string,
   options?: GetConfigOptions,
-): ConfigResult {
+): ConfigResult => {
   return useConfigImpl(
     configName,
     options,
     true /* exposure logging disabled */,
   );
-}
+};

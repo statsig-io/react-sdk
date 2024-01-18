@@ -7,14 +7,15 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React, { useState } from 'react';
 import StatsigJS, { StatsigUser } from 'statsig-js';
-import Statsig from '../Statsig';
-import StatsigSynchronousProvider from '../StatsigSynchronousProvider';
+import { Statsig } from '../Statsig';
+import { StatsigSynchronousProvider } from '../StatsigSynchronousProvider';
 import { useConfig, useGate } from '../index';
-import useUpdateUser from '../useUpdateUser';
+import { useUpdateUser } from '../useUpdateUser';
 import LocalStorageMock from './LocalStorageMock';
 import * as TestBootstrapData from './initialize_response.json';
 import * as TestInitializeData from './other_initialize_response.json';
 import * as UpdatedInitializeData from './updated_initialize_values.json';
+import { StatsigLazyLoader } from '../StatsigLazyLoader';
 
 const TID_USER_VALUE = 'statsig-user-object';
 const TID_SET_USER_STATE = 'update-via-set-state';
@@ -37,8 +38,8 @@ function UpdateUserHookTestComponent(props: { userID: string }) {
   return (
     <>
       <div data-testid={TID_GATE_VALUE}>{gate.value ? 'ON' : 'OFF'}</div>
-      <div data-testid={TID_CONFIG_VAL}>{config.get('val', 17)}</div>
-      <div data-testid={TID_CONFIG_NAME}>{config.get('name', 'default')}</div>
+      <div data-testid={TID_CONFIG_VAL}>{config?.get('val', 17)}</div>
+      <div data-testid={TID_CONFIG_NAME}>{config?.get('name', 'default')}</div>
       <button
         onClick={() =>
           updateUser((old) => {
@@ -152,6 +153,10 @@ describe('StatsigSynchronousProvider', () => {
   });
 
   let setTimeout = jest.spyOn(global, 'setTimeout');
+
+  beforeAll(async () => {
+    await StatsigLazyLoader.loadModule();
+  });
 
   beforeEach(() => {
     requestsMade = [];

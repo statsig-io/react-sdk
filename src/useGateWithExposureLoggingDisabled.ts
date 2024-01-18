@@ -11,9 +11,9 @@ import { GateResult, useGateImpl } from './StatsigHooks';
  *
  * @returns a result indicating the boolean value of the gate and loading state of the SDK
  */
-export default function (
+export const useGateWithExposureLoggingDisabled = (
   gateName: string,
   options?: CheckGateOptions,
-): GateResult {
+): GateResult => {
   return useGateImpl(gateName, options, true /* exposure logging disabled */);
-}
+};

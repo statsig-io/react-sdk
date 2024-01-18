@@ -7,12 +7,13 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React, { useEffect, useState } from 'react';
 import StatsigJS, { StatsigClient, StatsigUser } from 'statsig-js';
-import StatsigSynchronousProvider from '../StatsigSynchronousProvider';
-import Statsig from '../Statsig';
-import useUpdateUser from '../useUpdateUser';
+import { StatsigSynchronousProvider } from '../StatsigSynchronousProvider';
+import { Statsig } from '../Statsig';
+import { useUpdateUser } from '../useUpdateUser';
 import * as TestBootstrapData from './initialize_response.json';
 import { useGate, useConfig } from '../index';
 import * as TestInitializeData from './other_initialize_response.json';
+import { StatsigLazyLoader } from '../StatsigLazyLoader';
 
 StatsigJS.encodeIntializeCall = false;
 
@@ -35,8 +36,8 @@ function UpdateUserHookTestComponent(props: { userID: string }) {
   return (
     <>
       <div data-testid={TID_GATE_VALUE}>{gate.value ? 'ON' : 'OFF'}</div>
-      <div data-testid={TID_CONFIG_VAL}>{config.get('val', 17)}</div>
-      <div data-testid={TID_CONFIG_NAME}>{config.get('name', 'default')}</div>
+      <div data-testid={TID_CONFIG_VAL}>{config?.get('val', 17)}</div>
+      <div data-testid={TID_CONFIG_NAME}>{config?.get('name', 'default')}</div>
       <button
         onClick={() =>
           updateUser((old) => {
@@ -154,6 +155,11 @@ describe('Singleton then StatsigSynchronousProvider', () => {
       });
     }
   });
+
+  beforeAll(async () => {
+    await StatsigLazyLoader.loadModule();
+  });
+
   beforeEach(() => {
     requestsMade = [];
     initCallbacks = 0;

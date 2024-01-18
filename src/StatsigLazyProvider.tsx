@@ -1,27 +1,32 @@
-import type {
-  AppState,
-  AsyncStorage,
-  DeviceInfo,
-  ExpoConstants,
-  ExpoDevice,
-  NativeModules,
-  Platform,
-  UUID,
-} from 'statsig-js';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { StatsigContext, UpdateUserFunc } from './StatsigContext';
-import StatsigJS, { StatsigUser, _SDKPackageInfo } from 'statsig-js';
-
-import { Statsig } from './Statsig';
-import { StatsigOptions } from './StatsigOptions';
-
+import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { version as SDKVersion } from './SDKVersion';
+import { StatsigContext, UpdateUserFunc } from './StatsigContext';
+import { StatsigLazyLoader } from './StatsigLazyLoader';
+import { StatsigOptions } from './StatsigOptions';
 import { pickChildToRender, usePrevious } from './StatsigProviderHelpers';
+import type { StatsigUser } from 'statsig-js';
+
+// TODO  will be migrated to @linktr.ee/sessionId lib
+function getBrowserId(): string | undefined {
+  const root = typeof window === 'undefined' ? globalThis : window;
+  return root.localStorage?.getItem('browserId') || undefined;
+}
+
+const getEnvironment = (stage: string): string => {
+  switch (stage) {
+    case 'local':
+      return 'development';
+    case 'qa':
+      return 'staging';
+    default:
+      return stage;
+  }
+};
 
 /**
  * Properties required to initialize the Statsig React SDK
  */
-type Props = {
+export type StatsigLazyProviderProps = {
   children: React.ReactNode | React.ReactNode[];
 
   /**
@@ -44,6 +49,8 @@ type Props = {
    * Options for initializing the SDK, shared with the statsig-js SDK
    */
   options?: StatsigOptions;
+
+  stage: string;
 
   /**
    * Waits for the SDK to load any cached values before rendering child components
@@ -69,35 +76,20 @@ type Props = {
   mountKey?: string;
 
   shutdownOnUnmount?: boolean;
-
-  /**
-   * DO NOT CALL DIRECTLY. Used to polyfill react native specific dependencies.
-   */
-  _reactNativeDependencies?: {
-    SDKPackageInfo: _SDKPackageInfo;
-    AsyncStorage: AsyncStorage | null;
-    AppState: AppState | null;
-    NativeModules: NativeModules | null;
-    Platform: Platform | null;
-    RNDevice: DeviceInfo | null;
-    Constants: ExpoConstants | null;
-    ExpoDevice: ExpoDevice | null;
-    ReactNativeUUID: UUID | null;
-  };
 };
 
 /**
- * The StatsigProvider is the top level component from which all React SDK components derive
+ * The StatsigLazyProvider is the top level component from which all React SDK components derive
  * It initializes the SDK so child components can use FeatureGate and DynamicConfig values
+ * The main difference between StatsigLazyProvider and StatsigProvider that is uses lazy load approach of loading
+ * Statsig.ts with statsig-js.
  *
  * The provider accepts the same SDK initialization parameters as the statsig-js SDK.
  *
- * We recommend you place this at the entry point of your app and pass waitForInitialization = true
- * to ensure the SDK is initialized and all values are up to date prior to rendering anything.
  * @param props
  * @returns
  */
-export function StatsigProvider({
+export const StatsigLazyProvider: FC<StatsigLazyProviderProps> = ({
   children,
   sdkKey,
   user,
@@ -107,10 +99,9 @@ export function StatsigProvider({
   waitForInitialization,
   initializingComponent,
   mountKey,
+  stage,
   shutdownOnUnmount = false,
-  _reactNativeDependencies: rnDeps,
-}: Props): JSX.Element {
-  const isReactNative = !!rnDeps;
+}) => {
   const [hasCacheValues, setHasCacheValues] = useState(false);
   const [hasNetworkValues, setHasNetworkValues] = useState(false);
   const resolver = useRef<(() => void) | null>(null);
@@ -126,10 +117,18 @@ export function StatsigProvider({
     return user;
   }, [JSON.stringify(user)]);
 
+  const optionsMemo = useMemo<StatsigOptions>(() => {
+    return {
+      overrideStableID: options?.overrideStableID || getBrowserId(),
+      environment: { tier: getEnvironment(stage) },
+      ...options,
+    };
+  }, [JSON.stringify(options)]);
+
   const prevMountKey = usePrevious(mountKey ?? null);
 
   useEffect(() => {
-    if (Statsig.initializeCalled()) {
+    if (StatsigLazyLoader.initializeCalled()) {
       statsigPromise.current = new Promise((resolve) => {
         resolver.current = resolve;
       });
@@ -139,64 +138,52 @@ export function StatsigProvider({
         setHasCacheValues(false);
       }
 
-      Statsig.updateUser(user).then(() => {
-        resolver.current && resolver.current();
-        setUserVersion((version) => version + 1);
-        if (unmount) {
-          setHasNetworkValues(true);
-          setHasCacheValues(true);
-        }
-      });
+      StatsigLazyLoader.getStatsigAPI()
+        .Statsig.updateUser(user)
+        .then(() => {
+          resolver.current && resolver.current();
+          setUserVersion((version) => version + 1);
+          if (unmount) {
+            setHasNetworkValues(true);
+            setHasCacheValues(true);
+          }
+        });
 
       return;
     }
 
-    Statsig.setSDKPackageInfo({
-      sdkType: 'react-client',
-      sdkVersion: SDKVersion,
+    StatsigLazyLoader.loadModule().then(({ Statsig }) => {
+      Statsig.setSDKPackageInfo({
+        sdkType: 'react-client',
+        sdkVersion: SDKVersion,
+      });
+
+      Statsig.setOnCacheLoadedCallback(() => {
+        setHasCacheValues(true);
+      });
+
+      Statsig.initialize(sdkKey, userMemo, optionsMemo).then(() => {
+        setHasNetworkValues(true);
+        resolver.current && resolver.current();
+      });
+
+      if (typeof window !== 'undefined') {
+        window.__STATSIG_RERENDER_OVERRIDE__ = () => {
+          setUserVersion(userVersion + 1);
+        };
+      }
     });
-
-    if (isReactNative) {
-      Statsig.setSDKPackageInfo(rnDeps.SDKPackageInfo);
-      Statsig.setAppState(rnDeps.AppState);
-      Statsig.setAsyncStorage(rnDeps.AsyncStorage);
-      Statsig.setNativeModules(rnDeps.NativeModules);
-      Statsig.setPlatform(rnDeps.Platform);
-      Statsig.setRNDeviceInfo(rnDeps.RNDevice);
-      Statsig.setReactNativeUUID(rnDeps.ReactNativeUUID);
-
-      // expo
-      Statsig.setExpoConstants(rnDeps.Constants);
-      Statsig.setExpoDevice(rnDeps.ExpoDevice);
-    }
-
-    Statsig.setOnCacheLoadedCallback(() => {
-      setHasCacheValues(true);
-    });
-
-    Statsig.initialize(sdkKey, userMemo, options).then(() => {
-      setHasNetworkValues(true);
-      resolver.current && resolver.current();
-    });
-
-    if (typeof window !== 'undefined') {
-      window.__STATSIG_SDK__ = Statsig;
-      window.__STATSIG_JS_SDK__ = StatsigJS;
-      window.__STATSIG_RERENDER_OVERRIDE__ = () => {
-        setUserVersion(userVersion + 1);
-      };
-    }
   }, [userMemo]);
 
   useEffect(() => {
-    Statsig.setReactContextUpdater(() =>
+    StatsigLazyLoader.setReactContextUpdater(() =>
       setUserVersion((version) => version + 1),
     );
     return () => {
       if (shutdownOnUnmount) {
-        Statsig.shutdown();
+        StatsigLazyLoader.shutdown();
       }
-      Statsig.setReactContextUpdater(null);
+      StatsigLazyLoader.setReactContextUpdater(null);
     };
   }, []);
 
@@ -214,7 +201,7 @@ export function StatsigProvider({
       initialized: hasNetworkValues,
       statsigPromise,
       userVersion,
-      initStarted: Statsig.initializeCalled(),
+      initStarted: StatsigLazyLoader.initializeCalled(),
       updateUser:
         setUser ??
         (() => {
@@ -225,7 +212,7 @@ export function StatsigProvider({
       hasNetworkValues,
       statsigPromise,
       userVersion,
-      Statsig.initializeCalled(),
+      StatsigLazyLoader.initializeCalled(),
       setUser,
     ],
   );
@@ -234,4 +221,4 @@ export function StatsigProvider({
       {child}
     </StatsigContext.Provider>
   );
-}
+};

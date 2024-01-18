@@ -1,12 +1,13 @@
 import { useContext, useEffect } from 'react';
-import Statsig from './Statsig';
-import StatsigContext from './StatsigContext';
+import { Statsig } from './Statsig';
+import { StatsigContext } from './StatsigContext';
 
-export default function (
+/** @deprecated Please use the event ingestion pipeline */
+export const useStatsigLogEffect = (
   eventName: string,
   value?: string | number | null,
   metadata?: Record<string, string> | null,
-): void {
+): void => {
   const { initStarted } = useContext(StatsigContext);
 
   useEffect(() => {
@@ -15,4 +16,4 @@ export default function (
     }
     Statsig.logEvent(eventName, value, metadata);
   }, [initStarted]);
-}
+};

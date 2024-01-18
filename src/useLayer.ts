@@ -7,11 +7,11 @@ import { LayerResult, useLayerImpl } from './StatsigHooks';
  * @param keepDeviceValue - whether the value returned should be kept for the user on the device for the duration of the experiment
  * @returns an object containing a isLoading flag and the Layer object itself
  */
-export default function (
+export const useLayer = (
   layerName: string,
   keepDeviceValue = false,
-): LayerResult {
+): LayerResult => {
   return useLayerImpl(layerName, {
     keepDeviceValue,
   });
-}
+};

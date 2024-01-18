@@ -1,4 +1,4 @@
-import {
+import type {
   InitCompletionCallback,
   UpdateUserCompletionCallback,
   GateEvaluationCallback,
