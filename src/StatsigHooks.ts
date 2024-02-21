@@ -14,7 +14,7 @@ import { StatsigLazyLoader } from './StatsigLazyLoader';
  */
 export type GateResult = {
   isLoading: boolean;
-  value: boolean;
+  value: boolean | null;
 };
 
 export function useGateImpl(
@@ -25,6 +25,10 @@ export function useGateImpl(
   const { initialized, userVersion, initStarted } = useContext(StatsigContext);
 
   const gate = useMemo(() => {
+    if (!StatsigLazyLoader.moduleLoaded) {
+      return null;
+    }
+
     const { Statsig } = StatsigLazyLoader.getStatsigAPI();
 
     return initStarted
