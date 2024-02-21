@@ -1,6 +1,6 @@
 {
   "name": "@linktr.ee/statsig-react",
-  "version": "1.34.0-alpha.96",
+  "version": "1.34.0-alpha.101",
   "description": "An SDK for using Statsig Feature Management and Experimentation platform in React clients",
   "type": "module",
   "main": "index.js",
