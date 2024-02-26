@@ -1,5 +1,4 @@
 import type {
-  AppState,
   AsyncStorage,
   DeviceInfo,
   ExpoConstants,
@@ -54,7 +53,7 @@ export default class Statsig {
 
   private static sdkPackageInfo?: _SDKPackageInfo;
   // RN static dependencies
-  private static appState?: AppState;
+  private static appState?: unknown;
   private static nativeModules?: NativeModules;
   private static platform?: Platform;
   private static deviceInfo?: DeviceInfo;
@@ -73,8 +72,8 @@ export default class Statsig {
     try {
       if (!Statsig.instance) {
         Statsig.instance = new StatsigClient(sdkKey, user, options);
-        Statsig.instance.setSDKPackageInfo(this.sdkPackageInfo);
         Statsig.instance.setAppState(this.appState);
+        Statsig.instance.setSDKPackageInfo(this.sdkPackageInfo);
         Statsig.instance.setNativeModules(this.nativeModules);
         Statsig.instance.setPlatform(this.platform);
         Statsig.instance.setRNDeviceInfo(this.deviceInfo);
@@ -444,6 +443,12 @@ export default class Statsig {
   }
 
   // All methods below are for the statsig react native SDK internal usage only!
+  public static setAppState(appState?: unknown | null): void {
+    if (appState != null) {
+      Statsig.appState = appState;
+    }
+  }
+
   public static setSDKPackageInfo(sdkPackageInfo: _SDKPackageInfo) {
     Statsig.sdkPackageInfo = sdkPackageInfo;
   }
@@ -457,12 +462,6 @@ export default class Statsig {
   public static setAsyncStorage(asyncStorage?: AsyncStorage | null): void {
     if (asyncStorage != null) {
       StatsigAsyncStorage.asyncStorage = asyncStorage;
-    }
-  }
-
-  public static setAppState(appState?: AppState | null): void {
-    if (appState != null) {
-      Statsig.appState = appState;
     }
   }
 

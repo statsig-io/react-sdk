@@ -1,5 +1,4 @@
 import type {
-  AppState,
   AsyncStorage,
   DeviceInfo,
   ExpoConstants,
@@ -74,8 +73,8 @@ type Props = {
    */
   _reactNativeDependencies?: {
     SDKPackageInfo: _SDKPackageInfo;
+    AppState: unknown | null;
     AsyncStorage: AsyncStorage | null;
-    AppState: AppState | null;
     NativeModules: NativeModules | null;
     Platform: Platform | null;
     RNDevice: DeviceInfo | null;

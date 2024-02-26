@@ -1,7 +1,4 @@
 import type {
-  AppState,
-  AppStateEvent,
-  AppStateStatus,
   StatsigUser,
   StatsigEnvironment,
   StatsigOverrides,
@@ -57,7 +54,4 @@ export type {
   StatsigEnvironment,
   StatsigOverrides,
   UUID,
-  AppState,
-  AppStateStatus,
-  AppStateEvent,
 };
