@@ -48,9 +48,6 @@ type Props = {
  * immediately and you can take advantage of server side rendering of react components.
  *
  * The provider accepts the same SDK initialization parameters as the statsig-js SDK.
- *
- * We recommend you place this at the entry point of your app and pass waitForInitialization = true
- * to ensure the SDK is initialized and all values are up to date prior to rendering anything.
  * @param props
  * @returns
  */
