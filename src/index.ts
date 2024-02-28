@@ -3,8 +3,9 @@ import type {
   StatsigEnvironment,
   StatsigOverrides,
   UUID,
+  CheckGateOptions as GetFeatureGateOptions,
 } from 'statsig-js';
-import { DynamicConfig, Layer } from 'statsig-js';
+import { DynamicConfig, Layer, FeatureGate } from 'statsig-js';
 import Statsig from './Statsig';
 import StatsigContext from './StatsigContext';
 import StatsigProvider from './StatsigProvider';
@@ -17,12 +18,13 @@ import usePrefetchUsers from './usePrefetchUsers';
 import useStatsigLogEffect from './useStatsigLogEffect';
 import StatsigSynchronousProvider from './StatsigSynchronousProvider';
 import { StatsigOptions } from './StatsigOptions';
-import { ConfigResult, LayerResult, GateResult } from './StatsigHooks';
+import { ConfigResult, LayerResult, GateResult, FeatureGateResult } from './StatsigHooks';
 import useConfigWithExposureLoggingDisabled from './useConfigWithExposureLoggingDisabled';
 import useGateWithExposureLoggingDisabled from './useGateWithExposureLoggingDisabled';
 import useExperimentWithExposureLoggingDisabled from './useExperimentWithExposureLoggingDisabled';
 import useLayerWithExposureLoggingDisabled from './useLayerWithExposureLoggingDisabled';
 import useUpdateUser from './useUpdateUser';
+import useFeatureGate from './useFeatureGate';
 
 export {
   Statsig,
@@ -39,7 +41,9 @@ export {
   useGateWithExposureLoggingDisabled,
   useStatsigLogEffect,
   useUpdateUser,
+  useFeatureGate,
   DynamicConfig,
+  FeatureGate,
   staticImplements,
   StatsigStatic,
   Layer,
@@ -49,9 +53,11 @@ export type {
   ConfigResult,
   LayerResult,
   GateResult,
+  FeatureGateResult,
   StatsigUser,
   StatsigOptions,
   StatsigEnvironment,
   StatsigOverrides,
   UUID,
+  GetFeatureGateOptions,
 };

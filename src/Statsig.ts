@@ -6,11 +6,13 @@ import type {
   NativeModules,
   Platform,
   UUID,
+  CheckGateOptions as GetGateOptions,
 } from 'statsig-js';
 import StatsigJS, {
   DynamicConfig,
   EvaluationDetails,
   EvaluationReason,
+  FeatureGate,
   Layer,
   StatsigAsyncStorage,
   StatsigClient,
@@ -34,6 +36,7 @@ declare global {
 export type CheckGateOptions = {
   ignoreOverrides?: boolean;
 };
+export { CheckGateOptions as GetFeatureGateOptions } from 'statsig-js';
 export type GetConfigOptions = {
   ignoreOverrides?: boolean;
 };
@@ -148,6 +151,16 @@ export default class Statsig {
     return this.capture(
       () => Statsig.getClientX().checkGate(gateName, ignoreOverrides),
       false,
+    );
+  }
+
+  public static getFeatureGate(gateName: string, options?: GetGateOptions) {
+    return this.capture(
+      () => Statsig.getClientX().getFeatureGate(gateName, options),
+      new FeatureGate(gateName, false, '', {
+        time: Date.now(),
+        reason: EvaluationReason.Uninitialized,
+      }),
     );
   }
 

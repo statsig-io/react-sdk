@@ -1,5 +1,6 @@
 import { useContext, useMemo } from 'react';
-import { DynamicConfig, EvaluationReason, Layer } from 'statsig-js';
+import { DynamicConfig, EvaluationReason, FeatureGate, Layer } from 'statsig-js';
+import type { CheckGateOptions as GetFeatureGateOptions } from 'statsig-js';
 import StatsigContext from './StatsigContext';
 import Statsig, {
   CheckGateOptions,
@@ -15,6 +16,44 @@ export type GateResult = {
   isLoading: boolean;
   value: boolean;
 };
+
+/**
+ * Returns the initialization state of the SDK and a gate object
+ */
+export type FeatureGateResult = {
+  isLoading: boolean;
+  gate: FeatureGate;
+}
+
+export function useFeatureGateImpl(
+  gateName: string,
+  options?: GetFeatureGateOptions,
+): FeatureGateResult {
+  const { initialized, userVersion, initStarted } = useContext(StatsigContext);
+
+  const gate = useMemo(
+    () =>
+      initStarted
+        ? Statsig.getFeatureGate(gateName, options)
+        : new FeatureGate(gateName, false, '', {
+          time: Date.now(),
+          reason: EvaluationReason.Uninitialized,
+        }),
+    [
+      initialized,
+      initStarted,
+      gateName,
+      userVersion,
+      options,
+      options?.disableExposureLogging,
+    ],
+  );
+  return {
+    isLoading: !initialized,
+    gate: gate,
+  };
+}
+
 
 export function useGateImpl(
   gateName: string,
