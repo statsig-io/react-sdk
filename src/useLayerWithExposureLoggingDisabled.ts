@@ -1,5 +1,5 @@
 import { GetLayerOptions } from './Statsig';
-import { LayerResult, useLayerImpl } from './StatsigHooks';
+import { LayerResult, useLayerWithExposureLoggingDisabledImpl } from './StatsigHooks';
 
 /**
  * A synchronous hook to check the value of an layer without exposure logging.
@@ -17,5 +17,5 @@ export default function (
   layerName: string,
   options?: GetLayerOptions,
 ): LayerResult {
-  return useLayerImpl(layerName, options, true /* exposure logging disabled */);
+  return useLayerWithExposureLoggingDisabledImpl(layerName, options);
 }

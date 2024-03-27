@@ -1,5 +1,5 @@
 import { CheckGateOptions } from './Statsig';
-import { GateResult, useGateImpl } from './StatsigHooks';
+import { GateResult, useGateWithExposureLoggingDisabledImpl } from './StatsigHooks';
 
 /**
  * A synchronous hook to check the value of the gate without exposure logging.
@@ -15,5 +15,5 @@ export default function (
   gateName: string,
   options?: CheckGateOptions,
 ): GateResult {
-  return useGateImpl(gateName, options, true /* exposure logging disabled */);
+  return useGateWithExposureLoggingDisabledImpl(gateName, options);
 }

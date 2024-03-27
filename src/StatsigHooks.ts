@@ -4,7 +4,6 @@ import type { CheckGateOptions as GetFeatureGateOptions } from 'statsig-js';
 import StatsigContext from './StatsigContext';
 import Statsig, {
   CheckGateOptions,
-  GetConfigOptions,
   GetExperimentOptions,
   GetLayerOptions,
 } from './Statsig';
@@ -44,7 +43,7 @@ export function useFeatureGateImpl(
       initStarted,
       gateName,
       userVersion,
-      options,
+      options?.ignoreOverrides,
       options?.disableExposureLogging,
     ],
   );
@@ -54,10 +53,16 @@ export function useFeatureGateImpl(
   };
 }
 
+export function useGateWithExposureLoggingDisabledImpl(
+  gateName: string,
+  options?: CheckGateOptions,
+): GateResult {
+  return useGateImpl(gateName, options?.ignoreOverrides ?? false, true);
+}
 
 export function useGateImpl(
   gateName: string,
-  options?: CheckGateOptions,
+  ignoreOverrides: boolean,
   exposureLoggingDisabled = false,
 ): GateResult {
   const { initialized, userVersion, initStarted, initValuesTime } = useContext(StatsigContext);
@@ -66,15 +71,15 @@ export function useGateImpl(
     () =>
       initStarted
         ? exposureLoggingDisabled
-          ? Statsig.checkGateWithExposureLoggingDisabled(gateName, options)
-          : Statsig.checkGate(gateName, options?.ignoreOverrides)
+          ? Statsig.checkGateWithExposureLoggingDisabled(gateName, { ignoreOverrides })
+          : Statsig.checkGate(gateName, ignoreOverrides)
         : false,
     [
       initialized,
       initStarted,
       gateName,
       userVersion,
-      options,
+      ignoreOverrides,
       exposureLoggingDisabled,
       initValuesTime,
     ],
@@ -95,26 +100,27 @@ export type ConfigResult = {
 
 export function useConfigImpl(
   configName: string,
-  options?: GetConfigOptions,
+  ignoreOverrides: boolean,
   exposureLoggingDisabled = false,
 ): ConfigResult {
   const { initialized, initStarted, userVersion, initValuesTime } = useContext(StatsigContext);
   const config = useMemo(
-    () =>
-      initStarted
+    () => {
+      return initStarted
         ? exposureLoggingDisabled
-          ? Statsig.getConfigWithExposureLoggingDisabled(configName, options)
-          : Statsig.getConfig(configName, options?.ignoreOverrides)
+          ? Statsig.getConfigWithExposureLoggingDisabled(configName, { ignoreOverrides })
+          : Statsig.getConfig(configName, ignoreOverrides)
         : new DynamicConfig(configName, {}, '', {
             time: Date.now(),
             reason: EvaluationReason.Uninitialized,
-          }),
+          });
+    },
     [
       initialized,
       initStarted,
       configName,
       userVersion,
-      options,
+      ignoreOverrides,
       exposureLoggingDisabled,
       initValuesTime,
     ],
@@ -125,9 +131,22 @@ export function useConfigImpl(
   };
 }
 
-export function useExperimentImpl(
+export function useExperimentWithExposureLoggingDisabledImpl(
   experimentName: string,
   options?: GetExperimentOptions,
+): ConfigResult {
+  return useExperimentImpl(
+    experimentName,
+    options?.keepDeviceValue ?? false,
+    options?.ignoreOverrides ?? false,
+    true,
+  );
+}
+
+export function useExperimentImpl(
+  experimentName: string,
+  keepDeviceValue: boolean,
+  ignoreOverrides: boolean,
   exposureLoggingDisabled = false,
 ): ConfigResult {
   const { initialized, initStarted, userVersion, initValuesTime } = useContext(StatsigContext);
@@ -137,12 +156,15 @@ export function useExperimentImpl(
         ? exposureLoggingDisabled
           ? Statsig.getExperimentWithExposureLoggingDisabled(
               experimentName,
-              options,
+              {
+                keepDeviceValue,
+                ignoreOverrides,
+              },
             )
           : Statsig.getExperiment(
               experimentName,
-              options?.keepDeviceValue,
-              options?.ignoreOverrides,
+              keepDeviceValue,
+              ignoreOverrides,
             )
         : new DynamicConfig(experimentName, {}, '', {
             time: Date.now(),
@@ -153,7 +175,8 @@ export function useExperimentImpl(
       initStarted,
       experimentName,
       userVersion,
-      options,
+      keepDeviceValue,
+      ignoreOverrides,
       exposureLoggingDisabled,
       initValuesTime,
     ],
@@ -172,9 +195,20 @@ export type LayerResult = {
   layer: Layer;
 };
 
-export function useLayerImpl(
+export function useLayerWithExposureLoggingDisabledImpl(
   layerName: string,
   options?: GetLayerOptions,
+): LayerResult {
+  return useLayerImpl(
+    layerName,
+    options?.keepDeviceValue ?? false,
+    true,
+  );
+}
+
+export function useLayerImpl(
+  layerName: string,
+  keepDeviceValue: boolean,
   exposureLoggingDisabled = false,
 ): LayerResult {
   const { initialized, initStarted, userVersion, initValuesTime } = useContext(StatsigContext);
@@ -182,8 +216,8 @@ export function useLayerImpl(
     () =>
       initStarted
         ? exposureLoggingDisabled
-          ? Statsig.getLayerWithExposureLoggingDisabled(layerName, options)
-          : Statsig.getLayer(layerName, options?.keepDeviceValue)
+          ? Statsig.getLayerWithExposureLoggingDisabled(layerName, { keepDeviceValue })
+          : Statsig.getLayer(layerName, keepDeviceValue)
         : Layer._create(layerName, {}, '', {
             time: Date.now(),
             reason: EvaluationReason.Uninitialized,
@@ -193,7 +227,7 @@ export function useLayerImpl(
       initStarted,
       layerName,
       userVersion,
-      options,
+      keepDeviceValue,
       exposureLoggingDisabled,
       initValuesTime,
     ],

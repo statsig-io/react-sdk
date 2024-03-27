@@ -13,8 +13,5 @@ export default function (
   keepDeviceValue = false,
   ignoreOverrides?: boolean,
 ): ConfigResult {
-  return useExperimentImpl(experimentName, {
-    keepDeviceValue,
-    ignoreOverrides,
-  });
+  return useExperimentImpl(experimentName, keepDeviceValue, ignoreOverrides ?? false);
 }

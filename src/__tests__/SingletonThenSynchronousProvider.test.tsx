@@ -9,7 +9,6 @@ import React, { useEffect, useState } from 'react';
 import StatsigJS, { StatsigClient, StatsigUser } from 'statsig-js';
 import StatsigSynchronousProvider from '../StatsigSynchronousProvider';
 import Statsig from '../Statsig';
-import useUpdateUser from '../useUpdateUser';
 import * as TestBootstrapData from './initialize_response.json';
 import { useGate, useConfig } from '../index';
 import * as TestInitializeData from './other_initialize_response.json';
@@ -21,41 +20,19 @@ let updateUserCallbacks = 0;
 
 const TID_USER_VALUE = 'statsig-user-object';
 const TID_SET_USER_STATE = 'update-via-set-state';
-const TID_UPDATE_USER_HOOK = 'update-via-hook';
-const TID_PARTIAL_UPDATE_USER_HOOK = 'partial-update-via-hook';
 const TID_GATE_VALUE = 'gate-value';
 const TID_CONFIG_NAME = 'config-name';
 const TID_CONFIG_VAL = 'config-val';
 
-function UpdateUserHookTestComponent(props: { userID: string }) {
-  const updateUser = useUpdateUser();
+function UpdateUserHookTestComponent() {
   const gate = useGate('on_for_usera_update');
-  const config = useConfig('usera_config').config;
-
+  const config = useConfig('usera_config');
+  
   return (
     <>
       <div data-testid={TID_GATE_VALUE}>{gate.value ? 'ON' : 'OFF'}</div>
-      <div data-testid={TID_CONFIG_VAL}>{config.get('val', 17)}</div>
-      <div data-testid={TID_CONFIG_NAME}>{config.get('name', 'default')}</div>
-      <button
-        onClick={() =>
-          updateUser((old) => {
-            return {
-              ...old,
-              userID: props.userID + '-partial-update-via-useUpdateUser',
-            };
-          })
-        }
-        data-testid={TID_PARTIAL_UPDATE_USER_HOOK}
-      />
-      <button
-        onClick={() =>
-          updateUser({
-            userID: props.userID + '-full-update-via-useUpdateUser',
-          })
-        }
-        data-testid={TID_UPDATE_USER_HOOK}
-      />
+      <div data-testid={TID_CONFIG_VAL}>{config.config.get('val', 17)}</div>
+      <div data-testid={TID_CONFIG_NAME}>{config.config.get('name', 'default')}</div>
     </>
   );
 }
@@ -108,7 +85,7 @@ function UserTestComponent(props: {
         data-testid={TID_SET_USER_STATE}
       />
 
-      <UpdateUserHookTestComponent userID={props.userID} />
+      <UpdateUserHookTestComponent />
     </StatsigSynchronousProvider>
   );
 }

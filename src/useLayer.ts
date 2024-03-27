@@ -11,7 +11,5 @@ export default function (
   layerName: string,
   keepDeviceValue = false,
 ): LayerResult {
-  return useLayerImpl(layerName, {
-    keepDeviceValue,
-  });
+  return useLayerImpl(layerName, keepDeviceValue);
 }

@@ -1,5 +1,5 @@
 import { GetExperimentOptions } from './Statsig';
-import { ConfigResult, useExperimentImpl } from './StatsigHooks';
+import { ConfigResult, useExperimentWithExposureLoggingDisabledImpl } from './StatsigHooks';
 
 /**
  * A synchronous hook to check the value of an experiment without exposure logging.
@@ -17,9 +17,8 @@ export default function (
   experimentName: string,
   options?: GetExperimentOptions,
 ): ConfigResult {
-  return useExperimentImpl(
+  return useExperimentWithExposureLoggingDisabledImpl(
     experimentName,
     options,
-    true /* exposure logging disabled */,
   );
 }

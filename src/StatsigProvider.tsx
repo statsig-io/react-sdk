@@ -233,7 +233,6 @@ export default function StatsigProvider({
       statsigPromise,
       userVersion,
       Statsig.initializeCalled(),
-      setUser,
     ],
   );
   return (

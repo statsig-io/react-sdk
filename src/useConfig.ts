@@ -11,7 +11,5 @@ export default function (
   configName: string,
   ignoreOverrides?: boolean,
 ): ConfigResult {
-  return useConfigImpl(configName, {
-    ignoreOverrides,
-  });
+  return useConfigImpl(configName, ignoreOverrides ?? false);
 }
