@@ -60,7 +60,7 @@ export function useGateImpl(
   options?: CheckGateOptions,
   exposureLoggingDisabled = false,
 ): GateResult {
-  const { initialized, userVersion, initStarted } = useContext(StatsigContext);
+  const { initialized, userVersion, initStarted, initValuesTime } = useContext(StatsigContext);
 
   const gate = useMemo(
     () =>
@@ -76,6 +76,7 @@ export function useGateImpl(
       userVersion,
       options,
       exposureLoggingDisabled,
+      initValuesTime,
     ],
   );
   return {
@@ -97,7 +98,7 @@ export function useConfigImpl(
   options?: GetConfigOptions,
   exposureLoggingDisabled = false,
 ): ConfigResult {
-  const { initialized, initStarted, userVersion } = useContext(StatsigContext);
+  const { initialized, initStarted, userVersion, initValuesTime } = useContext(StatsigContext);
   const config = useMemo(
     () =>
       initStarted
@@ -115,6 +116,7 @@ export function useConfigImpl(
       userVersion,
       options,
       exposureLoggingDisabled,
+      initValuesTime,
     ],
   );
   return {
@@ -128,7 +130,7 @@ export function useExperimentImpl(
   options?: GetExperimentOptions,
   exposureLoggingDisabled = false,
 ): ConfigResult {
-  const { initialized, initStarted, userVersion } = useContext(StatsigContext);
+  const { initialized, initStarted, userVersion, initValuesTime } = useContext(StatsigContext);
   const config = useMemo(
     () =>
       initStarted
@@ -153,6 +155,7 @@ export function useExperimentImpl(
       userVersion,
       options,
       exposureLoggingDisabled,
+      initValuesTime,
     ],
   );
   return {
@@ -174,7 +177,7 @@ export function useLayerImpl(
   options?: GetLayerOptions,
   exposureLoggingDisabled = false,
 ): LayerResult {
-  const { initialized, initStarted, userVersion } = useContext(StatsigContext);
+  const { initialized, initStarted, userVersion, initValuesTime } = useContext(StatsigContext);
   const layer = useMemo(
     () =>
       initStarted
@@ -192,6 +195,7 @@ export function useLayerImpl(
       userVersion,
       options,
       exposureLoggingDisabled,
+      initValuesTime,
     ],
   );
   return {

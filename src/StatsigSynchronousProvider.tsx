@@ -66,10 +66,11 @@ export default function StatsigSynchronousProvider({
   const userMemo = useMemo(() => {
     return user;
   }, [JSON.stringify(user)]);
+  const initValuesTime = String(initializeValues.time);
   useMemo(() => {
     Statsig.bootstrap(sdkKey, initializeValues, userMemo, options);
     return initializeValues;
-  }, [JSON.stringify(initializeValues)]);
+  }, [initValuesTime]);
 
   useEffect(() => {
     if (firstUpdate.current) {
@@ -118,8 +119,9 @@ export default function StatsigSynchronousProvider({
         (() => {
           // noop
         }),
+      initValuesTime: initValuesTime,
     };
-  }, [initialized, userVersion, Statsig.initializeCalled(), setUser]);
+  }, [initialized, userVersion, Statsig.initializeCalled(), setUser, initValuesTime]);
   return (
     <StatsigContext.Provider value={contextValue}>
       {children}
