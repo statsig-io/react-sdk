@@ -52,8 +52,15 @@ export type StatsigReactContextUpdater = () => void;
 
 @staticImplements<StatsigStatic>()
 export default class Statsig {
+  private static readonly MAX_QUEUED_EVENTS = 20;
+
   private static instance: StatsigClient | undefined;
 
+  private static eventQueue: Array<{
+    eventName: string;
+    value: string | number | null;
+    metadata: Record<string, string> | null;
+  }> = [];
   private static sdkPackageInfo?: _SDKPackageInfo;
   // RN static dependencies
   private static appState?: unknown;
@@ -86,7 +93,9 @@ export default class Statsig {
           this.onCacheLoadedCallback,
         );
       }
-      return Statsig.instance.initializeAsync();
+      await Statsig.instance.initializeAsync();
+      Statsig.processEventQueue();
+      return
     } catch (e) {
       if (Statsig.canThrow()) {
         throw e;
@@ -322,7 +331,16 @@ export default class Statsig {
     metadata: Record<string, string> | null = null,
   ): void {
     this.capture(
-      () => Statsig.getClientX().logEvent(eventName, value, metadata),
+      () => {
+        if (!Statsig.instance || !Statsig.initializeCalled()) {
+          if (Statsig.eventQueue.length >= this.MAX_QUEUED_EVENTS) {
+            return;
+          }
+          Statsig.eventQueue.push({ eventName, value, metadata });
+          return;
+        }
+        Statsig.instance.logEvent(eventName, value, metadata);
+      },
       undefined,
     );
   }
@@ -514,6 +532,17 @@ export default class Statsig {
 
   public static setOnCacheLoadedCallback(fn: () => void) {
     Statsig.onCacheLoadedCallback = fn;
+  }
+
+  private static processEventQueue(): void {
+    for (const event of Statsig.eventQueue) {
+      Statsig.instance?.logEvent(
+        event.eventName,
+        event.value,
+        event.metadata,
+      );
+    }
+    Statsig.eventQueue = [];
   }
 
   private static getClientX(): StatsigClient {
