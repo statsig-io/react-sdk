@@ -1,0 +1,32 @@
+{
+  "feature_gates": {
+    "442483016": {
+      "name": "442483016",
+      "value": false,
+      "rule_id": "default",
+      "id_type": "userID"
+    }
+  },
+  "dynamic_configs": {
+    "2069983659": {
+      "name": "2069983659",
+      "value": {},
+      "rule_id": "default",
+      "group": "default",
+      "is_device_based": false,
+      "id_type": "userID"
+    }
+  },
+  "layer_configs": {},
+  "sdkParams": {},
+  "has_updates": true,
+  "generator": "scrapi-nest",
+  "time": 0,
+  "evaluated_keys": {},
+  "hash_used": "djb2",
+  "derived_fields": {
+    "user_agent": "https://console.statsig.com/KJutSfoztrLVx37HKnaaJ/",
+    "ip": "4.38.114.186",
+    "country": "US"
+  }
+}

@@ -65,7 +65,7 @@ export function useGateImpl(
   ignoreOverrides: boolean,
   exposureLoggingDisabled = false,
 ): GateResult {
-  const { initialized, userVersion, initStarted, initValuesTime } = useContext(StatsigContext);
+  const { initialized, userVersion, initStarted, hooksMemoKey } = useContext(StatsigContext);
 
   const gate = useMemo(
     () =>
@@ -81,7 +81,7 @@ export function useGateImpl(
       userVersion,
       ignoreOverrides,
       exposureLoggingDisabled,
-      initValuesTime,
+      hooksMemoKey,
     ],
   );
   return {
@@ -103,7 +103,7 @@ export function useConfigImpl(
   ignoreOverrides: boolean,
   exposureLoggingDisabled = false,
 ): ConfigResult {
-  const { initialized, initStarted, userVersion, initValuesTime } = useContext(StatsigContext);
+  const { initialized, initStarted, userVersion, hooksMemoKey } = useContext(StatsigContext);
   const config = useMemo(
     () => {
       return initStarted
@@ -122,7 +122,7 @@ export function useConfigImpl(
       userVersion,
       ignoreOverrides,
       exposureLoggingDisabled,
-      initValuesTime,
+      hooksMemoKey,
     ],
   );
   return {
@@ -149,7 +149,7 @@ export function useExperimentImpl(
   ignoreOverrides: boolean,
   exposureLoggingDisabled = false,
 ): ConfigResult {
-  const { initialized, initStarted, userVersion, initValuesTime } = useContext(StatsigContext);
+  const { initialized, initStarted, userVersion, hooksMemoKey } = useContext(StatsigContext);
   const config = useMemo(
     () =>
       initStarted
@@ -178,7 +178,7 @@ export function useExperimentImpl(
       keepDeviceValue,
       ignoreOverrides,
       exposureLoggingDisabled,
-      initValuesTime,
+      hooksMemoKey,
     ],
   );
   return {
@@ -211,7 +211,7 @@ export function useLayerImpl(
   keepDeviceValue: boolean,
   exposureLoggingDisabled = false,
 ): LayerResult {
-  const { initialized, initStarted, userVersion, initValuesTime } = useContext(StatsigContext);
+  const { initialized, initStarted, userVersion, hooksMemoKey } = useContext(StatsigContext);
   const layer = useMemo(
     () =>
       initStarted
@@ -229,7 +229,7 @@ export function useLayerImpl(
       userVersion,
       keepDeviceValue,
       exposureLoggingDisabled,
-      initValuesTime,
+      hooksMemoKey,
     ],
   );
   return {

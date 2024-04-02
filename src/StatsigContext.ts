@@ -9,7 +9,7 @@ export interface TStatsigContext {
   userVersion: number;
   initStarted: boolean;
   updateUser: UpdateUserFunc;
-  initValuesTime: string | null; // The time field on the initializeValues - synchronousprovider only
+  hooksMemoKey: string | null; // For now, only used by the synchronous provider to break hook memoization when initializeValues changes
 }
 
 /**
@@ -23,5 +23,5 @@ export default React.createContext<TStatsigContext>({
   updateUser: () => {
     // noop
   },
-  initValuesTime: null,
+  hooksMemoKey: null,
 });

@@ -226,7 +226,7 @@ export default function StatsigProvider({
         (() => {
           // noop
         }),
-      initValuesTime: null,
+      hooksMemoKey: null,
     }),
     [
       hasNetworkValues,
