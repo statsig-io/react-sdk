@@ -3,11 +3,13 @@
  */
 
 import '@testing-library/jest-dom';
-import { render, screen, waitFor } from '@testing-library/react';
+
 import React, { useEffect, useState } from 'react';
 import StatsigJS, { StatsigClient, StatsigUser } from 'statsig-js';
-import StatsigProvider from '../StatsigProvider';
+import { render, screen, waitFor } from '@testing-library/react';
+
 import Statsig from '../Statsig';
+import StatsigProvider from '../StatsigProvider';
 
 const TID_USER_VALUE = 'statsig-user-object';
 
@@ -96,12 +98,12 @@ describe('StatsigProvider', () => {
 
     expect(requestsMade).toEqual([
       {
-        url: 'https://featuregates.org/v1/initialize',
+        url: 'https://featureassets.org/v1/initialize',
         body: expect.objectContaining({ user: { userID: userID } }),
       },
       // when the provider renders, it calls update user
       {
-        url: 'https://featuregates.org/v1/initialize',
+        url: 'https://featureassets.org/v1/initialize',
         body: expect.objectContaining({ user: { userID: userID } }),
       },
     ]);

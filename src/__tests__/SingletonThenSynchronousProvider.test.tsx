@@ -3,15 +3,18 @@
  */
 
 import '@testing-library/jest-dom';
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+
+import * as TestBootstrapData from './initialize_response.json';
+import * as TestInitializeData from './other_initialize_response.json';
+
 import React, { useEffect, useState } from 'react';
 import StatsigJS, { StatsigClient, StatsigUser } from 'statsig-js';
-import StatsigSynchronousProvider from '../StatsigSynchronousProvider';
+import { render, screen, waitFor } from '@testing-library/react';
+import { useConfig, useGate } from '../index';
+
 import Statsig from '../Statsig';
-import * as TestBootstrapData from './initialize_response.json';
-import { useGate, useConfig } from '../index';
-import * as TestInitializeData from './other_initialize_response.json';
+import StatsigSynchronousProvider from '../StatsigSynchronousProvider';
+import userEvent from '@testing-library/user-event';
 
 StatsigJS.encodeIntializeCall = false;
 
@@ -27,12 +30,14 @@ const TID_CONFIG_VAL = 'config-val';
 function UpdateUserHookTestComponent() {
   const gate = useGate('on_for_usera_update');
   const config = useConfig('usera_config');
-  
+
   return (
     <>
       <div data-testid={TID_GATE_VALUE}>{gate.value ? 'ON' : 'OFF'}</div>
       <div data-testid={TID_CONFIG_VAL}>{config.config.get('val', 17)}</div>
-      <div data-testid={TID_CONFIG_NAME}>{config.config.get('name', 'default')}</div>
+      <div data-testid={TID_CONFIG_NAME}>
+        {config.config.get('name', 'default')}
+      </div>
     </>
   );
 }
@@ -101,7 +106,7 @@ describe('Singleton then StatsigSynchronousProvider', () => {
 
     expect(requestsMade).toEqual([
       {
-        url: 'https://featuregates.org/v1/initialize',
+        url: 'https://featureassets.org/v1/initialize',
         body: expect.objectContaining({ user: { userID: userID } }),
       },
     ]);

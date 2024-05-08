@@ -3,18 +3,21 @@
  */
 
 import '@testing-library/jest-dom';
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import React, { useState } from 'react';
-import StatsigJS, { StatsigUser } from 'statsig-js';
-import Statsig from '../Statsig';
-import StatsigSynchronousProvider from '../StatsigSynchronousProvider';
-import { useConfig, useGate } from '../index';
-import useUpdateUser from '../useUpdateUser';
-import LocalStorageMock from './LocalStorageMock';
+
 import * as TestBootstrapData from './initialize_response.json';
 import * as TestInitializeData from './other_initialize_response.json';
 import * as UpdatedInitializeData from './updated_initialize_values.json';
+
+import React, { useState } from 'react';
+import StatsigJS, { StatsigUser } from 'statsig-js';
+import { render, screen, waitFor } from '@testing-library/react';
+import { useConfig, useGate } from '../index';
+
+import LocalStorageMock from './LocalStorageMock';
+import Statsig from '../Statsig';
+import StatsigSynchronousProvider from '../StatsigSynchronousProvider';
+import useUpdateUser from '../useUpdateUser';
+import userEvent from '@testing-library/user-event';
 
 const TID_USER_VALUE = 'statsig-user-object';
 const TID_SET_USER_STATE = 'update-via-set-state';
@@ -119,7 +122,7 @@ describe('StatsigSynchronousProvider', () => {
 
     expect(requestsMade).toEqual([
       {
-        url: 'https://featuregates.org/v1/initialize',
+        url: 'https://featureassets.org/v1/initialize',
         body: expect.objectContaining({ user: { userID: userID } }),
       },
     ]);

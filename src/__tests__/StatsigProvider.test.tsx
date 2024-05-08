@@ -92,12 +92,10 @@ describe('Singleton then StatsigProvider', () => {
   async function VerifyInitializeForUserWithRender(userID: string) {
     await waitFor(() => screen.getByText(userID));
 
-    expect(requestsMade).toContainEqual(
-      {
-        url: 'https://featuregates.org/v1/initialize',
-        body: expect.objectContaining({ user: { userID: userID } }),
-      },
-    );
+    expect(requestsMade).toContainEqual({
+      url: 'https://featureassets.org/v1/initialize',
+      body: expect.objectContaining({ user: { userID: userID } }),
+    });
   }
 
   (global as any).fetch = jest.fn((url, params) => {
