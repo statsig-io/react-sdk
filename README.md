@@ -2,10 +2,10 @@
 
 [![npm version](https://badge.fury.io/js/statsig-react.svg)](https://badge.fury.io/js/statsig-react)
 
+
 > [!IMPORTANT]
-> This version of the SDK is now in maintainance mode and will only receive bug fixes.
-> All new features will be added to the [@statsig/js-client and @statsig/react-bindings packages](https://github.com/statsig-io/js-client-monorepo).
-> Users of the `statsig-react` npm package should migrate to the `@statsig/js-client` and `@statsig/react-bindings` packages by 1/31/2025 - see this [migration guide](https://docs.statsig.com/client/javascript-sdk/migrating-from-statsig-react?ref=gh_react).
+> Support for this version of the SDK ended January 31, 2025.
+> All users of the `statsig-react` npm package should migrate to the `@statsig/js-client` and `@statsig/react-bindings` packages for bug fixes, performance improvements, and new features. See [migration guide](https://docs.statsig.com/client/javascript-sdk/migrating-from-statsig-react?ref=gh_react). for more info.
 
 The Statsig React SDK for single user client environments. If you need a SDK for another language or server environment, check out our [other SDKs](https://docs.statsig.com/#sdks?ref=gh_react).
 
